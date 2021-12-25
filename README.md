@@ -1,8 +1,5 @@
 # Parkour Fortress: Redux
 
-## Table of Contents
-[TOC]
-
 ## About
 Parkour Fortress: Redux adds Mirror's Edge-style parkour movement mechanics into Team Fortress 2. Its maps are prefixed by `pf_`. The mod is a from-scratch, backward-compatible recreation of Jonas Kaerlev's Parkour Fortress mod from 2011.
 
