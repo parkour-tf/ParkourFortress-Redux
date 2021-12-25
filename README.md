@@ -43,19 +43,24 @@ This code is licensed under the GNU General Public License, version 3. (GPLv3). 
 
 ## Credits
 
+### Parkour Fortress: Redux Credits
+
 Programming Lead - ScrewdriverHyena (Jonathan S.)
 
-Programming Support - Nami, oWave (Tobias K.), Lucas Nimny (Tyler S.), NotPaddy (Patric O.)
+Programming Support - Nami (Nami), oWave (Tobias K.), Lucas Nimny (Tyler S.), NotPaddy (Patric O.), Mikusch (Norman M.)
 
 Assets Lead - Beepin (Nate B.)
 
-Early Alpha Code - NotPaddy, Muffinoota (Ian M.), Leechertyper
-
-Original Parkour Fortress - MekuCube (Jonas K.)
+Assets Support - Sunmane/JJ (Sean C.)
 
 Tutorial Art - Ben Sadfleck
 
 Viewmodels - Kirillian
 
-Original PF Assets - Werbad, MekuCube
+### Honorable Mentions
 
+Original Parkour Fortress Code - MekuCube (Jonas K.)
+
+Original Parkour Fortress Assets - Werbad, Vincentor, Lampenpam, Scarness, Turtlez (Daryn M.)
+
+Early Alpha Code - Muffinoota (Ian M.), Leechertyper
