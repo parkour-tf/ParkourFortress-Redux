@@ -39,7 +39,7 @@ Find our mapping guide here: https://steamcommunity.com/sharedfiles/filedetails/
 
 ## License
 
-This code is licensed under the GNU General Public License, version 3. (GPLv3). See LICENSE.md for more information.
+This code is licensed under the GNU General Public License, version 3. (GPLv3). See LICENSE for more information.
 
 ## Credits
 
