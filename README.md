@@ -45,7 +45,7 @@ This code is licensed under the GNU General Public License, version 3. (GPLv3). 
 
 Programming Lead - ScrewdriverHyena (Jonathan S.)
 
-Programming Support - Nami, oWave, Lucas Nimny (Tyler S.), NotPaddy (Patric O.)
+Programming Support - Nami, oWave (Tobias K.), Lucas Nimny (Tyler S.), NotPaddy (Patric O.)
 
 Assets Lead - Beepin (Nate B.)
 
