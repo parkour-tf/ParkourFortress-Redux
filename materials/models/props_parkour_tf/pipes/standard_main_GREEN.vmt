@@ -1,0 +1,15 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/pipes/standard_main_diff"
+	"$bumpmap" "models/props_parkour_tf/pipes/standard_main_nrm"
+
+	"$color2" "[0 1 0]"
+
+	"$phong"     "1"	
+	"$phongexponent"   "15"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[.3 .3 .3]"
+
+	"$envmap" "env_cubemap" 
+	"$envmaptint" "[.05 .3 .05]"
+}

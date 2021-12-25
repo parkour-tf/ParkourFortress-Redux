@@ -1,0 +1,9 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "mats_parkour_tf/buildings/building_tall_2_diff"
+	"$bumpmap" "mats_parkour_tf/buildings/building_tall_2_nrm"
+	
+	"$normalmapalphaenvmapmask" "1"
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.3 .3 .3]"
+}

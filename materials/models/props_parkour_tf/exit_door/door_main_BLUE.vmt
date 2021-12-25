@@ -1,0 +1,18 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/exit_door/door_main_diff"
+	"$bumpmap" "models/props_parkour_tf/exit_door/door_main_nrm"
+	
+	"$blendtintbybasealpha" "1"
+	"$normalmapalphaenvmapmask" "1"
+
+	"$color2" "[0 0 1]"
+
+	"$phong"     "1"	
+	"$phongexponent"   "15"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[.3 .3 .3]"
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.3 .3 .6]"
+}

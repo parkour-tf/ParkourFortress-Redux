@@ -1,0 +1,11 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "mats_parkour_tf/metalducts/metal_duct_diff"
+	"$bumpmap" "mats_parkour_tf/metalducts/metal_duct_nrm"	
+	"$surfaceprop" "metal"
+
+	"$color" "[.5 .5 .5]"
+
+	"$envmap" "env_cubemap"	
+	"$envmaptint" "[.3 .3 .3]"
+}

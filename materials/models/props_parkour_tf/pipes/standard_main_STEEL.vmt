@@ -1,0 +1,9 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/pipes/standard_main_diff"
+
+	"$color2" "[.5 .5 .6]"
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .7 .7 .8]"
+}

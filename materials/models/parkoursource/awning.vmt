@@ -1,0 +1,8 @@
+//Texture and model by HIYOUGAMI http://hiyougami.webs.com
+"VertexLitGeneric"
+{
+	"$basetexture" "models/parkoursource/awning"
+	"$selfillum" 1
+	"$surfaceprop" "plastic"
+	"$model" 1
+}

@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "mats_parkour_tf/buildings/building_generic_3_diff"
+	"$bumpmap" "mats_parkour_tf/buildings/building_generic_3_nrm"
+}

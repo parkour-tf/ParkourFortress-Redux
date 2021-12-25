@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/exit_door/door_handle_diff"
+	"$bumpmap" "models/props_parkour_tf/exit_door/door_handle_nrm"
+	
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.7 .7 .8]"
+}

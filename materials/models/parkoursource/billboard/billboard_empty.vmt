@@ -1,0 +1,13 @@
+// Original Valve texture
+
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/parkoursource/billboard/billboard_empty"
+	"$bumpmap" "models/player/shared/shared_normal"
+	
+	"$phong" "1"
+	"$phongexponent" "80"
+	"$phongboost" "0.05"	
+	"$phongfresnelranges"	"[.5 1 4]"
+	"$halflambert" "0"
+}

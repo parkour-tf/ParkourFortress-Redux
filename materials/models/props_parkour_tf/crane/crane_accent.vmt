@@ -1,0 +1,13 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/crane/crane_main_diff"
+	"$bumpmap" "models/props_parkour_tf/crane/crane_main_nrm"
+	
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.1 .1 .1]"
+
+	"$phong"     "1"	
+	"$phongexponent"   "50"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[1 1 1]"
+}

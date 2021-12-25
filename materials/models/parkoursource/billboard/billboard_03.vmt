@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/parkoursource/billboard/billboard_03"
+	"$bumpmap" "models/player/shared/shared_normal"
+	
+	"$phong" "1"
+	"$phongexponent" "25"
+	"$phongboost" "0.125"	
+	"$phongfresnelranges"	"[.5 1 4]"
+	"$halflambert" "0"
+}

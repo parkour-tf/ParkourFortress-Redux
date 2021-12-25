@@ -1,0 +1,17 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "mats_parkour_tf/shiny_gray_diff"
+	"$bumpmap" "mats_parkour_tf/shiny_gray_nrm_test"
+	"$surfaceprop" "metal"		
+
+	"$color" "[.4 .4 .41]"
+	
+	$detail detail\noise_detail_01
+	$detailscale 8
+	$detailblendfactor 0.2
+	$detailblendmode 0
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.3 .3 .3]"	
+	"$normalmapalphaenvmapmask" "1"
+}

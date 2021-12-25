@@ -1,0 +1,9 @@
+//Texture and model by HIYOUGAMI http://hiyougami.webs.com
+"VertexLitGeneric"
+{
+	"$basetexture" "models/parkoursource/fanvent_6"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "models/parkoursource/fanvent_6_spec"
+	"$surfaceprop" "metal"
+	"$model" 1
+}

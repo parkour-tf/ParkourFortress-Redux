@@ -1,0 +1,12 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "mats_parkour_tf/scaffold_diff"
+	"$bumpmap" "mats_parkour_tf/scaffold_nrm"
+	
+	"$color" "[.5 .5 .5]"
+	
+	$detail detail\noise_detail_01
+	$detailscale 8
+	$detailblendfactor 0.2
+	$detailblendmode 0
+}

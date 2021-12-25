@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/exit_door/door_cover_CLEAR_diff"
+	"$translucent" "1"
+}

@@ -1,0 +1,9 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "pf_remakes\1024_2col_2row_offset\dark_dot"
+	"$bumpmap" "pf_remakes\1024_2col_2row_offset\1024_norm"
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.04 .04 .05]"
+//	"$envmaptint" "[1 1 1]"
+}

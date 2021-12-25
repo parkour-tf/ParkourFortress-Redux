@@ -1,0 +1,13 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/props_parkour_tf/zipline_tower/zipline_main_diff"
+	"$bumpmap" "models/props_parkour_tf/zipline_tower/zipline_main_nrm"
+	
+	"$phong"     "1"	
+	"$phongexponent"   "15"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[.3 .3 .3]"
+
+	"$envmap" "env_cubemap" 
+	"$envmaptint" "[.3 .3 .3]"	
+}

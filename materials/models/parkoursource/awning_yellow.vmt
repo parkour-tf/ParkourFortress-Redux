@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/parkoursource/awning_yellow"
+	"$selfillum" 1
+	"$surfaceprop" "plastic"
+	"$model" 1
+}

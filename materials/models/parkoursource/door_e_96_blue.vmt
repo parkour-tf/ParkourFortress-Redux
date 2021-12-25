@@ -1,0 +1,12 @@
+//Texture and model by HIYOUGAMI http://hiyougami.webs.com
+"VertexLitGeneric"
+{
+	"$basetexture" "models/parkoursource/door_e_96_blue"
+	$model 1
+	$surfaceprop metal
+
+	"$envmap" "env_cubemap"
+    $envmaptint "[0.5 0.5 1.0]"
+	"$envmapmask" "models/parkoursource/door_e_96_g"
+
+}

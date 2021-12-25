@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models\props_parkour_tf\rails\rail_main_diff"
+	
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.7 .7 .7]"
+}
