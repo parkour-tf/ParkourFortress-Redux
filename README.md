@@ -26,8 +26,11 @@ This version of the mod also does not come with the tutorial functional. We scra
 ## Requirements
 
 MetaMod 1.10.7-dev
+
 SourceMod 1.10.0.6512
+
 DHooks 2.2.0-detours7
+
 TF2 Econ Data 0.16.6
 
 ## Mapping
@@ -41,10 +44,18 @@ This code is licensed under the GNU General Public License, version 3. (GPLv3). 
 ## Credits
 
 Programming Lead - ScrewdriverHyena (Jonathan S.)
+
 Programming Support - Nami, oWave, Lucas Nimny (Tyler S.), NotPaddy (Patric O.)
+
 Assets Lead - Beepin (Nate B.)
+
 Early Alpha Code - NotPaddy, Muffinoota (Ian M.), Leechertyper
+
 Original Parkour Fortress - MekuCube (Jonas K.)
+
 Tutorial Art - Ben Sadfleck
+
 Viewmodels - Kirillian
+
 Original PF Assets - Werbad, MekuCube
+
