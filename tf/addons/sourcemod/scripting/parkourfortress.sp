@@ -63,8 +63,6 @@ All code is licensed under the GNU General Public License, version 3.
 #include "weapons/pickupweapons.sp"
 #include "weapons/config.sp"
 
-#include "pftimer.inc"
-
 public Plugin myinfo =
 {
     name = "Parkour Fortress: Redux",
