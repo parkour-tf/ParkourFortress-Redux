@@ -13,9 +13,13 @@
 
 #define ROPE_TOTAL 2
 
+#define DEFAULT_MAXSPEED 520.0
+
 char g_strRopeCommands[ROPE_TOTAL][32] = {
 	ROPE_COMMAND1, ROPE_COMMAND2
 };
+
+Address g_pPatchLocation;
 
 bool g_bLate;
 bool g_bMapLoaded;
@@ -35,12 +39,15 @@ Handle g_hHookSetWinningTeam;
 
 int g_iHookIdGiveNamedItem[TF_MAXPLAYERS];
 int g_iTEBeams;
+int g_iRestoreData;
 
 float g_flAirAccel[TF_MAXPLAYERS] = {10.0, 10.0, ...};
 float g_flStockAirAccel;
 
 float g_flAccel[TF_MAXPLAYERS] = {10.0, 10.0, ...};
 float g_flStockAccel;
+
+float g_flMaxSpeedVal;
 
 #if defined DEBUGROPES
 ConVar g_cvarDebugRopes;

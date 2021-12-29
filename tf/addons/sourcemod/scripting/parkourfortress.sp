@@ -15,7 +15,7 @@ Remade PF Assets - Beepin (Nate B.), ScrewdriverHyena
 All code is licensed under the GNU General Public License, version 3.
 */
 
-#define PLUGIN_VERSION		"1.0 Release Edition"
+#define PLUGIN_VERSION		"1.0p Release Edition"
 
 #define TF_MAXPLAYERS		34	//32 clients + 1 for 0/world/console + 1 for replay/SourceTV
 #define WEAPON_FISTS 		5
@@ -30,6 +30,13 @@ All code is licensed under the GNU General Public License, version 3.
 #include <dhooks>
 #include <morecolors>
 #include <tf_econ_data>
+
+/*** PRIVATE VERSION CODE - DO NOT INCLUDE IN PUBLIC BUILDS ***/
+#undef REQUIRE_PLUGIN
+#include <parkourtf>
+#include <parkourtf-mapvote>
+/*** END PRIVATE VERSION CODE ***/
+
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -62,6 +69,8 @@ All code is licensed under the GNU General Public License, version 3.
 #include "weapons/stocks.sp"
 #include "weapons/pickupweapons.sp"
 #include "weapons/config.sp"
+
+#include "pftimer.inc"
 
 public Plugin myinfo =
 {
@@ -244,6 +253,8 @@ public void OnPluginEnd()
 		SDKUnhook(i, SDKHook_PostThink, OnPostThink);
 		SDKUnhook(i, SDKHook_WeaponSwitch, OnWeaponSwitch);
 	}
+	
+	RemoveMaxSpeedPatch();
 }
 
 public void Mapvote_OnMapsLoaded()
@@ -645,6 +656,8 @@ public void OnMapEnd()
 {
 	g_bMapLoaded = false;
 	g_bLate = false;
+	
+	RemoveMaxSpeedPatch();
 }
 
 public Action WeaponReload(int client, int args)
@@ -814,6 +827,53 @@ void SetPlayerAccel(int iClient, float flValue)
 		g_flAccel[iClient] = flValue;
 }
 
+// Thanks FlaminSarge
+void ApplyMaxSpeedPatch()
+{
+	g_pPatchLocation = Address_Null;
+	g_iRestoreData = 0;
+
+	Handle hGameData = LoadGameConfigFile("tf.maxspeed");
+	if (hGameData == INVALID_HANDLE)
+	{
+		LogError("Failed to load maxspeed patch: Missing gamedata/tf.maxspeed.txt");
+		return;
+	}
+
+	g_pPatchLocation = GameConfGetAddress(hGameData, "CTFGameMovement::ProcessMovement_limit");
+	if (g_pPatchLocation == Address_Null)
+	{
+		LogError("Failed to load maxspeed patch: Failed to locate \"CTFGameMovement::ProcessMovement_limit\"");
+		delete hGameData;
+		return;
+	}
+	
+	delete hGameData;
+
+	g_iRestoreData = LoadFromAddress(g_pPatchLocation, NumberType_Int32);
+	if (view_as<float>(g_iRestoreData) != DEFAULT_MAXSPEED)
+	{
+		LogError("Value at (0x%.8X) was not expected: (%.4f) != %.1f. Cowardly refusing to do things.", g_pPatchLocation, g_iRestoreData, DEFAULT_MAXSPEED);
+		g_iRestoreData = 0;
+		g_pPatchLocation = Address_Null;
+		return;
+	}
+	
+	LogMessage("Patching ProcessMovement data at (0x%.8X) from (%.4f) to (%.4f).", g_pPatchLocation, view_as<float>(g_iRestoreData), g_flMaxSpeedVal);
+	StoreToAddress(g_pPatchLocation, view_as<int>(g_flMaxSpeedVal), NumberType_Int32);
+}
+
+void RemoveMaxSpeedPatch() {
+	if (g_pPatchLocation == Address_Null || g_iRestoreData <= 0)
+		return;
+
+	LogMessage("Restoring ProcessMovement data at (0x%.8X) to (%.4f).", g_pPatchLocation, view_as<float>(g_iRestoreData));
+	StoreToAddress(g_pPatchLocation, g_iRestoreData, NumberType_Int32);
+
+	g_pPatchLocation = Address_Null;
+	g_iRestoreData = 0;
+}
+
 Action OnGiveNamedItem(char[] sClassname, int iItem)
 {
 	if (StrContains(sClassname, "tf_wearable") == 0) // starts with tf_wearable
@@ -971,6 +1031,11 @@ public void OnClientPostAdminCheck(int iClient)
 	
 	if (!IsFakeClient(iClient))
 		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, false, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);
+}
+
+public void OnConfigsExecuted()
+{
+	ApplyMaxSpeedPatch();
 }
 
 public Action OnPlayerSpawn(Event hEvent, const char[] strName, bool bDontBroadcast)
