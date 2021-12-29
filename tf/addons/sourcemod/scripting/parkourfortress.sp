@@ -31,13 +31,6 @@ All code is licensed under the GNU General Public License, version 3.
 #include <morecolors>
 #include <tf_econ_data>
 
-/*** PRIVATE VERSION CODE - DO NOT INCLUDE IN PUBLIC BUILDS ***/
-#undef REQUIRE_PLUGIN
-#include <parkourtf>
-#include <parkourtf-mapvote>
-/*** END PRIVATE VERSION CODE ***/
-
-
 #pragma semicolon 1
 #pragma newdecls required
 
