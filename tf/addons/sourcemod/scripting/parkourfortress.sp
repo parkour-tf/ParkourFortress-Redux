@@ -15,7 +15,7 @@ Remade PF Assets - Beepin (Nate B.), ScrewdriverHyena
 All code is licensed under the GNU General Public License, version 3.
 */
 
-#define PLUGIN_VERSION		"1.0p Release Edition"
+#define PLUGIN_VERSION		"1.0 Release Edition"
 
 #define TF_MAXPLAYERS		34	//32 clients + 1 for 0/world/console + 1 for replay/SourceTV
 #define WEAPON_FISTS 		5
@@ -23,12 +23,11 @@ All code is licensed under the GNU General Public License, version 3.
 #include <sourcemod>
 #include <sdkhooks>
 #include <tf2>
-#include <tf2attributes>
 #include <tf2_stocks>
 #include <clientprefs>
 #include <tracerayex>
 #include <dhooks>
-#include <morecolors>
+//#include <morecolors>
 #include <tf_econ_data>
 
 #pragma semicolon 1
@@ -750,6 +749,84 @@ void InitSDK()
 		LogMessage("Failed to create call: CBasePlayer::EquipWearable!");
 		
 	delete hGameData;
+
+	Handle hGameConf = LoadGameConfigFile("tf2.attributes");
+	if (!hGameConf) {
+		SetFailState("Could not locate gamedata file tf2.attributes.txt for TF2Attributes, pausing plugin");
+	}
+
+	StartPrepSDKCall(SDKCall_Static);
+	PrepSDKCall_SetFromConf(hGameConf, SDKConf_Signature, "GEconItemSchema");
+	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);	//Returns address of CEconItemSchema
+	hSDKSchema = EndPrepSDKCall();
+	if (!hSDKSchema) {
+		SetFailState("Could not initialize call to GEconItemSchema");
+	}
+	
+	StartPrepSDKCall(SDKCall_Raw);
+	PrepSDKCall_SetFromConf(hGameConf, SDKConf_Signature, "CEconItemSchema::GetAttributeDefinition");
+	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
+	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);	//Returns address of a CEconItemAttributeDefinition
+	hSDKGetAttributeDef = EndPrepSDKCall();
+	if (!hSDKGetAttributeDef) {
+		SetFailState("Could not initialize call to CEconItemSchema::GetAttributeDefinition");
+	}
+
+	StartPrepSDKCall(SDKCall_Raw);
+	PrepSDKCall_SetFromConf(hGameConf, SDKConf_Signature, "CAttributeList::SetRuntimeAttributeValue");
+	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
+	PrepSDKCall_AddParameter(SDKType_Float, SDKPass_Plain);
+	//PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
+	//Apparently there's no return, so avoid setting return info, but the 'return' is nonzero if the attribute is added successfully
+	//Just a note, the above SDKCall returns ((entindex + 4) * 4) | 0xA000), and you can AND it with 0x1FFF to get back the entindex if you want, though it's pointless)
+	//I don't know any other specifics, such as if the highest 3 bits actually matter
+	//And I don't know what happens when you hit ent index 2047
+	
+	hSDKSetRuntimeValue = EndPrepSDKCall();
+	if (!hSDKSetRuntimeValue) {
+		SetFailState("Could not initialize call to CAttributeList::SetRuntimeAttributeValue");
+	}
+
+	delete hGameConf;
+}
+
+static Address GetItemSchema() {
+	return SDKCall(hSDKSchema);
+}
+
+static Address GetEntityAttributeList(int entity) {
+	int offsAttributeList = GetEntSendPropOffs(entity, "m_AttributeList", true);
+	if (offsAttributeList > 0) {
+		return GetEntityAddress(entity) + view_as<Address>(offsAttributeList);
+	}
+	return Address_Null;
+}
+
+static Address GetAttributeDefinitionByID(int id) {
+	Address pSchema = GetItemSchema();
+	if (!pSchema) {
+		return Address_Null;
+	}
+	return SDKCall(hSDKGetAttributeDef, pSchema, id);
+}
+
+public bool TF2Attrib_SetByDefIndex(int iEntity, int iDefIndex, float flValue) {
+	if (!IsValidEntity(iEntity)) {
+		return false;
+	}
+
+	Address pEntAttributeList = GetEntityAttributeList(iEntity);
+	if (!pEntAttributeList) {
+		return false;
+	}
+	
+	Address pAttribDef = GetAttributeDefinitionByID(iDefIndex);
+	if (!pAttribDef) {
+		return false;
+	}
+	
+	SDKCall(hSDKSetRuntimeValue, pEntAttributeList, pAttribDef, flValue);
+	return true;
 }
 
 public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hParams)
