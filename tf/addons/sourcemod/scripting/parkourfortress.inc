@@ -37,6 +37,10 @@ Handle g_hSDKAccelerate;
 Handle g_hSDKGetMaxAmmo;
 Handle g_hHookSetWinningTeam;
 
+Handle hSDKGetAttributeDef;
+Handle hSDKSetRuntimeValue;
+Handle hSDKSchema;
+
 int g_iHookIdGiveNamedItem[TF_MAXPLAYERS];
 int g_iTEBeams;
 int g_iRestoreData;
