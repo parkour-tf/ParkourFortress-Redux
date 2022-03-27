@@ -295,7 +295,7 @@ void CreateRailSprites(float vecOrigin[3], int iColor[3] = {255, 0, 0})
 	SetEdictFlags(iEntity, FL_EDICT_ALWAYS);
 
 	SetEntityRenderMode(iEntity, RENDER_WORLDGLOW);  
-	DispatchKeyValue(iEntity, "GlowProxySize", "5000");
+	DispatchKeyValue(iEntity, "GlowProxySize", "64");
 	DispatchKeyValue(iEntity, "renderamt", "255"); 
 	DispatchKeyValue(iEntity, "framerate", "10.0"); 
 	DispatchKeyValue(iEntity, "scale", "100.0");
