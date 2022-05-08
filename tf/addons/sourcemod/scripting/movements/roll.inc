@@ -108,7 +108,7 @@ methodmap CPFRollHandler
 			return false;
 		}
 		
-		if (vecVelocity[2] < -1050 && CPFStateController.Get(iClient) != State_Roll && CPFStateController.Get(iClient) != State_Locked)
+		if (vecVelocity[2] < -1050 && !CPFSpeedController.GetFallDeathImmunity(iClient) && CPFStateController.Get(iClient) != State_Roll && CPFStateController.Get(iClient) != State_Locked)
 		{
 			const float STUN_DURATION = 3.0;
 			
