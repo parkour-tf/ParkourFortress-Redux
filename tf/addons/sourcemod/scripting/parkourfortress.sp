@@ -961,6 +961,7 @@ void InitOther()
 	SDKHookClassname("trigger_multiple", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_catapult", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_push", SDKHook_StartTouch, OnStartTouchTrigger);
+	SDKHookClassname("trigger_hurt", SDKHook_StartTouch, OnStartTouchTrigger);
 	
 	SDKHookClassname("trigger_multiple", SDKHook_EndTouch, OnEndTouchTrigger);
 	
@@ -1636,6 +1637,8 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	CPFSoundController.StopAllSounds(client);
 	
 	CPFStateController.Set(client, State_None);
+	
+	CPFStateController.RemoveFlags(client, SF_BEINGHEALED);
 	
 	CPFViewController.Kill(client);
 }
