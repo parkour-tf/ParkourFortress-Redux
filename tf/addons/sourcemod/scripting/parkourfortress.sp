@@ -961,6 +961,7 @@ void InitOther()
 	SDKHookClassname("trigger_multiple", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_catapult", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_push", SDKHook_StartTouch, OnStartTouchTrigger);
+	SDKHookClassname("trigger_hurt", SDKHook_StartTouch, OnStartTouchTrigger);
 	
 	SDKHookClassname("trigger_multiple", SDKHook_EndTouch, OnEndTouchTrigger);
 	
@@ -1077,7 +1078,7 @@ public void Tutorial_OnGetPlayerStage(int iClient, TutorialStage eStage)
 
 public void GiveFists(int iClient)
 {
-	int iWeapon = TF2_CreateAndEquipWeapon(iClient, WEAPON_FISTS, (g_cvarPvP.BoolValue) ? "1 ; 0.80" : "1 ; 0.00");
+	int iWeapon = TF2_CreateAndEquipWeapon(iClient, WEAPON_FISTS, "1 ; 0.80");
 	SetCollisionGroup(iWeapon, COLLISION_GROUP_NONE);
 }
 
@@ -1641,6 +1642,8 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	CPFSoundController.StopAllSounds(client);
 	
 	CPFStateController.Set(client, State_None);
+	
+	CPFStateController.RemoveFlags(client, SF_BEINGHEALED);
 	
 	CPFViewController.Kill(client);
 }
