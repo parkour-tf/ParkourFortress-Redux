@@ -1078,7 +1078,7 @@ public void Tutorial_OnGetPlayerStage(int iClient, TutorialStage eStage)
 
 public void GiveFists(int iClient)
 {
-	int iWeapon = TF2_CreateAndEquipWeapon(iClient, WEAPON_FISTS, (g_cvarPvP.BoolValue) ? "1 ; 0.80" : "1 ; 0.00");
+	int iWeapon = TF2_CreateAndEquipWeapon(iClient, WEAPON_FISTS, "1 ; 0.80");
 	SetCollisionGroup(iWeapon, COLLISION_GROUP_NONE);
 }
 
