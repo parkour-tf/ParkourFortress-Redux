@@ -1613,7 +1613,12 @@ public Action OnTakeDamage(int iClient, int &iAttacker, int &iInflictor, float &
 		}
 		flNewSpeed = CPFSpeedController.GetSpeed(iClient, true) - (flDamage * 0.5);
 	}
-
+	
+	if (!g_cvarPvP.BoolValue && IsValidClient(iAttacker))
+	{
+		eAction = Plugin_Handled;
+	}
+	
 	if (eAction != Plugin_Handled)
 	{
 		CPFSpeedController.ValidateSpeed(iClient, flNewSpeed, .flMaxClampAt = MINIMUM_SPEED_PENALTY, .flMaxClampTo = MINIMUM_SPEED_PENALTY);
