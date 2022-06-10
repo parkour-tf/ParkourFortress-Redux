@@ -1587,11 +1587,24 @@ public Action OnTakeDamage(int iClient, int &iAttacker, int &iInflictor, float &
 		}
 		
 		if (CPFRollHandler.Try(iClient))
-		{
-			flDamage *= 2.0;
-			flNewSpeed = CPFSpeedController.GetSpeed(iClient, true) - (flDamage * SPEED_PENALTY_MULT);
-			eAction = Plugin_Changed;
-			DebugOutput("Plugin_Changed");
+		{	    	
+	   		float flFallVelocity = GetEntPropFloat(iClient, Prop_Send, "m_flFallVelocity");
+	   			
+			// TF2 damage formula
+			float flFallDamage = 5 * (flFallVelocity / 300);
+			
+			// Fall damage needs to scale according to the player's max health, or
+			// it's always going to be much more dangerous to weaker classes than larger.
+			float flRatio = GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, iClient) / 100.0;
+			flFallDamage *= flRatio;
+			
+			// Fall Damage should be doubled in parkour fortress
+			flFallDamage *= 2.0;
+
+			SDKHooks_TakeDamage(iClient, 0, 0, flFallDamage, DMG_FALL, -1, NULL_VECTOR, NULL_VECTOR);
+			
+			eAction = Plugin_Stop;
+			flNewSpeed = CPFSpeedController.GetSpeed(iClient, true) - (flFallDamage * SPEED_PENALTY_MULT);
 		}
 		else
 			eAction = Plugin_Handled;
