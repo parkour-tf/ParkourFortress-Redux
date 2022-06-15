@@ -74,6 +74,7 @@ ConVar g_cvarAirAcceleration;
 ConVar g_cvarAcceleration;
 
 Cookie g_cookieMusic;
+Cookie g_cookieMusicVolume;
 Cookie g_cookieSound;
 Cookie g_cookieSelfAmbientSound;
 Cookie g_cookieViewmodel;

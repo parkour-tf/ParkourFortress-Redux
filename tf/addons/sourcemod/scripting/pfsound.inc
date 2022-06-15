@@ -12,8 +12,6 @@ enum struct MusicData
 {
 	//char[] LastMusic;
 	float Intensity;
-	float MusVolume;
-	float LastKnownVol;
 	int CurrentLevel;
 	int CurrentMusic;
 	int TickStart;
@@ -192,12 +190,9 @@ methodmap CPFSoundController
 	
 	public static float GetClientMusicVol(int iClient)
 	{
-		QueryClientConVar(iClient, "snd_musicvolume", ProcessClientMusicVol);
-		if (g_MusicData[iClient].MusVolume == -1.0)
-			return g_MusicData[iClient].LastKnownVol;
-			
-		g_MusicData[iClient].LastKnownVol = g_MusicData[iClient].MusVolume;
-		return g_MusicData[iClient].MusVolume;
+		char MusicVolume[8];
+		g_cookieMusicVolume.Get(iClient, MusicVolume, sizeof(MusicVolume));
+		return StringToFloat(MusicVolume);
 	}
 	
 	public static void PlayDoor(int iDoor, const bool bClosing)
@@ -574,7 +569,6 @@ methodmap CPFSoundController
 		
 		flVolume = CPFSoundController.GetClientMusicVol(iClient);
 		
-		if (g_MusicData[iClient].MusVolume == -1.0) return;
 		EmitSoundToClient(	.client = iClient,
 							.sample = strMusic[iCurrent],
 							.volume = flVolume,
@@ -686,9 +680,4 @@ public Action ResetMusicCooldown(Handle hTimer, int iClient)
 public Action ResetBeepCooldown(Handle hTimer, int iClient)
 {
 	g_MusicData[iClient].BeepCooldown = false;
-}
-
-public void ProcessClientMusicVol(QueryCookie cookie, int iClient, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
-{
-	g_MusicData[iClient].MusVolume = !(g_MusicData[iClient].MusVolume == StringToFloat(cvarValue)) ? StringToFloat(cvarValue) : -1.0;
 }
