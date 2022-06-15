@@ -160,6 +160,11 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_pf_music", ToggleMusic, "Toggle background music for the player");
 	RegConsoleCmd("sm_parkour_music", ToggleMusic, "Toggle background music for the player");
 	
+	RegConsoleCmd("pf_musicvolume", ChangeMusicVolume, "Change background music volume for the player");
+	RegConsoleCmd("pf_music_volume", ChangeMusicVolume, "Change background music volume for the player");
+	RegConsoleCmd("parkour_musicvolume", ChangeMusicVolume, "Change background music volume for the player");
+	RegConsoleCmd("parkour_music_volume", ChangeMusicVolume, "Change background music volume for the player");
+	
 	RegConsoleCmd("pf_sound", ToggleSound, "Toggle ambient sounds for the player");
 	RegConsoleCmd("pf_sfx", ToggleSound, "Toggle ambient sounds for the player");
 	RegConsoleCmd("parkour_sound", ToggleSound, "Toggle ambient sounds for the player");
@@ -194,6 +199,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_parkour_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
 	
 	g_cookieLerp = new Cookie("parkourlerp", "Toggle camera tilt", CookieAccess_Protected);
+	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
 }
 
 public void OnAllPluginsLoaded()
@@ -304,6 +310,15 @@ public Action ToggleMusic(int iClient, int iArgs)
 		g_cookieMusic.Set(iClient, "0");
 		CPFSoundController.SwitchMusic(iClient, true);
 	}
+	
+	return Plugin_Handled;
+}
+
+public Action ChangeMusicVolume(int iClient, int iArgs)
+{
+	char MusicVol[8];
+	if (GetCmdArg(1, MusicVol, sizeof(MusicVol)) != 0)
+		g_cookieMusicVolume.Set(iClient, MusicVol);
 	
 	return Plugin_Handled;
 }
