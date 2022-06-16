@@ -202,6 +202,14 @@ public void OnPluginStart()
 	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
 }
 
+public void OnClientCookiesCached(int iClient)
+{
+	char MusicVolume[8];
+	g_cookieMusicVolume.Get(iClient, MusicVolume, sizeof(MusicVolume));
+	if(MusicVolume[0] == '\0')
+		g_cookieMusicVolume.Set(iClient, "1");
+}
+
 public void OnAllPluginsLoaded()
 {
 	AddCommandListener(BlockCYOA, "cyoa_pda_open");
@@ -317,9 +325,36 @@ public Action ToggleMusic(int iClient, int iArgs)
 public Action ChangeMusicVolume(int iClient, int iArgs)
 {
 	char MusicVol[8];
-	if (GetCmdArg(1, MusicVol, sizeof(MusicVol)) != 0)
-		g_cookieMusicVolume.Set(iClient, MusicVol);
+	bool bDecimal;
 	
+	if (GetCmdArg(1, MusicVol, sizeof(MusicVol)) == 0)
+	{
+		char MusicVolumeCookie[8];
+		g_cookieMusicVolume.Get(iClient, MusicVolumeCookie, sizeof(MusicVolumeCookie));
+		ReplyToCommand(iClient, "Music Volume: %s", MusicVolumeCookie);
+		return Plugin_Handled;
+	}
+	
+	for(int i; i < strlen(MusicVol); i++)
+	{
+		if(MusicVol[i] == '.' && !bDecimal)
+		{
+			bDecimal = true;
+			continue;
+		}
+		
+		if (IsCharNumeric(MusicVol[i]))
+			continue;
+
+		ReplyToCommand(iClient, "Invalid music volume input");
+		return Plugin_Handled;
+	}
+	
+	if (StringToFloat(MusicVol) > 1.0)
+		MusicVol = "1.0";
+		
+	g_cookieMusicVolume.Set(iClient, MusicVol);
+	ReplyToCommand(iClient, "Music Volume: %s", MusicVol);
 	return Plugin_Handled;
 }
 
