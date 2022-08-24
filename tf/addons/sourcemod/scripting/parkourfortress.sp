@@ -98,6 +98,8 @@ public void OnPluginStart()
 	
 	HookUserMessage(GetUserMessageId("VoiceSubtitle"), UserMsg_VoiceSubtitle, true);
 	
+	AddCommandListener(OnTaunt, "taunt");
+	
 	CreateConVar("pf_version", PLUGIN_VERSION, "Plugin Version", FCVAR_ARCHIVE);
 	g_cvarPvP = CreateConVar("pf_pvp", "0", "Enable PvP", 0, true, 0.0);
 	g_cvarDebugSpeed = CreateConVar("pf_speedlog", "0", "Enable speed log in chat", 0, true, 0.0, true, 1.0);
@@ -233,6 +235,19 @@ public void OnWeaponRespawnMinSet(ConVar cvarMin, const char[] strOldValue, cons
 public Action BlockCYOA(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
+}
+
+public Action OnTaunt(int client, const char[] command, int argc)
+{
+    RequestFrame(NextFrame_OnTaunt, client);
+}
+
+public void NextFrame_OnTaunt(int client)
+{
+	const int TF_TAUNT_YETISMASH = 1183;
+	
+    if(GetEntProp(client, Prop_Send, "m_iTauntItemDefIndex") == TF_TAUNT_YETISMASH)
+    	TF2_RemoveCondition(client, TFCond_Taunting);
 }
 
 void ResetAirAccel()
@@ -1637,24 +1652,11 @@ public Action OnTakeDamage(int iClient, int &iAttacker, int &iInflictor, float &
 		}
 		
 		if (CPFRollHandler.Try(iClient))
-		{	    	
-	   		float flFallVelocity = GetEntPropFloat(iClient, Prop_Send, "m_flFallVelocity");
-	   			
-			// TF2 damage formula
-			float flFallDamage = 5 * (flFallVelocity / 300);
-			
-			// Fall damage needs to scale according to the player's max health, or
-			// it's always going to be much more dangerous to weaker classes than larger.
-			float flRatio = GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, iClient) / 100.0;
-			flFallDamage *= flRatio;
-			
-			// Fall Damage should be doubled in parkour fortress
-			flFallDamage *= 2.0;
-
-			SDKHooks_TakeDamage(iClient, 0, 0, flFallDamage, DMG_FALL, -1, NULL_VECTOR, NULL_VECTOR);
-			
-			eAction = Plugin_Stop;
-			flNewSpeed = CPFSpeedController.GetSpeed(iClient, true) - (flFallDamage * SPEED_PENALTY_MULT);
+		{
+			flDamage *= 2.0;
+			flNewSpeed = CPFSpeedController.GetSpeed(iClient, true) - (flDamage * SPEED_PENALTY_MULT);
+			eAction = Plugin_Changed;
+			DebugOutput("Plugin_Changed");
 		}
 		else
 			eAction = Plugin_Handled;
