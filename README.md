@@ -47,7 +47,7 @@ This code is licensed under the GNU General Public License, version 3. (GPLv3). 
 
 Programming Lead - ScrewdriverHyena (Jonathan S.)
 
-Programming Support - Nami (Nami), oWave (Tobias K.), Lucas Nimny (Tyler S.), NotPaddy (Patric O.), Mikusch (Norman M.)
+Programming Support - Nami (Nami), oWave (Tobias K.), Lucas Nimny (Tyler S.), NotPaddy (Patric O.), Mikusch (Norman M.), Horiuchi (Ben L.)
 
 Assets Lead - Beepin (Nate B.)
 
@@ -64,3 +64,5 @@ Original Parkour Fortress Code - MekuCube (Jonas K.)
 Original Parkour Fortress Assets - Werbad, Vincentor, Lampenpam, Scarness, Turtlez (Daryn M.)
 
 Early Alpha Code - Muffinoota (Ian M.), Leechertyper
+
+Post Development Support - Bradasparky
