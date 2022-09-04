@@ -37,6 +37,7 @@ enum ePFStateFlags
     SF_CAMEFROMSLIDE 	= 1<<3,
     SF_STRIPHOOKSHOT	= 1<<4,
     SF_SPAWNING			= 1<<5,
+    SF_INFINITEJUMP		= 1<<6,
 };
 
 enum struct StateInfo

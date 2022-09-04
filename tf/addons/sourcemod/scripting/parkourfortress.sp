@@ -246,7 +246,7 @@ public void NextFrame_OnTaunt(int client)
 {
 	const int TF_TAUNT_YETISMASH = 1183;
 	
-    if(GetEntProp(client, Prop_Send, "m_iTauntItemDefIndex") == TF_TAUNT_YETISMASH)
+	if(GetEntProp(client, Prop_Send, "m_iTauntItemDefIndex") == TF_TAUNT_YETISMASH)
     	TF2_RemoveCondition(client, TFCond_Taunting);
 }
 
@@ -485,6 +485,24 @@ public Action SkipTutorial(int iClient, int iArgs)
 	CPFTutorialController.Complete(iClient);
 	CPFTutorialController.ClearOverlay(iClient);
 	return Plugin_Continue;
+}
+
+public void PFTeleportPlayer(int iClient, const float origin[3], const float angles[3], const float velocity[3])
+{
+	if (!IsNullVector(origin))
+	{
+		SetEntPropVector(iClient, Prop_Data, "m_vecOrigin", origin);
+	}
+	
+	if (!IsNullVector(angles))
+	{
+		SetEntPropVector(iClient, Prop_Data, "m_angAbsRotation", angles);
+	}
+	
+	if (!IsNullVector(velocity))
+	{
+		SetEntPropVector(iClient, Prop_Data, "m_vecAbsVelocity", velocity);
+	}
 }
 
 public void OnSuccessfulTeleport(int iClient)
@@ -1027,8 +1045,13 @@ void InitOther()
 	SDKHookClassname("trigger_catapult", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_push", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_hurt", SDKHook_StartTouch, OnStartTouchTrigger);
-	
+
+	SDKHookClassname("trigger_stun", SDKHook_EndTouch, OnEndTouchTrigger);
+	SDKHookClassname("trigger_once", SDKHook_EndTouch, OnEndTouchTrigger);
 	SDKHookClassname("trigger_multiple", SDKHook_EndTouch, OnEndTouchTrigger);
+	SDKHookClassname("trigger_catapult", SDKHook_EndTouch, OnEndTouchTrigger);
+	SDKHookClassname("trigger_push", SDKHook_EndTouch, OnEndTouchTrigger);
+	SDKHookClassname("trigger_hurt", SDKHook_EndTouch, OnEndTouchTrigger);
 	
 	HookEntityOutput("prop_dynamic", "OnAnimationBegin", OnAnimationBegin);
 	HookEntityOutput("prop_dynamic", "OnAnimationDone", OnAnimationDone);
@@ -1511,6 +1534,13 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 			CPFStateController.Set(iClient, State_None);
 	}
 	
+	if (StrContains(strTargetname, "infinitejump") > -1 && CPFStateController.Get(iClient) != State_Falling)
+	{
+		CPFStateController.SetFlags(iClient, SF_INFINITEJUMP);
+		
+		return Plugin_Continue;
+	}
+	
 	if (!StrEqual("climbable", strTargetname) || eState == State_Roll || eState == State_Climb) // || CPFStateController.IsOnCooldown(iClient, State_Climb)
 		return Plugin_Continue;
 	
@@ -1565,6 +1595,13 @@ public Action OnEndTouchTrigger(int iEnt, int iClient)
 	if (StrEqual("nofalldeath", strTargetname) || StrEqual("nofalldamage", strTargetname))
 	{
 		CPFSpeedController.SetFallDeathImmunity(iClient, false);
+	}
+	
+	if (StrContains(strTargetname, "infinitejump") > -1)
+	{
+		CPFStateController.RemoveFlags(iClient, SF_INFINITEJUMP);
+		
+		return Plugin_Continue;
 	}
 	
 	if (!StrEqual("climbable", strTargetname) || CPFStateController.Get(iClient) == State_Roll)
@@ -1677,8 +1714,9 @@ public Action OnTakeDamage(int iClient, int &iAttacker, int &iInflictor, float &
 			}
 		}
 		flNewSpeed = CPFSpeedController.GetSpeed(iClient, true) - (flDamage * 0.5);
+
 	}
-	
+
 	if (!g_cvarPvP.BoolValue && IsValidClient(iAttacker))
 	{
 		eAction = Plugin_Handled;
@@ -1707,9 +1745,9 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	CPFSoundController.StopAllSounds(client);
 	
 	CPFStateController.Set(client, State_None);
-	
 	CPFStateController.RemoveFlags(client, SF_BEINGHEALED);
-	
+	CPFStateController.RemoveFlags(client, SF_INFINITEJUMP);
+
 	CPFViewController.Kill(client);
 }
 
@@ -1847,6 +1885,20 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons)
 	{
 		iButtons &= ~IN_JUMP;
 		return Plugin_Changed;
+	}
+	
+	if (CPFStateController.HasFlags(iClient, SF_INFINITEJUMP))
+	{
+		if (iButtons & IN_JUMP)
+		{
+			SetEntProp(iClient, Prop_Send, "m_iAirDash", 0);
+		}
+		
+		TF2Attrib_SetByName(iClient, "increased jump height", 1.5);
+	}
+	else
+	{
+		TF2Attrib_SetByName(iClient, "increased jump height", 1.0);
 	}
 	
 	if (CPFStateController.HasFlags(iClient, SF_STRIPHOOKSHOT) && (iButtons & IN_ATTACK))

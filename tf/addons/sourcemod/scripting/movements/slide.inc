@@ -379,6 +379,6 @@ methodmap CPFSlideHandler
 		DebugOutput("CPFSlideHandler::Slide --- Setting maxspeed to %.3f", flFinalMaxSpeed);
 		
 		SetEntPropFloat(iClient, Prop_Data, "m_flMaxspeed", flFinalMaxSpeed);
-		TeleportEntity(iClient, NULL_VECTOR, NULL_VECTOR, g_vecLastSlope[iClient]);
+		PFTeleportPlayer(iClient, NULL_VECTOR, NULL_VECTOR, g_vecLastSlope[iClient]);
 	}
 };

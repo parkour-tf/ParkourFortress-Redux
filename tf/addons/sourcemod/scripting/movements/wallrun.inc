@@ -289,7 +289,7 @@ methodmap CPFWallrunHandler
 				}
 			}
 			
-			TeleportEntity(iClient, NULL_VECTOR, NULL_VECTOR, vecVelocity);
+			PFTeleportPlayer(iClient, NULL_VECTOR, NULL_VECTOR, vecVelocity);
 			
 			CPFSpeedController.SetSpeed(iClient, 1.0);
 			CPFSoundController.PlayWallrun(iClient, GetGameTickCount() - g_WallrunData[iClient].ActionStart);
