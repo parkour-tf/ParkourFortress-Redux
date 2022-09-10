@@ -62,6 +62,7 @@ All code is licensed under the GNU General Public License, version 3.
 #include "weapons/stocks.sp"
 #include "weapons/pickupweapons.sp"
 #include "weapons/config.sp"
+#include "smmem.inc"
 
 public Plugin myinfo =
 {
@@ -844,8 +845,9 @@ public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hPa
 		return MRES_Supercede;
 	}
 	
-	char sClassname[256];
-	DHookGetParamString(hParams, 1, sClassname, sizeof(sClassname));
+	char sClassname[64];
+	Address ClassnameAddress = DHookGetParamAddress(hParams, 1);
+	PtrToString(LoadFromAddress(ClassnameAddress, NumberType_Int32), sClassname, sizeof(sClassname));
 	
 	int iIndex = DHookGetParamObjectPtrVar(hParams, 3, 4, ObjectValueType_Int) & 0xFFFF;
 	

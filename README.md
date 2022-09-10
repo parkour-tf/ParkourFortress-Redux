@@ -33,6 +33,10 @@ DHooks 2.2.0-detours7
 
 TF2 Econ Data 0.16.6
 
+More Colors 1.9.1
+
+SM-Memory 1.3.1
+
 ## Mapping
 
 Find our mapping guide here: https://steamcommunity.com/sharedfiles/filedetails/?id=2198515304
