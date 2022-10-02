@@ -114,7 +114,7 @@ methodmap CPFRollHandler
 			
 			TF2_StunPlayer(iClient, STUN_DURATION, 1.0, TF_STUNFLAG_BONKSTUCK|TF_STUNFLAG_NOSOUNDOREFFECT);
 			CPFStateController.Set(iClient, State_Locked);
-			CreateTimer(STUN_DURATION + 1.0, UnlockPlayer, GetClientUserId(iClient));
+			g_hUnlockPlayerTimer[iClient] = CreateTimer(STUN_DURATION + 1.0, UnlockPlayer, GetClientUserId(iClient));
 			SetEntityFlags(iClient, GetEntityFlags(iClient) | FL_ATCONTROLS);
 			return true;
 		}

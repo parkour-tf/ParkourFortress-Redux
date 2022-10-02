@@ -223,13 +223,13 @@ methodmap CPFSpeedController
 		if (!IsOnGround(iClient))
 		{
 			CPFSpeedController.StoreAirVel(iClient);
-			if (flClientAbsVel[2] < -1200 && !g_SpeedData[iClient].FallDeathImmune)
+			if (flClientAbsVel[2] < -1200 && !g_SpeedData[iClient].FallDeathImmune && !CPFStateController.HasFlags(iClient, SF_INFINITEJUMP))
 			{
 				CPFStateController.Set(iClient, State_Falling);
 				CPFSoundController.PlayFallVO(iClient);
 				CPFViewController.Queue(iClient, AnimState_OnlyDeathBelow, 1.0, true);
 			}
-			else if (flClientAbsVel[2] < -650)
+			else if (flClientAbsVel[2] < -650 && !CPFStateController.HasFlags(iClient, SF_INFINITEJUMP))
 			{
 				SetEntProp(iClient, Prop_Send, "m_iAirDash", 1);
 			}

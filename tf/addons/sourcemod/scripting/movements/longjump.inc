@@ -30,7 +30,7 @@ methodmap CPFLongjumpHandler
 		GetForwardVector(iClient, vecForward);
 		ScaleVector(vecForward, LONGJUMP_FWD_VELOCITY);
 		vecForward[2] = LONGJUMP_UP_VELOCITY;
-		TeleportEntity(iClient, NULL_VECTOR, NULL_VECTOR, vecForward);
+		PFTeleportPlayer(iClient, NULL_VECTOR, NULL_VECTOR, vecForward);
 		
 		CPFSpeedController.SetStoredSpeed(iClient, SPEED_BASE);
 		CPFSpeedController.RestoreSpeed(iClient);

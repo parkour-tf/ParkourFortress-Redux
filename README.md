@@ -25,9 +25,9 @@ This version of the mod also does not come with the tutorial functional. We scra
 
 ## Requirements
 
-MetaMod 1.10.7-dev
+MetaMod 1.11.0-dev+1148V
 
-SourceMod 1.10.0.6512
+SourceMod 1.11.0.5906
 
 DHooks 2.2.0-detours7
 

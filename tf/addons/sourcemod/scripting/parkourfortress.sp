@@ -15,7 +15,7 @@ Remade PF Assets - Beepin (Nate B.), ScrewdriverHyena
 All code is licensed under the GNU General Public License, version 3.
 */
 
-#define PLUGIN_VERSION		"1.0p Release Edition"
+#define PLUGIN_VERSION		"1.01p Needle Release Edition"
 
 #define TF_MAXPLAYERS		34	//32 clients + 1 for 0/world/console + 1 for replay/SourceTV
 #define WEAPON_FISTS 		5
@@ -1557,6 +1557,11 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 		if (!(GetClientButtons(iClient) & IN_DUCK) && (CPFPipeController.GetClientLastPipe(iClient) != view_as<CPFPipe>(iEnt)) && CPFStateController.Get(iClient) != State_Falling)
 		{
 			DebugOutput("OnStartTouchTrigger --- Attempting to mount %N", iClient);		
+			if (CPFStateController.Get(iClient) == State_Wallrun)
+			{
+				DebugOutput("OnStartTouchTrigger --- Killing Wallrun for %N", iClient);
+				CPFWallrunHandler.Break(iClient, WALLRUN_DISENGAGE_PIPE);
+			}
 			CPFClimbHandler.Mount(iClient, hPipe);
 		}
 		else
