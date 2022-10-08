@@ -29,7 +29,7 @@ MetaMod 1.11.0-dev+1148V
 
 SourceMod 1.11.0.5906
 
-DHooks 2.2.0-detours7
+Flamin Sarge's tf_maxspeed_patch
 
 TF2 Econ Data 0.16.6
 
