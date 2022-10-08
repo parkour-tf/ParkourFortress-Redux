@@ -37,6 +37,8 @@ More Colors 1.9.1
 
 SM-Memory 1.3.1
 
+TF2Attributes
+
 ## Mapping
 
 Find our mapping guide here: https://steamcommunity.com/sharedfiles/filedetails/?id=2198515304
