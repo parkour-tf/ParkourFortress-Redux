@@ -382,7 +382,7 @@ void ForwardVector(const float vecAngles[3], const float flMagnitude, float vecR
 	vecResult = vecForward;
 }
 
-ePFRotDirection FindRotDirection(const float[3] vecCenter, const float[3] vecStart, const float[3] vecEnd)
+ePFRotDirection FindRotDirection(const float vecCenter[3], const float vecStart[3], const float vecEnd[3])
 {
 	float vecStartRelative[3], vecEndRelative[3];
 	SubtractVectors(vecStart, vecCenter, vecStartRelative);
