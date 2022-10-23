@@ -1536,6 +1536,13 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 			CPFStateController.Set(iClient, State_None);
 	}
 	
+	if (StrContains(strTargetname, "giveboost") > -1)
+	{
+		CPFStateController.SetFlags(iClient, SF_INFINITEBOOST);
+			
+		return Plugin_Continue;
+	}
+	
 	if (StrContains(strTargetname, "infinitejump") > -1 && CPFStateController.Get(iClient) != State_Falling)
 	{
 		CPFStateController.SetFlags(iClient, SF_INFINITEJUMP);
@@ -1604,6 +1611,13 @@ public Action OnEndTouchTrigger(int iEnt, int iClient)
 		CPFSpeedController.SetFallDeathImmunity(iClient, false);
 	}
 	
+	if (StrContains(strTargetname, "giveboost") > -1)
+	{
+		CPFStateController.RemoveFlags(iClient, SF_INFINITEBOOST);
+			
+		return Plugin_Continue;
+	}
+
 	if (StrContains(strTargetname, "infinitejump") > -1)
 	{
 		CPFStateController.RemoveFlags(iClient, SF_INFINITEJUMP);
@@ -1754,6 +1768,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	CPFStateController.Set(client, State_None);
 	CPFStateController.RemoveFlags(client, SF_BEINGHEALED);
 	CPFStateController.RemoveFlags(client, SF_INFINITEJUMP);
+	CPFStateController.RemoveFlags(client, SF_INFINITEBOOST);
 
 	CPFViewController.Kill(client);
 }
@@ -2223,6 +2238,12 @@ public void OnPreThink(int iClient)
 		}
 	}
 	
+	if (CPFStateController.HasFlags(iClient, SF_INFINITEBOOST))
+	{	
+		CPFSpeedController.SetSpeed(iClient, view_as<float>(SPEED_MAX_BOOST));
+		CPFSpeedController.SetBoost(iClient, true);
+	}
+
 	CPFStateController.UpdateButtons(iClient, iButtons);
 }
 

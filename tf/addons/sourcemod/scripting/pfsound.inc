@@ -192,6 +192,7 @@ methodmap CPFSoundController
 	{
 		char MusicVolume[8];
 		g_cookieMusicVolume.Get(iClient, MusicVolume, sizeof(MusicVolume));
+		
 		return StringToFloat(MusicVolume);
 	}
 	

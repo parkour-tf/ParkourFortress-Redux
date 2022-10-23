@@ -37,7 +37,7 @@ Handle g_hSDKAccelerate;
 Handle g_hSDKGetMaxAmmo;
 Handle g_hHookSetWinningTeam;
 
-Handle g_hUnlockPlayerTimer[TF_MAXPLAYERS + 1];
+Handle g_hUnlockPlayerTimer[TF_MAXPLAYERS + 1] = INVALID_HANDLE;
 
 int g_iHookIdGiveNamedItem[TF_MAXPLAYERS];
 int g_iTEBeams;

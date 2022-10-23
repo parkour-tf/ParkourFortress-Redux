@@ -38,6 +38,7 @@ enum ePFStateFlags
     SF_STRIPHOOKSHOT	= 1<<4,
     SF_SPAWNING			= 1<<5,
     SF_INFINITEJUMP		= 1<<6,
+    SF_INFINITEBOOST	= 1<<7,
 };
 
 enum struct StateInfo
