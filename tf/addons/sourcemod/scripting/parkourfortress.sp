@@ -203,6 +203,7 @@ public void OnPluginStart()
 	
 	g_cookieLerp = new Cookie("parkourlerp", "Toggle camera tilt", CookieAccess_Protected);
 	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
+	g_cookieSelfAmbientSound = new Cookie("fluwee", "Toggle self ambient sounds", CookieAccess_Protected);
 }
 
 public void OnClientCookiesCached(int iClient)
