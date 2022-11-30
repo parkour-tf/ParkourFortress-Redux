@@ -56,7 +56,7 @@ methodmap CPFClimbHandler
 	{
 		float flClientAbsVel[3];
 		GetEntPropVector(iClient, Prop_Data, "m_vecAbsVelocity", flClientAbsVel);
-		if (flClientAbsVel[2] > -1200.0)
+		if (flClientAbsVel[2] > -1200.0 && GetEntityMoveType(iClient) != MOVETYPE_NOCLIP)
 		{
 			float vecAngles[3];
 			GetClientEyeAngles(iClient, vecAngles);
