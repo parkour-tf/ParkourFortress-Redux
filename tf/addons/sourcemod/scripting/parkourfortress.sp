@@ -839,28 +839,29 @@ void InitSDK()
 
 public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hParams)
 {
-	// Block if one of the pointers is null
-	if (DHookIsNullParam(hParams, 1) || DHookIsNullParam(hParams, 3))
-	{
-		DHookSetReturn(hReturn, 0);
-		return MRES_Supercede;
-	}
-	
-	char sClassname[64];
-	Address ClassnameAddress = DHookGetParamAddress(hParams, 1);
-	PtrToString(LoadFromAddress(ClassnameAddress, NumberType_Int32), sClassname, sizeof(sClassname));
-	
-	int iIndex = DHookGetParamObjectPtrVar(hParams, 3, 4, ObjectValueType_Int) & 0xFFFF;
-	
-	Action iAction = OnGiveNamedItem(sClassname, iIndex);
-	
-	if (iAction == Plugin_Handled)
-	{
-		DHookSetReturn(hReturn, 0);
-		return MRES_Supercede;
-	}
-	
-	return MRES_Ignored;
+    // Block if one of the pointers is null
+    if (DHookIsNullParam(hParams, 1) || DHookIsNullParam(hParams, 3))
+    {
+        DHookSetReturn(hReturn, 0);
+        return MRES_Supercede;
+    }    
+    
+    char sClassname[64];
+    Address ClassnameAddress = DHookGetParamAddress(hParams, 1);
+    
+    PtrToString(view_as<int>(ClassnameAddress), sClassname, sizeof(sClassname));
+    
+    int iIndex = DHookGetParamObjectPtrVar(hParams, 3, 4, ObjectValueType_Int) & 0xFFFF;
+    
+    Action iAction = OnGiveNamedItem(sClassname, iIndex);
+    
+    if (iAction == Plugin_Handled)
+    {
+        DHookSetReturn(hReturn, 0);
+        return MRES_Supercede;
+    }
+    
+    return MRES_Ignored;
 }
 
 public void DHook_OnGiveNamedItemRemoved(int iHookId)
@@ -1113,7 +1114,7 @@ public void OnClientPostAdminCheck(int iClient)
 	}
 	
 	if (!IsFakeClient(iClient))
-		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, false, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);
+		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, true, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);
 }
 
 public void OnConfigsExecuted()

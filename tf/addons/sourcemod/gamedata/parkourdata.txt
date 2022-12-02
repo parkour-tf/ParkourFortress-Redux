@@ -55,8 +55,8 @@
 
 			"CBasePlayer::RemoveWearable"
 			{
-				"windows"	"432"
-				"linux"	"433"
+				"windows"	"439"
+				"linux"	"440"
 			}
 
 			"CVEngineServer::SetView"
@@ -67,14 +67,14 @@
 
 			"CTeamplayRoundBasedRules::SetWinningTeam"
 			{
-				"linux"	"161"
-				"windows"	"160"
+				"linux"	"165"
+				"windows"	"164"
 			}
 			
 			"CTFPlayer::GiveNamedItem"
 			{
-				"linux"	"485"
-				"windows"	"478"
+				"linux"	"493"
+				"windows"	"486"
 			}
 
 			"CTFGameMovement::ProcessMovement"
@@ -103,8 +103,8 @@
 
 			"CTFViewModel::CalcViewModelView"
 			{
-				"windows"	"223"
-				"linux"	"224"
+				"windows"	"229"
+				"linux"	"230"
 			}
 
 			"CBaseEntity::GetBaseEntity"
