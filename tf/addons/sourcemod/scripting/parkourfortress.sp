@@ -1171,6 +1171,8 @@ public void Tutorial_OnGetPlayerStage(int iClient, TutorialStage eStage)
 public void GiveFists(int iClient)
 {
 	int iWeapon = TF2_CreateAndEquipWeapon(iClient, WEAPON_FISTS, "1 ; 0.80");
+	if(!g_cvarPvP.BoolValue)
+		SetEntProp(iWeapon, Prop_Send, "m_iAccountID", GetSteamAccountID(iClient));
 	SetCollisionGroup(iWeapon, COLLISION_GROUP_NONE);
 }
 
