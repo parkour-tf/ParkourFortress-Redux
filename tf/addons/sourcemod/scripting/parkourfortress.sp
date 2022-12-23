@@ -1063,6 +1063,18 @@ void InitOther()
 
 void InitObjects(bool bForce = false)
 {
+	for(int iEntity = 0; iEntity <= GetMaxEntities(); iEntity++)
+	{
+		if (IsValidEntity(iEntity))
+		{
+			char strEntName[64];
+			GetEntPropString(iEntity, Prop_Data, "m_iName", strEntName, sizeof(strEntName));
+
+			if (StrEqual("pf_railsprite", strEntName))
+				RemoveEntity(iEntity);
+		}
+	}
+
 	CPFRopeController.Init(bForce);
 	CPFPipeController.Init(bForce);
 	CPFDoorController.Init(bForce);
