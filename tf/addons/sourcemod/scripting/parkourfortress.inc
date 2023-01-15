@@ -24,6 +24,8 @@ Address g_pPatchLocation;
 bool g_bLate;
 bool g_bMapLoaded;
 
+bool g_bTimerLoaded;
+
 bool g_bTutorialFetched[TF_MAXPLAYERS];
 
 Handle g_hHookGiveNamedItem;

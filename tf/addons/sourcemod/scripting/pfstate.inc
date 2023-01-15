@@ -118,7 +118,7 @@ methodmap CPFStateController
 			return;
 		
 		SetCollisionGroup(iClient, g_ePFCollisionGroup);
-		SetEntityMoveType(iClient, MOVETYPE_DEFAULT);
+		SetEntityMoveType(iClient, GetEntityMoveType(iClient) == MOVETYPE_NOCLIP ? MOVETYPE_NOCLIP : MOVETYPE_WALK);
 		SetEntityFlags(iClient, GetEntityFlags(iClient) & ~FL_ATCONTROLS);
 		SetEntityFlags(iClient, GetEntityFlags(iClient) & ~FL_FROZEN);
 		SetEntityGravity(iClient, 1.0);

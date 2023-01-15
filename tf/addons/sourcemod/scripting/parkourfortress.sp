@@ -121,6 +121,7 @@ public void OnPluginStart()
 	g_cvarWeaponRareChance = CreateConVar("pf_weapon_rare_chance", "5", "1 in value chance to spawn rare weapon when spawning random rarity", 0, true, 1.0, false);
 	g_cvarWeaponGrabDistance = CreateConVar("pf_weapon_grab_distance", "100.0", "How far away in units a player can pick up a weapon from", 0, true, 48.0, false);
 	
+	g_cvarPvP.AddChangeHook(OnChangePvP);
 	g_cvarWeaponRespawn.AddChangeHook(OnWeaponRespawnSet);
 	g_cvarWeaponRespawnMin.AddChangeHook(OnWeaponRespawnMinSet);
 	g_cvarAirAcceleration.AddChangeHook(OnChangeAirAccel);
@@ -308,7 +309,7 @@ void ProcessClientRopeCvars(QueryCookie cookie, int iClient, ConVarQueryResult r
 	if (!StrEqual(cvarValue, "1"))
 	{
 		CPFRopeController.SpawnRopeBeams(iClient);
-		CPrintToChat(iClient, "{fullred}Please type {green}%s 1{fullred} in console in order to see ropes correctly! Add {green}%s 1{fullred} at the very end of your cfg/autoexec.cfg and restart your game.", cvarName);
+		CPrintToChat(iClient, "{fullred}Please type {green}%s 1{fullred} in console in order to see ropes correctly! Add {green}%s 1{fullred} at the very end of your cfg/autoexec.cfg and restart your game.", cvarName, cvarName);
 	}
 }
 
@@ -1134,6 +1135,14 @@ public void OnConfigsExecuted()
 	ApplyMaxSpeedPatch();
 }
 
+public void OnChangePvP(ConVar cvarTime, const char[] strOldValue, const char[] strNewValue)
+{
+	PrintToServer("%i", StringToInt(strNewValue));
+	FindConVar("tf_weapon_criticals").BoolValue = !!!StringToInt(strNewValue);
+	FindConVar("tf_weapon_criticals_melee").BoolValue = !!!StringToInt(strNewValue);
+	FindConVar("tf_use_fixed_weaponspreads").BoolValue = !!StringToInt(strNewValue);
+}
+
 public Action OnPlayerSpawn(Event hEvent, const char[] strName, bool bDontBroadcast)
 {
 	CPFTraceur iClient = CPFTraceur(GetClientOfUserId(hEvent.GetInt("userid")));
@@ -1396,6 +1405,91 @@ public void OnEntityCreatedPost(int iEntity)
 			RequestFrame(ProcessRadialsPostKeyValue);
 		}
 	}
+}
+
+public void CustomMusicNotifier(int iClient)
+{
+	if (!IsValidClient(iClient))
+		return;
+
+	switch (CurrentMapHasCustomMusic())
+	{
+		case 1: //Map has music, can be changed with CHAR_DRYMIX
+		{
+			CPrintToChat(iClient, "{fullred}This map has custom music playing!\nType {green}snd_musicvolume <0.1 - 1.0> {fullred}in console to enable it.\nTo prevent parkour music overlapping, type {green}/pf_music{fullred} to toggle it.");
+		}
+		case 2: //Map has music, can't be changed with CHAR_DRYMIX
+		{
+			CPrintToChat(iClient, "{fullred}This map has custom music playing!\nTo prevent parkour music overlapping, type {green}/pf_music{fullred} to toggle it.");
+		}
+	}
+}
+
+int CurrentMapHasCustomMusic()
+{
+	//Check for an existing map info_target entity named pf_musicplayer
+	int ent = -1;
+	while( (ent = FindEntityByClassname(ent, "info_target")) != -1)
+	{
+		char targetname[32];
+		GetEntPropString(ent, Prop_Data, "m_iName", targetname, sizeof(targetname));
+		if(StrEqual(targetname, "pf_musicplayer"))
+			return 1;
+	}
+
+	//Otherwise check for a map key
+	char cfg[32] = "configs/pf/custom_map_music.cfg";
+	char path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, path, sizeof(path), cfg);    // Create path
+	KeyValues kv = new KeyValues("maps");
+	
+	if (!FileExists(path))	//Check folder structure
+	{
+		LogError("Unable to find %s", path);
+		delete kv;
+		return 0;
+	}
+
+	if (!kv.ImportFromFile(path)) //Check if there's a keyvalue structure
+	{
+		LogError("Unable to import keyvalues from file %s", cfg);
+		delete kv;
+		return 0;
+	}
+
+	char section[PLATFORM_MAX_PATH];
+	if (!kv.GetSectionName(section, sizeof(section)))	//Check for a valid starting section
+	{
+		LogError("Unable to find the first key in file %s", cfg);	
+		delete kv;
+		return 0;
+	}
+	
+	if (!kv.GotoFirstSubKey(false))
+	{
+		LogError("Unable to find subkey within section %s", section);    //No map keys exist
+		delete kv;
+		return 0;
+	}
+
+	char map[32];
+	GetCurrentMap(map, sizeof(map));
+
+	do
+	{
+		if (!kv.GetSectionName(section, sizeof(section)))
+			continue;
+
+		if (StrEqual(section, map))
+		{
+			char value[2];
+			kv.GetString(NULL_STRING, value, sizeof(value));
+			return StringToInt(value);
+		}
+	}
+	while (kv.GotoNextKey(false));
+
+	return 0;
 }
 
 public void ProcessRadialsPostKeyValue(any aData)

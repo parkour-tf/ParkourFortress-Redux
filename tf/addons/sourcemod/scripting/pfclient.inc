@@ -14,6 +14,7 @@
 #define CPFTRACEUR_INVALID TRACEUR(0)
 
 static bool g_bSDKHooked[MAXPLAYERS + 1];
+bool g_bMusicMessageShown[TF_MAXPLAYERS] = false;
 
 methodmap CPFTraceur
 {
@@ -30,6 +31,7 @@ methodmap CPFTraceur
 		SDKUnhook(THISCLIENT, SDKHook_WeaponSwitch, OnWeaponSwitch);
 		
 		g_bSDKHooked[THISCLIENT] = false;
+		g_bMusicMessageShown[THISCLIENT] = false;
 	}
 
 	public void Spawn(bool bLate = false)
@@ -67,6 +69,12 @@ methodmap CPFTraceur
 				RemoveWallclimbCooldown(THISCLIENT); // TODO: FIND ANOTHER WAY AROUND THIS
 			}
 			
+			if (IsPlayerAlive(THISCLIENT) && !g_bMusicMessageShown[THISCLIENT])
+			{
+				CustomMusicNotifier(THISCLIENT);
+				g_bMusicMessageShown[THISCLIENT] = true;
+			}
+
 			CheckClientRopeCvars(THISCLIENT);
 			CheckClientDownloadCvar(THISCLIENT);
 			CheckClientWeapons(THISCLIENT);

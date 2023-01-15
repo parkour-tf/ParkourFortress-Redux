@@ -184,6 +184,8 @@ public Action UnlockPlayer(Handle hTimer, int iUserID)
 	CPFSpeedController.SetStoredSpeed(iClient, 250.0);
 	CPFSpeedController.SetBoost(iClient, false);
 	
+	g_hUnlockPlayerTimer[iClient] = INVALID_HANDLE;
+	
 	return Plugin_Handled;
 }
 
