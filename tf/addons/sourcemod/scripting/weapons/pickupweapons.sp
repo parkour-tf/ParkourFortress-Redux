@@ -26,8 +26,8 @@ char g_sVoWeaponScout[][PLATFORM_MAX_PATH] =
 static float vecClampMins[3] = {-32.0, -32.0, -8.0};
 static float vecClampMaxs[3] = {32.0, 32.0, 24.0};
 
-static bool g_bCanPickup[TF_MAXPLAYERS] = false;
-static bool g_bTriggerEntity[2048] = true;
+static bool g_bCanPickup[TF_MAXPLAYERS] = {false, ...};
+static bool g_bTriggerEntity[2048] = {true, ...};
 
 static int m_iRare = 0;
 

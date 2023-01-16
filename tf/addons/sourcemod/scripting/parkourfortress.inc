@@ -39,16 +39,16 @@ Handle g_hSDKAccelerate;
 Handle g_hSDKGetMaxAmmo;
 Handle g_hHookSetWinningTeam;
 
-Handle g_hUnlockPlayerTimer[TF_MAXPLAYERS + 1] = INVALID_HANDLE;
+Handle g_hUnlockPlayerTimer[TF_MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
 
 int g_iHookIdGiveNamedItem[TF_MAXPLAYERS];
 int g_iTEBeams;
 int g_iRestoreData;
 
-float g_flAirAccel[TF_MAXPLAYERS] = {10.0, 10.0, ...};
+float g_flAirAccel[TF_MAXPLAYERS] = {10.0, ...};
 float g_flStockAirAccel;
 
-float g_flAccel[TF_MAXPLAYERS] = {10.0, 10.0, ...};
+float g_flAccel[TF_MAXPLAYERS] = {10.0, ...};
 float g_flStockAccel;
 
 float g_flMaxSpeedVal;
@@ -283,8 +283,10 @@ stock int CreateSprite(float vecOrigin[3], int iColor[3] = {255, 0, 0})
 	SetEntProp(iEntity, Prop_Data, "m_bWorldSpaceScale", 1); 
 	DispatchSpawn(iEntity); 
 
+	#if defined DEBUGROPES
 	if (g_cvarDebugRopes.IntValue) AcceptEntityInput(iEntity, "ShowSprite");
- 
+	#endif
+
 	TeleportEntity(iEntity, vecOrigin, NULL_VECTOR, NULL_VECTOR);
 	
 	return iEntity;

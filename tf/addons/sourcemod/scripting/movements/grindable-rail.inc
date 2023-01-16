@@ -826,7 +826,7 @@ bool Rail_IsPointInLineSegment(const float vecA[3], const float vecB[3], const f
  */
 stock bool Rail_IsPointInLinearRail(const CPFRail hRail, const float vecC[3])
 {
-	if (hRail == CPFROPE_INVALID)
+	if (hRail == CPFRAIL_INVALID)
 		return false;
 
 	float vecA[3], vecB[3];

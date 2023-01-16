@@ -14,7 +14,7 @@
 #define CPFTRACEUR_INVALID TRACEUR(0)
 
 static bool g_bSDKHooked[MAXPLAYERS + 1];
-bool g_bMusicMessageShown[TF_MAXPLAYERS] = false;
+bool g_bMusicMessageShown[TF_MAXPLAYERS] = {false, ...};
 
 methodmap CPFTraceur
 {

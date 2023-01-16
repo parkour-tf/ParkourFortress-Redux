@@ -77,7 +77,7 @@ ArrayList Config_LoadWeaponData()
 				kv.GetString("sound", wep.sSound, sizeof(wep.sSound));
 				
 				kv.GetString("callback", sBuffer, sizeof(sBuffer));
-				wep.callback = view_as<Weapon_OnPickup>(GetFunctionByName(null, sBuffer));
+				wep.callback = view_as<Function>(GetFunctionByName(null, sBuffer));
 				
 				int iColor[4];
 				kv.GetColor4("color", iColor);

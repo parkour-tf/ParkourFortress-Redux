@@ -569,7 +569,7 @@ public void OnMapStart()
 
 void ClearTutorials()
 {
-	for (int i = i; i < MaxClients; i++)
+	for (int i = 0; i < MaxClients + 1; i++)
 		g_bTutorialFetched[i] = false;
 }
 
