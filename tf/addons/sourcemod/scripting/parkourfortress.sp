@@ -1626,14 +1626,20 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 	
 	if (StrEqual("lockcontrols", strTargetname))
 	{
+		if(GetEntityMoveType(iClient) == MOVETYPE_NOCLIP)
+			return Plugin_Continue;
+		
 		CPFStateController.ResetClient(iClient);
 		
 		CPFStateController.Set(iClient, State_Locked);
 		SetEntityFlags(iClient, GetEntityFlags(iClient)|FL_ATCONTROLS);
 		return Plugin_Continue;
 	}
-	else if (StrEqual("unlockcontrols", strTargetname) && eState == State_Locked)
+	else if (StrEqual("unlockcontrols", strTargetname))
 	{
+		if(eState != State_Locked)
+			return Plugin_Continue;
+		
 		CPFStateController.ResetClient(iClient);
 		return Plugin_Continue;
 	}
