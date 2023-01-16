@@ -15,7 +15,7 @@ enum struct Weapon
 	int iColor[3];
 	float vecOrigin[3];
 	float vecAngles[3];
-	Weapon_OnPickup callback;
+	Function callback; //OnWeapon_Pickup
 }
 
 void Weapons_Refresh()

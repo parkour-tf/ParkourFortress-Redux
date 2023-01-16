@@ -8,7 +8,7 @@
 #endif
 #define _MOVEMENTS_HANG_INCLUDED
 
-static bool g_bHangEnabled[MAXPLAYERS + 1] = { true, true, ... };
+static bool g_bHangEnabled[MAXPLAYERS + 1] = {true, ...};
 int g_iHangElapsedTicks[MAXPLAYERS + 1];
 
 enum eLedgeGrabDisengageSrc

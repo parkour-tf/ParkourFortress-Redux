@@ -117,8 +117,8 @@ methodmap CPFPipe < ArrayList
 };
 
 #define CPFPIPE_INVALID view_as<CPFPipe>(0)
-CPFPipe g_hClientPipe[MAXPLAYERS + 1] = { CPFPIPE_INVALID, CPFPIPE_INVALID, CPFPIPE_INVALID, ... };
-CPFPipe g_hClientLastPipe[MAXPLAYERS + 1] = { CPFPIPE_INVALID, CPFPIPE_INVALID, CPFPIPE_INVALID, ... };
+CPFPipe g_hClientPipe[MAXPLAYERS + 1] = {CPFPIPE_INVALID, ...};
+CPFPipe g_hClientLastPipe[MAXPLAYERS + 1] = {CPFPIPE_INVALID, ...};
 
 methodmap CPFPipeController
 {

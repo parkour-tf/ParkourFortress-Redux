@@ -94,12 +94,12 @@ methodmap CPFTutorialController
 		CPFTutorialController.Stagepoint(iClient, TUTORIAL_NONE);
 #endif
 	}
-	
+	/*
 	public static void Think(int iClient)
 	{
 		CPFTutorialController.SetOverlayDynamic(iClient);
 	}
-	
+	*/
 	public static void Complete(int iClient)
 	{
 #if defined _PF_INCLUDED

@@ -26,7 +26,7 @@ methodmap CBaseSDKTrace < Handle
 {
 	public CBaseSDKTrace() 
 	{ 
-		return; 
+		return Plugin_Handled; 
 	}
 	
 	/**
@@ -438,14 +438,18 @@ methodmap TraceHull < CBaseSDKTrace
 	 * @param mins			Hull minimum size.
 	 * @param maxs			Hull maximum size.
 	 * @param flags			Trace flags.
+	 * @param filter		Function to use as a filter.
+	 * @param data			Arbitrary data value to pass through to the filter function.
 	 */
 	public static void Start(  	const float pos[3], 
 								const float vec[3], 
 								const float mins[3], 
 								const float maxs[3], 
-								int flags				)
+								int flags,
+								TraceEntityFilter filter,
+								any data = 0				)
 	{
-		(filter == NULL_FUNC) ? TR_TraceHull(pos, vec, mins, maxs, flags) : TR_TraceHullFilter(pos, vec, mins, maxs, flags, filter, data)
+		(!filter) ? TR_TraceHull(pos, vec, mins, maxs, flags) : TR_TraceHullFilter(pos, vec, mins, maxs, flags, filter, data)
 	}
 };
 
@@ -535,6 +539,6 @@ methodmap TraceHullC < CBaseSDKTrace
 							   int flags,
 							   int entity			)
 	{
-		TR_ClipRayHullToEntity(pos, vec, mins, maxs, flags, rtype, entity);
+		TR_ClipRayHullToEntity(pos, vec, mins, maxs, flags, entity);
 	}
 };
