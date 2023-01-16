@@ -406,7 +406,7 @@ stock int FindEntityByTargetname(const char[] sTargetName, const char[] sClassna
 	char sBuffer[32];
 	int iEntity = -1;
 	
-	while(strcmp(sClassname, sTargetName) != 0 && (iEntity = FindEntityByClassname(iEntity, classname)) != -1)
+	while(strcmp(sClassname, sTargetName) != 0 && (iEntity = FindEntityByClassname(iEntity, sClassname)) != -1)
 		GetEntPropString(iEntity, Prop_Data, "m_iName", sBuffer, sizeof(sBuffer));
 	
 	return iEntity;
