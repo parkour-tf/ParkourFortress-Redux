@@ -100,8 +100,6 @@ public void OnPluginStart()
 	
 	HookUserMessage(GetUserMessageId("VoiceSubtitle"), UserMsg_VoiceSubtitle, true);
 	
-	AddCommandListener(OnTaunt, "taunt");
-	
 	CreateConVar("pf_version", PLUGIN_VERSION, "Plugin Version", FCVAR_ARCHIVE);
 	g_cvarPvP = CreateConVar("pf_pvp", "0", "Enable PvP", 0, true, 0.0);
 	g_cvarDebugSpeed = CreateConVar("pf_speedlog", "0", "Enable speed log in chat", 0, true, 0.0, true, 1.0);
@@ -245,20 +243,6 @@ public void OnWeaponRespawnMinSet(ConVar cvarMin, const char[] strOldValue, cons
 public Action BlockCYOA(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
-}
-
-public Action OnTaunt(int client, const char[] command, int argc)
-{
-	RequestFrame(NextFrame_OnTaunt, client);
-	return Plugin_Continue;
-}
-
-public void NextFrame_OnTaunt(int client)
-{
-	const int TF_TAUNT_YETISMASH = 1183;
-	
-	if(GetEntProp(client, Prop_Send, "m_iTauntItemDefIndex") == TF_TAUNT_YETISMASH)
-    	TF2_RemoveCondition(client, TFCond_Taunting);
 }
 
 void ResetAirAccel()
