@@ -198,9 +198,6 @@ methodmap CPFSoundController
 	
 	public static void PlayDoor(int iDoor, const bool bClosing)
 	{
-		if (!IsSoundPrecached((bClosing) ? SFX_DOOR_CLOSE : SFX_DOOR_OPEN))
-			PrecacheSound((bClosing) ? SFX_DOOR_CLOSE : SFX_DOOR_OPEN);
-		
 		if (!IsValidEntity(iDoor) || !iDoor)
 			return;
 		
@@ -216,9 +213,6 @@ methodmap CPFSoundController
 	
 	public static void PlayLedgegrab(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_LEDGEGRAB))
-			PrecacheSound(SFX_LEDGEGRAB);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -229,9 +223,6 @@ methodmap CPFSoundController
 	
 	public static void PlaySlide(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_SLIDE))
-			PrecacheSound(SFX_SLIDE);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -256,9 +247,6 @@ methodmap CPFSoundController
 	
 	public static void PlayZipline(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_ZIPLINE))
-			PrecacheSound(SFX_ZIPLINE);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -278,9 +266,6 @@ methodmap CPFSoundController
 	
 	public static void PlayRailGrind(int iClient, int iPitch = SNDPITCH_NORMAL)
 	{
-		if (!IsSoundPrecached(SFX_RAILGRIND))
-			PrecacheSound(SFX_RAILGRIND);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -294,9 +279,6 @@ methodmap CPFSoundController
 	
 	public static void PlayRailMount(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_RAILMOUNT))
-			PrecacheSound(SFX_RAILMOUNT);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -307,9 +289,6 @@ methodmap CPFSoundController
 	
 	public static void PlayRailEnd(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_RAILEND))
-			PrecacheSound(SFX_RAILEND);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -320,9 +299,6 @@ methodmap CPFSoundController
 	
 	public static void PlayPipeSlide(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_PIPESLIDE))
-			PrecacheSound(SFX_PIPESLIDE);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -340,9 +316,6 @@ methodmap CPFSoundController
 	
 	public static void PlayFallDeath(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_FALLDEATH))
-			PrecacheSound(SFX_FALLDEATH);
-		
 		if (!IsValidClient(iClient))
 			return;
 		
@@ -373,12 +346,6 @@ methodmap CPFSoundController
 	
 	public static void PlayWallrun(int iClient, int iTickCount)
 	{
-		if (!IsSoundPrecached(SFX_FOOTSTEP1))
-			PrecacheSound(SFX_FOOTSTEP1);
-		
-		if (!IsSoundPrecached(SFX_FOOTSTEP2))
-			PrecacheSound(SFX_FOOTSTEP2);
-		
 		if (!(iTickCount % 30))
 			EmitSoundToClient(	.client = iClient,
 								.sample = SFX_FOOTSTEP1,
@@ -430,9 +397,6 @@ methodmap CPFSoundController
 			Format(sRandVO, sizeof(sRandVO), "vo/scout_ApexofJump0%i.mp3", random);
 			GetClientEyePosition(iClient, vecOrigin);
 			
-			if (!IsSoundPrecached(sRandVO))
-				PrecacheSound(sRandVO);
-			
 			EmitAmbientSound(	.name = sRandVO, 
 								.pos = vecOrigin,
 								.entity = iClient,
@@ -442,12 +406,6 @@ methodmap CPFSoundController
 	
 	public static void PlayPipeclimb(int iClient)
 	{
-		if (!IsSoundPrecached(SFX_LADDER1))
-			PrecacheSound(SFX_LADDER1);
-		
-		if (!IsSoundPrecached(SFX_LADDER2))
-			PrecacheSound(SFX_LADDER2);
-		
 		int iTickCount = GetGameTickCount();
 		
 		if (!(iTickCount % 30))
@@ -673,12 +631,14 @@ public void PlayToAllButClient(int iClient, char[] sJingle)
 				.level = SNDLEVEL_TRAIN		);
 }
 
-public Action ResetMusicCooldown(Handle hTimer, int iClient)
+Action ResetMusicCooldown(Handle hTimer, int iClient)
 {
 	g_MusicData[iClient].DelayTimer = INVALID_HANDLE;
+	return Plugin_Continue;
 }
 
-public Action ResetBeepCooldown(Handle hTimer, int iClient)
+Action ResetBeepCooldown(Handle hTimer, int iClient)
 {
 	g_MusicData[iClient].BeepCooldown = false;
+	return Plugin_Continue;
 }

@@ -182,10 +182,12 @@ methodmap CPFStateController
 	}
 };
 
-public Action ResetCooldown(Handle hTimer, DataPack hData)
+Action ResetCooldown(Handle hTimer, DataPack hData)
 {
 	hData.Reset();
 	g_bOnCooldown[hData.ReadCell()][GetClientOfUserId(hData.ReadCell())] = false;
+	
+	return Plugin_Continue;
 }
 
 public void RemoveWallclimbCooldown(any iClient)

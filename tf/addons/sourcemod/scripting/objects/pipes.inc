@@ -215,8 +215,8 @@ methodmap CPFPipeController
 				CPFPipe hPipe = new CPFPipe(i);
 				CPFPipeController.AddPipe(hPipe);
 				
-				PrintToServer("CPFPipeController::Init --- Late-loaded pipe %d", hPipe.PipeIndex);
-				PrintToServer("CPFPipeController::Init --- Angle: %.3f", hPipe.Angle);
+				//PrintToServer("CPFPipeController::Init --- Late-loaded pipe %d", hPipe.PipeIndex);
+				//PrintToServer("CPFPipeController::Init --- Angle: %.3f", hPipe.Angle);
 			}
 		}
 	}

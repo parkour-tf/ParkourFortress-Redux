@@ -8,9 +8,8 @@
 #endif
 #define _PFTUTORIAL_INCLUDED
 
-/* BIG TODO: Redo this with cookies. It was hastily done using external MySQL, so it won't work outside of parkour.tf as is. */
+Handle hTutorialTimer[TF_MAXPLAYERS + 1] = { INVALID_HANDLE, ... };
 
-#if !defined _PF_INCLUDED
 enum TutorialStage
 {
 	TUTORIAL_INVALID = -1,
@@ -24,38 +23,24 @@ enum TutorialStage
 	
 	TS_COUNT
 };
-#endif
 
 methodmap CPFTutorialController
 {
 	public static TutorialStage GetStage(int iClient)
 	{
-#if defined _PF_INCLUDED
-		return TutorialStage.GetStage(iClient);
-#else
-		return 6;
-#endif
+		return view_as<TutorialStage>(GetCookieInt(g_cookieTutorialStage, iClient));
 	}
 	
 	public static void SetStage(int iClient, TutorialStage eStage)
 	{
-		eStage.SetStage(iClient);
-	}
-	
-	public static void IncStage(int iClient)
-	{
-#if defined _PF_INCLUDED
-		TutorialStage eStage = TutorialStage.GetStage(iClient);
-		eStage++;
-		CPFTutorialController.SetStage(iClient, eStage);
-#endif
+		char Stage[2];
+		IntToString(view_as<int>(eStage), Stage, sizeof(Stage));
+		g_cookieTutorialStage.Set(iClient, Stage);
 	}
 
-	public static void SetOverlay(int iClient, const char[] strOverlay)
+	public static void IncStage(int iClient)
 	{
-		char strPath[PLATFORM_MAX_PATH];
-		FormatEx(strPath, PLATFORM_MAX_PATH, "parkoursource/tutorialredux/%s", strOverlay);
-		DisplayScreenImage(iClient, strPath, (CPFTutorialController.GetStage(iClient) == TUTORIAL_COMPLETE) ? 5.0 : 0.0);
+		CPFTutorialController.SetStage(iClient, view_as<TutorialStage>(GetCookieInt(g_cookieTutorialStage, iClient) + 1));
 	}
 	
 	public static void ClearOverlay(int iClient)
@@ -65,7 +50,6 @@ methodmap CPFTutorialController
 
 	public static void Stagepoint(int iClient, TutorialStage eStage)
 	{
-#if defined _PF_INCLUDED
 		if (CPFTutorialController.GetStage(iClient) != eStage)
 			return;
 		
@@ -74,64 +58,79 @@ methodmap CPFTutorialController
 		
 		char strOverlay[16];
 		Format(strOverlay, sizeof(strOverlay), "tutorial%d", view_as<int>(eCurrent));
-		CPFTutorialController.SetOverlay(iClient, strOverlay);
+
+		if (hTutorialTimer[iClient] != INVALID_HANDLE)
+			TriggerTimer(hTutorialTimer[iClient]);
 		
-		if (eCurrent == TUTORIAL_COMPLETE)
-			CreateTimer(5.0, CompleteTutorial, iClient);
-		else if (eCurrent < TUTORIAL_NONE || eCurrent > TUTORIAL_COMPLETE)
-		{
+		if (eCurrent < TUTORIAL_NONE || eCurrent > TUTORIAL_COMPLETE) {
 			CPFTutorialController.ClearOverlay(iClient);
 			CreateTimer(0.1, CompleteTutorial, iClient);
 		}
-#endif
+		else if (eCurrent == TUTORIAL_COMPLETE)
+			CreateTimer(5.0, CompleteTutorial, iClient);
 	}
-	
+
 	public static void Restart(int iClient)
 	{
-#if defined _PF_INCLUDED
 		CPFTutorialController.SetStage(iClient, TUTORIAL_NONE);
+#if defined _PFTIMER_INCLUDED
 		FakeClientCommand(iClient, "sm_restart");
-		CPFTutorialController.Stagepoint(iClient, TUTORIAL_NONE);
 #endif
+		CPFTutorialController.Stagepoint(iClient, TUTORIAL_NONE);
 	}
-	/*
-	public static void Think(int iClient)
-	{
-		CPFTutorialController.SetOverlayDynamic(iClient);
-	}
-	*/
+
 	public static void Complete(int iClient)
 	{
-#if defined _PF_INCLUDED
 		CPFTutorialController.SetStage(iClient, TUTORIAL_COMPLETE);
+#if defined _PFTIMER_INCLUDED
 		FakeClientCommand(iClient, "sm_restart");
 #endif
 	}
 	
+	public static void InitPlayer(int iClient) {
+		if (hTutorialTimer[iClient] != INVALID_HANDLE)
+			delete hTutorialTimer[iClient];
+
+		if (CPFTutorialController.GetStage(iClient) < TUTORIAL_COMPLETE)
+			hTutorialTimer[iClient] = CreateTimer(1.0, DisplayTutorialScreen, iClient, TIMER_REPEAT);
+	}
+
 	public static void Init()
 	{
-#if defined _PF_INCLUDED
 		for (int i = 1; i < view_as<int>(TS_COUNT); i++)
 		{
 			char strMaterial[PLATFORM_MAX_PATH];
 			Format(strMaterial, sizeof(strMaterial), "parkoursource/tutorialredux/tutorial%d", i);
 			SuperPrecacheMaterial(strMaterial, true);
 		}
-#endif
 	}
 };
 
-public void DisplayScreenImage(int iClient, const char[] strFile, float flDuration)
+Action DisplayTutorialScreen(Handle hTimer, int iClient) 
 {
-	if (!IsValidClient(iClient)) return;
+	if (!IsValidClient(iClient)) {
+		hTutorialTimer[iClient] = INVALID_HANDLE;
+		return Plugin_Stop;
+	}
+
+	if (!IsPlayerAlive(iClient))
+		return Plugin_Continue;
 	
-	ClientCommand(iClient, "r_screenoverlay \"%s.vtf\"", strFile);
+	TutorialStage eCurrent = CPFTutorialController.GetStage(iClient);
+	char strPath[PLATFORM_MAX_PATH];
+	FormatEx(strPath, PLATFORM_MAX_PATH, "parkoursource/tutorialredux/tutorial%i", view_as<int>(eCurrent)); //Get stage number
+	ClientCommand(iClient, "r_screenoverlay \"%s.vtf\"", strPath);  //Set and overlay based on the player's stage
 	
-	if (flDuration)
-		CreateTimer(flDuration, ClearScreenImage, iClient);
+	if (CPFTutorialController.GetStage(iClient) == TUTORIAL_COMPLETE) { //Stop the timer and clean up the handle
+		hTutorialTimer[iClient] = INVALID_HANDLE;
+		CreateTimer(5.0, ClearScreenImage, iClient);
+		return Plugin_Stop;
+	}
+
+	return Plugin_Continue;
 }
 
-public Action ClearScreenImage(Handle hTimer, int iClient)
+Action ClearScreenImage(Handle hTimer, int iClient)
 {
 	if (IsValidClient(iClient))
 		ClientCommand(iClient, "r_screenoverlay \"\"");
@@ -139,7 +138,7 @@ public Action ClearScreenImage(Handle hTimer, int iClient)
 	return Plugin_Handled;
 }
 
-public Action CompleteTutorial(Handle hTimer, int iClient)
+Action CompleteTutorial(Handle hTimer, int iClient)
 {
 	CPFTutorialController.Complete(iClient);
 	return Plugin_Handled;

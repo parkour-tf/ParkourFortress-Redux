@@ -162,6 +162,8 @@ public Action Event_WeaponsRoundStart(Event event, const char[] name, bool dontB
 	}
 	
 	delete aWeaponsCommon;
+
+	return Plugin_Continue;
 }
 
 public Action Event_ResetPickup(Event event, const char[] name, bool dontBroadcast)
@@ -172,6 +174,8 @@ public Action Event_ResetPickup(Event event, const char[] name, bool dontBroadca
 	{
 		g_bCanPickup[iClient] = true;
 	}
+
+	return Plugin_Continue;
 }
 
 bool AttemptGrabItem(int iClient)
@@ -372,7 +376,7 @@ void PickupWeapon(int iClient, Weapon wep, int iTarget)
 	Call_Finish();
 }
 
-public Action Timer_RegenWeapon(Handle timer, int iRef)
+Action Timer_RegenWeapon(Handle timer, int iRef)
 {
 	int iEntity = EntRefToEntIndex(iRef);
 	DebugOutput("Timer_RegenWeapon -- unhiding & rerolling weapon index %i", iEntity);
@@ -383,10 +387,12 @@ public Action Timer_RegenWeapon(Handle timer, int iRef)
 	return Plugin_Continue;
 }
 
-public Action Timer_ResetPickup(Handle timer, any iClient)
+Action Timer_ResetPickup(Handle timer, any iClient)
 {
 	if (IsValidClient(iClient))
 		g_bCanPickup[iClient] = true;
+
+	return Plugin_Continue;
 }
 
 stock WeaponType GetWeaponType(int iEntity)

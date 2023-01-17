@@ -26,7 +26,7 @@ methodmap CBaseSDKTrace < Handle
 {
 	public CBaseSDKTrace() 
 	{ 
-		return Plugin_Handled; 
+		return view_as<CBaseSDKTrace>(0);
 	}
 	
 	/**

@@ -172,7 +172,7 @@ methodmap CPFRollHandler
 	}
 };
 
-public Action UnlockPlayer(Handle hTimer, int iUserID)
+Action UnlockPlayer(Handle hTimer, int iUserID)
 {
 	int iClient = GetClientOfUserId(iUserID);
 	
@@ -189,11 +189,13 @@ public Action UnlockPlayer(Handle hTimer, int iUserID)
 	return Plugin_Handled;
 }
 
-public Action RestorePlayer(Handle hTimer, int iUserID)
+Action RestorePlayer(Handle hTimer, int iUserID)
 {
 	int iClient = GetClientOfUserId(iUserID);
 	
 	CPFRollHandler.Disengage(iClient);
+
+	return Plugin_Continue;
 }
 
 public void ForceRemoveCamera(int iClient)
