@@ -402,11 +402,13 @@ void RopeNormal(const CPFRope hRope, float vecResult[3], float flScale = 0.0)
 		ScaleVector(vecResult, flScale);
 }
 
-public Action Zipline_RemoveCooldown(Handle hTimer, any aData)
+Action Zipline_RemoveCooldown(Handle hTimer, any aData)
 {
 	int iClient = GetClientOfUserId(aData);
 	DebugOutput("Zipline_RemoveCooldown --- %N", iClient);
 	g_bZiplineCooldown[iClient] = false;
+
+	return Plugin_Continue;
 }
 
 float ShortestDistanceToLine(float vecOrigin[3], float vecFirstPoint[3], float vecSecondPoint[3], 

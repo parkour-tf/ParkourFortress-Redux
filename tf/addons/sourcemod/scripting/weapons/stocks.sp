@@ -147,7 +147,7 @@ stock bool TF2_IsSlotClassname(int iClient, int iSlot, char[] sClassname)
 
 stock int TF2_GetSlotInItem(int iIndex, TFClassType nClass)
 {
-	int iSlot = TF2Econ_GetItemSlot(iIndex, nClass);
+	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
 	if (iSlot >= 0)
 	{
 		//Spy slots is a bit messy
@@ -438,17 +438,19 @@ stock void SpawnPickup(int iClient, const char[] sClassname)
 	}
 }
 
-public Action Timer_KillEntity(Handle hTimer, int iRef)
+Action Timer_KillEntity(Handle hTimer, int iRef)
 {
 	int iEntity = EntRefToEntIndex(iRef);
 	if (IsValidEntity(iEntity))
 		AcceptEntityInput(iEntity, "Kill");
+
+	return Plugin_Continue;
 }
 
 //https://github.com/Mikusch/tfgo/blob/c6109ad9a2f04ac0267e0916145a8274c9f6662e/addons/sourcemod/scripting/tfgo/stocks.sp#L205-L237 :)
 stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 {
-	int iSlot = TF2Econ_GetItemSlot(iIndex, iClass);
+	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
 	if (iSlot >= 0)
 	{
 		// Econ reports wrong slots for Engineer and Spy

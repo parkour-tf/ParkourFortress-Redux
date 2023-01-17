@@ -89,6 +89,7 @@ public void OnPluginStart()
 	PrintToServer("Parkour Fortress Reloading...");
 	
 	PrecacheModels();
+	CPFSoundController.Init();
 	
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
 	HookEvent("post_inventory_application", OnInventoryPost);
@@ -113,7 +114,7 @@ public void OnPluginStart()
 	
 	g_cvarAirAcceleration = FindConVar("sv_airaccelerate");
 	g_cvarAcceleration = FindConVar("sv_accelerate");
-
+	
 	g_cvarWeaponRespawn = CreateConVar("pf_weapon_respawntime", "60.0", "Max time for weapons to respawn if respawntime_random is on, otherwise hard value for respawn period", 0, true, 1.0, false);
 	g_cvarWeaponRespawnMin = CreateConVar("pf_weapon_respawntime_min", "10.0", "If respawntime_random is on, minimum time for weapons to respawn after being picked up", 0, true, 1.0, false);
 	g_cvarWeaponRespawnRandom = CreateConVar("pf_weapon_respawntime_random", "1", "Weapons respawn in a time period between respawntime_min and respawntime", 0, true, 0.0, true, 1.0);
@@ -126,6 +127,11 @@ public void OnPluginStart()
 	g_cvarWeaponRespawnMin.AddChangeHook(OnWeaponRespawnMinSet);
 	g_cvarAirAcceleration.AddChangeHook(OnChangeAirAccel);
 	g_cvarAcceleration.AddChangeHook(OnChangeAccel);
+
+	g_cookieTutorialStage = new Cookie("tutorialprogress", "How far along you are in the tutorial", CookieAccess_Public);
+	g_cookieLerp = new Cookie("parkourlerp", "Toggle camera tilt", CookieAccess_Protected);
+	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
+	g_cookieSelfAmbientSound = new Cookie("fluwee", "Toggle self ambient sounds", CookieAccess_Protected);
 
 	FindConVar("tf_avoidteammates_pushaway").SetBool(false);
 	FindConVar("tf_grapplinghook_los_force_detach_time").SetFloat(6.0);
@@ -201,18 +207,19 @@ public void OnPluginStart()
 	RegConsoleCmd("parkour_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
 	RegConsoleCmd("parkour_camera_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
 	RegConsoleCmd("sm_parkour_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	
-	g_cookieLerp = new Cookie("parkourlerp", "Toggle camera tilt", CookieAccess_Protected);
-	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
-	g_cookieSelfAmbientSound = new Cookie("fluwee", "Toggle self ambient sounds", CookieAccess_Protected);
 }
 
 public void OnClientCookiesCached(int iClient)
 {
 	char MusicVolume[8];
 	g_cookieMusicVolume.Get(iClient, MusicVolume, sizeof(MusicVolume));
-	if(MusicVolume[0] == '\0')
+	if (MusicVolume[0] == '\0')
 		g_cookieMusicVolume.Set(iClient, "1");
+
+	char TutorialProgress[2];
+	g_cookieTutorialStage.Get(iClient, TutorialProgress, sizeof(TutorialProgress));
+	if (TutorialProgress[0] == '\0')
+		g_cookieTutorialStage.Set(iClient, "1");
 }
 
 public void OnAllPluginsLoaded()
@@ -242,7 +249,8 @@ public Action BlockCYOA(int client, const char[] command, int argc)
 
 public Action OnTaunt(int client, const char[] command, int argc)
 {
-    RequestFrame(NextFrame_OnTaunt, client);
+	RequestFrame(NextFrame_OnTaunt, client);
+	return Plugin_Continue;
 }
 
 public void NextFrame_OnTaunt(int client)
@@ -302,7 +310,6 @@ void CheckClientRopeCvars(int iClient)
 	for (int i = 0; i < ROPE_TOTAL; i++)
 		QueryClientConVar(iClient, g_strRopeCommands[i], ProcessClientRopeCvars, i);
 }
-
 
 void ProcessClientRopeCvars(QueryCookie cookie, int iClient, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue, any iData)
 {
@@ -439,6 +446,7 @@ public Action DebugBBox(int iClient, int iArgs)
 	GetEntPropVector(iClient, Prop_Data, "m_vecMins", vecMins);
 
 	ReplyToCommand(iClient, "%.1f %.1f %.1f %.1f %.1f %.1f", vecMins[0], vecMins[1], vecMins[2], vecMaxs[0], vecMins[1], vecMins[2]);
+	return Plugin_Continue;
 }
 
 public Action DebugCoords(int iClient, int iArgs)
@@ -470,8 +478,12 @@ public Action RestartTutorial(int iClient, int iArgs)
 		return Plugin_Handled;
 	}
 	
+	if(hTutorialTimer[iClient] != INVALID_HANDLE)
+		delete hTutorialTimer[iClient];
+	hTutorialTimer[iClient] = CreateTimer(1.0, DisplayTutorialScreen, iClient, TIMER_REPEAT);
 	CPFTutorialController.Restart(iClient);
-	return Plugin_Continue;
+	
+	return Plugin_Handled;
 }
 
 public Action SkipTutorial(int iClient, int iArgs)
@@ -561,6 +573,7 @@ public void OnSuccessfulTeleport(int iClient)
 
 public void OnMapStart()
 {
+	CPFSoundController.Init();
 	PrecacheModels();
 	ClearTutorials();
 	Weapons_Refresh();
@@ -705,7 +718,7 @@ void PrecacheModels()
 	SuperPrecacheMaterial("models/reduxsource/zipwire_tower_kir_green", true);
 }
 
-public Action OnMapStartFrame(Handle hTimer)
+Action OnMapStartFrame(Handle hTimer)
 {
 	if (!g_bLate)
 	{
@@ -722,6 +735,8 @@ public Action OnMapStartFrame(Handle hTimer)
 	FindConVar("tf_use_fixed_weaponspreads").SetBool(g_cvarPvP.BoolValue);
 
 	g_bMapLoaded = true;
+
+	return Plugin_Continue;
 }
 
 public void Mapvote_OnPvPMap()
@@ -1038,8 +1053,12 @@ stock int SDK_GetEquippedWearable(int iClient, int iSlot)
 
 void InitOther()
 {
+	for(int iClient = 1; iClient < MaxClients + 1; iClient++) {
+		if(IsValidClient(iClient))
+			CPFTutorialController.InitPlayer(iClient);
+	}
+
 	CPFSoundController.Init();
-	CPFTutorialController.Init();
 	CPFViewController.Init();
 	
 	ResetAirAccel();
@@ -1108,6 +1127,10 @@ public void OnGameFrame()
 	
 	if (CPFRopeController.HasRails())
 		CPFRailHandler.OnGameFrame();
+}
+
+public void OnClientPutInServer(int iClient) {
+	CPFTutorialController.InitPlayer(iClient);
 }
 
 public void OnClientPostAdminCheck(int iClient)
@@ -1246,10 +1269,10 @@ public Action OnWeaponSwitch(int iClient, int iNewWeapon)
 		}
 	}
 	
-	if (!IsValidEntity(iNewWeapon)) return;
+	if (!IsValidEntity(iNewWeapon)) return Plugin_Continue;
 	
 	char sClassname[128];
-	if (!GetEntityClassname(iNewWeapon, sClassname, sizeof(sClassname))) return;
+	if (!GetEntityClassname(iNewWeapon, sClassname, sizeof(sClassname))) return Plugin_Continue;
 	
 	bool isFists = (StrEqual(sClassname, "tf_weapon_fists", false));
 	
@@ -1272,10 +1295,10 @@ public Action OnWeaponSwitch(int iClient, int iNewWeapon)
 				CPFSpeedController.SetStoredSpeed(iClient, fMin(CPFSpeedController.GetSpeed(iClient), 400.0));
 				CPFSpeedController.SetSpeed(iClient, fMin(CPFSpeedController.GetSpeed(iClient), 400.0));
 			}
-				
 		}
 	}
-	
+
+	return Plugin_Continue;
 }
 
 public Action TF2_CalcIsAttackCritical(int iClient, int weapon, char[] weaponname, bool& result)
@@ -1294,7 +1317,9 @@ public Action TF2_CalcIsAttackCritical(int iClient, int weapon, char[] weaponnam
 			CPFViewController.Queue(iClient, AnimState_Punch, 1.0, true);
 		CPFViewController.SetDontInterrupt(iClient, true);
 		
-	}	
+	}
+
+	return Plugin_Continue;
 }
 
 public Action OnAnimationBegin(char[] strOutput, int iEnt, int iBitch, float flDelay)
@@ -1497,10 +1522,12 @@ public void ProcessRadialsPostKeyValue(any aData)
 	ProcessRadials();
 }
 
-public Action AddStripHookshot(Handle hTimer, int iClient)
+Action AddStripHookshot(Handle hTimer, int iClient)
 {
-	if (!IsValidClient(iClient)) return;
-	CPFStateController.AddFlags(iClient, SF_STRIPHOOKSHOT);
+	if (IsValidClient(iClient))
+		CPFStateController.AddFlags(iClient, SF_STRIPHOOKSHOT);
+
+	return Plugin_Continue;
 }
 
 public Action OnHookshotTouch(int iHookshot, int iCollider) 
@@ -1752,19 +1779,18 @@ public Action OnEndTouchTrigger(int iEnt, int iClient)
 	return Plugin_Continue;
 }
 
-public Action CheckPlayerTrigger(Handle hTimer, int iClient)
+Action CheckPlayerTrigger(Handle hTimer, int iClient)
 {
 	
-	if (!IsValidClient(iClient))
-	{
-		DebugOutput("CheckPlayerTrigger --- Not a valid client (%i)", iClient);
-		return;
-	}
-	else
+	if (IsValidClient(iClient))
 	{
 		DebugOutput("CheckPlayerTrigger --- Removing FL_DONTTOUCH", iClient);
 		SetEntityFlags(iClient, GetEntityFlags(iClient) & ~FL_DONTTOUCH);
 	}
+	else
+		DebugOutput("CheckPlayerTrigger --- Not a valid client (%i)", iClient);
+
+	return Plugin_Continue;
 }
 
 /* This function stays here just because it uses values not accessable by the main include with our stocks. */
@@ -1889,7 +1915,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	CPFViewController.Kill(client);
 }
 
-public Action StartHealPlayer(Handle hTimer, int iUserID)
+Action StartHealPlayer(Handle hTimer, int iUserID)
 {
 	int iClient = GetClientOfUserId(iUserID);
 	if (!IsValidClient(iClient) || !IsPlayerAlive(iClient) ||  CPFStateController.HasFlags(iClient, SF_BEINGHEALED))
@@ -1912,7 +1938,7 @@ public Action StartHealPlayer(Handle hTimer, int iUserID)
 	return Plugin_Stop;
 }
 
-public Action StartHealPlayerRepeat(Handle hTimer, int iUserID)
+Action StartHealPlayerRepeat(Handle hTimer, int iUserID)
 {
 	int iClient = GetClientOfUserId(iUserID);
 	if (!IsValidClient(iClient) || !IsPlayerAlive(iClient) || !CPFStateController.HasFlags(iClient, SF_BEINGHEALED))

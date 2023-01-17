@@ -310,7 +310,8 @@ void CreateRailSprites(float vecOrigin[3], int iColor[3] = {255, 0, 0})
 	TeleportEntity(iEntity, vecOrigin, NULL_VECTOR, NULL_VECTOR);
 }
 
-public Action CreateRailSpriteTimer(Handle hTimer, int iEntity)
+Action CreateRailSpriteTimer(Handle hTimer, int iEntity)
 {
 	AcceptEntityInput(EntRefToEntIndex(iEntity), "ShowSprite");
+	return Plugin_Continue;
 }

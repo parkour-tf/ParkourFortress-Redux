@@ -24,8 +24,6 @@ Address g_pPatchLocation;
 bool g_bLate;
 bool g_bMapLoaded;
 
-bool g_bTimerLoaded;
-
 bool g_bTutorialFetched[TF_MAXPLAYERS];
 
 Handle g_hHookGiveNamedItem;
@@ -83,6 +81,7 @@ Cookie g_cookieSound;
 Cookie g_cookieSelfAmbientSound;
 Cookie g_cookieViewmodel;
 Cookie g_cookieLerp;
+Cookie g_cookieTutorialStage;
 
 int g_iFoundPropBecauseICantReturnItFromTheEnumerator;
 
@@ -174,18 +173,18 @@ static const char g_strCollisionGroupLUT[COLLISION_GROUP_T_COUNT][32] = {
 	"NPC SCRIPTED"
 };
 
-enum EffectFlags_t(<<=1)
+enum EffectFlags_t
 {
-    EF_BONEMERGE = (1 << 0),    // Merges bones of names shared with a parent entity to the position and direction of the parent's.
-    EF_BRIGHTLIGHT,             // Emits a dynamic light of RGB(250,250,250) and a random radius of 400 to 431 from the origin.
-    EF_DIMLIGHT,                // Emits a dynamic light of RGB(100,100,100) and a random radius of 200 to 231 from the origin.
-    EF_NOINTERP,                // Don't interpolate on the next frame.
-    EF_NOSHADOW,                // Don't cast a shadow. To do: Does this also apply to shadow maps?
-    EF_NODRAW,                  // Entity is completely ignored by the client. Can cause prediction errors if a player proceeds to collide with it on the server.
-    EF_NORECEIVESHADOW,         // Don't receive dynamic shadows.
-    EF_BONEMERGE_FASTCULL,      // For use with EF_BONEMERGE. If set, the entity will use its parent's origin to calculate whether it is visible; if not set, it will set up parent's bones every frame even if the parent is not in the PVS.
-    EF_ITEM_BLINK,              // Blink an item so that the user notices it. Added for Xbox 1, and really not very subtle.
-    EF_PARENT_ANIMATES          // Assume that the parent entity is always animating. Causes it to realign every frame.
+    EF_BONEMERGE = (1 << 0),    		// Merges bones of names shared with a parent entity to the position and direction of the parent's.
+    EF_BRIGHTLIGHT = (1 << 1),          // Emits a dynamic light of RGB(250,250,250) and a random radius of 400 to 431 from the origin.
+    EF_DIMLIGHT = (1 << 2),             // Emits a dynamic light of RGB(100,100,100) and a random radius of 200 to 231 from the origin.
+    EF_NOINTERP = (1 << 3),             // Don't interpolate on the next frame.
+    EF_NOSHADOW = (1 << 4),             // Don't cast a shadow. To do: Does this also apply to shadow maps?
+    EF_NODRAW = (1 << 5),               // Entity is completely ignored by the client. Can cause prediction errors if a player proceeds to collide with it on the server.
+    EF_NORECEIVESHADOW = (1 << 6),      // Don't receive dynamic shadows.
+    EF_BONEMERGE_FASTCULL = (1 << 7),   // For use with EF_BONEMERGE. If set, the entity will use its parent's origin to calculate whether it is visible; if not set, it will set up parent's bones every frame even if the parent is not in the PVS.
+    EF_ITEM_BLINK = (1 << 8),           // Blink an item so that the user notices it. Added for Xbox 1, and really not very subtle.
+    EF_PARENT_ANIMATES = (1 << 9)       // Assume that the parent entity is always animating. Causes it to realign every frame.
 };
 
 enum SpecMode_t
@@ -522,12 +521,12 @@ stock EffectFlags_t GetEFlags(int iEntity)
 
 stock bool IsEFlagSet(int iEntity, EffectFlags_t iEffect)
 {
-	return GetEntProp(iEntity, Prop_Send, "m_fEffects") & iEffect;
+	return !!(view_as<EffectFlags_t>(GetEntProp(iEntity, Prop_Send, "m_fEffects")) & iEffect);
 }
 
 stock bool AreEFlagsSet(int iEntity, EffectFlags_t iEffects)
 {
-	return GetEntProp(iEntity, Prop_Send, "m_fEffects") & iEffects == iEffects;
+	return !!(view_as<EffectFlags_t>(GetEntProp(iEntity, Prop_Send, "m_fEffects")) & iEffects == iEffects);
 }
 
 stock void SuperPrecacheMaterial(const char[] strMaterial, bool bPremap = true)

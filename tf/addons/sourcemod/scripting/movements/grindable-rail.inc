@@ -781,9 +781,10 @@ bool Rail_IsPointInClientBBox(float vecOrigin[3], float vecPoint[3])
  * Rail_RemoveCooldown(Handle, any)
  * Description: Pass from timer to CPFRailHandler::RemoveRopeCooldown.
  */
-public Action Rail_RemoveCooldown(Handle hTimer, any aData)
+Action Rail_RemoveCooldown(Handle hTimer, any aData)
 {
 	CPFRailHandler.RemoveRopeCooldown(GetClientOfUserId(aData));
+	return Plugin_Continue;
 }
 
 /**
