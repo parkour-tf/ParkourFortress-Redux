@@ -283,7 +283,7 @@ methodmap CPFViewController
 	{
 		int iViewmodel = EntRefToEntIndex(g_ViewmodelData[iClient].Viewmodel);
 		if (!force)
-			if (GetCookieInt(g_cookieViewmodel, iClient))
+			if (!GetCookieInt(g_cookieViewmodel, iClient))
 				return;
 		if (!g_ViewmodelData[iClient].Hidden && IsValidEntity(iViewmodel))
 		{
@@ -510,7 +510,7 @@ public Action OnSetTransmitViewmodel(int iEntity, int iClient)
 	
 	if (g_cookieViewmodel != null)
 	{
-		if (GetCookieInt(g_cookieViewmodel, iClient))
+		if (!GetCookieInt(g_cookieViewmodel, iClient))
 		return Plugin_Handled;
 	}
 	

@@ -274,7 +274,7 @@ methodmap CPFWallrunHandler
 			ForwardVector(vecWallAngles, 420.0, vecVelocity);
 			vecVelocity[2] = (WALLRUN_HEIGHT_COEFFICIENT * (((TICKRATE_STANDARD_FLOAT/GetTickRate()) * float(GetGameTickCount() - g_WallrunData[iClient].ActionStart)) - WALLRUN_HEIGHT_SHIFT));
 			
-			if (!GetCookieInt(g_cookieLerp, iClient))
+			if (!!GetCookieInt(g_cookieLerp, iClient))
 			{
 				GetClientAbsAngles(iClient, vecAngles);
 				if (GetGameTickCount() - g_WallrunData[iClient].ActionStart < WALLRUN_LERP_LENGTH + 5.0 && GetGameTickCount() - g_WallrunData[iClient].ActionStart > 5.0)

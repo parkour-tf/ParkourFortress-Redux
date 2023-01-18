@@ -117,12 +117,23 @@ methodmap CPFSoundController
 		g_cookieSound = new Cookie("parkoursfx", "Disable ambient sounds", CookieAccess_Protected);
 	}
 	
+	public static void InitPlayer(int iClient) {
+		if (!!GetCookieInt(g_cookieMusic, iClient))
+		{
+			CPFSoundController.InitDelayTimer(iClient);
+			CPFSoundController.SetIntensity(iClient, 0.0);
+			CPFSoundController.StopAllMusic(iClient);
+			CPFSoundController.SwitchMusic(iClient);
+			CPFSoundController.UpdateCurrentMusic(iClient);
+		}
+	}
+
 	public static bool ShouldPlayMusic(int iClient)
 	{
 		if (!g_cvarMusicEnabled.IntValue)
 			return false;
-
-		if (GetCookieInt(g_cookieMusic, iClient))
+		
+		if (!!!GetCookieInt(g_cookieMusic, iClient))
 			return false;
 		
 		return true;
@@ -516,7 +527,6 @@ methodmap CPFSoundController
 							.channel = SNDCHAN_AUTO,
 							.volume = CPFSoundController.GetClientMusicVol(iClient));
 		g_MusicData[iClient].CurrentMusic = random;
-		
 	}
 	
 	public static void UpdateCurrentMusic(int iClient)
@@ -617,7 +627,7 @@ public void PlayToAllButClient(int iClient, char[] sJingle)
 	
 	for (i = 1; i <= MaxClients; i++)
 	{
-		if (IsValidClient(i) && i != iClient && !GetCookieInt(g_cookieSound, i))
+		if (IsValidClient(i) && i != iClient && GetCookieInt(g_cookieSound, i))
 		{
 			iClients[total++] = i;
 		}
