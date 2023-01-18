@@ -126,10 +126,10 @@ public void OnPluginStart()
 	g_cvarAirAcceleration.AddChangeHook(OnChangeAirAccel);
 	g_cvarAcceleration.AddChangeHook(OnChangeAccel);
 
-	g_cookieTutorialStage = new Cookie("tutorialprogress", "How far along you are in the tutorial", CookieAccess_Public);
-	g_cookieLerp = new Cookie("parkourlerp", "Toggle camera tilt", CookieAccess_Protected);
+	g_cookieTutorialStage = new Cookie("tutorialprogress", "How far along you are in the tutorial", CookieAccess_Protected);
+	g_cookieLerp = new Cookie("parkourlerp", "Enable camera tilt", CookieAccess_Protected);
 	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
-	g_cookieSelfAmbientSound = new Cookie("fluwee", "Toggle self ambient sounds", CookieAccess_Protected);
+	g_cookieSelfAmbientSound = new Cookie("fluwee", "Enable self ambient sounds", CookieAccess_Protected);
 
 	FindConVar("tf_avoidteammates_pushaway").SetBool(false);
 	FindConVar("tf_grapplinghook_los_force_detach_time").SetFloat(6.0);
@@ -163,61 +163,66 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_skip", SkipTutorial, "Skip the tutorial");
 	RegConsoleCmd("sm_skiptutorial", SkipTutorial, "Skip the tutorial");
 	
-	RegConsoleCmd("pf_music", ToggleMusic, "Toggle background music for the player");
-	RegConsoleCmd("parkour_music", ToggleMusic, "Toggle background music for the player");
-	RegConsoleCmd("sm_pf_music", ToggleMusic, "Toggle background music for the player");
-	RegConsoleCmd("sm_parkour_music", ToggleMusic, "Toggle background music for the player");
+	RegConsoleCmd("pf_music", EnableMusic, "Enable background music for the player");
+	RegConsoleCmd("parkour_music", EnableMusic, "Enable background music for the player");
+	RegConsoleCmd("sm_pf_music", EnableMusic, "Enable background music for the player");
+	RegConsoleCmd("sm_parkour_music", EnableMusic, "Enable background music for the player");
 	
 	RegConsoleCmd("pf_musicvolume", ChangeMusicVolume, "Change background music volume for the player");
 	RegConsoleCmd("pf_music_volume", ChangeMusicVolume, "Change background music volume for the player");
 	RegConsoleCmd("parkour_musicvolume", ChangeMusicVolume, "Change background music volume for the player");
 	RegConsoleCmd("parkour_music_volume", ChangeMusicVolume, "Change background music volume for the player");
 	
-	RegConsoleCmd("pf_sound", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("pf_sfx", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("parkour_sound", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("parkour_sfx", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("sm_pf_sound", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("sm_pf_sfx", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("sm_parkour_sound", ToggleSound, "Toggle ambient sounds for the player");
-	RegConsoleCmd("sm_parkour_sfx", ToggleSound, "Toggle ambient sounds for the player");
+	RegConsoleCmd("pf_sound", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("pf_sfx", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("parkour_sound", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("parkour_sfx", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("sm_pf_sound", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("sm_pf_sfx", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("sm_parkour_sound", EnableSound, "Enable ambient sounds for the player");
+	RegConsoleCmd("sm_parkour_sfx", EnableSound, "Enable ambient sounds for the player");
 	
-	RegConsoleCmd("pf_fluwee", ToggleSelfAmbientSound, "Why would you want this?");
+	RegConsoleCmd("pf_fluwee", EnableSelfAmbientSound, "Why would you want this?");
 	
-	RegConsoleCmd("parkour_viewmodel", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("pf_viewmodel", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("parkour_animations", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("pf_animations", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("sm_parkour_viewmodel", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("sm_pf_viewmodel", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("sm_parkour_animations", ToggleViewmodel, "Toggle firstperson animations for the player");
-	RegConsoleCmd("sm_pf_animations", ToggleViewmodel, "Toggle firstperson animations for the player");
+	RegConsoleCmd("parkour_viewmodel", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("pf_viewmodel", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("parkour_animations", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("pf_animations", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("sm_parkour_viewmodel", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("sm_pf_viewmodel", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("sm_parkour_animations", EnableViewmodel, "Enable firstperson animations for the player");
+	RegConsoleCmd("sm_pf_animations", EnableViewmodel, "Enable firstperson animations for the player");
 	
-	RegConsoleCmd("sm_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("sm_cameratilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("sm_camera_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("pf_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("sm_pf_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("pf_cameratilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("sm_pf_cameratilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("pf_camera_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("sm_pf_camera_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("parkour_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("parkour_camera_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
-	RegConsoleCmd("sm_parkour_tilt", ToggleLerp, "Toggle camera tilt animation for the player");
+	RegConsoleCmd("sm_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("sm_cameratilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("sm_camera_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("pf_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("sm_pf_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("pf_cameratilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("sm_pf_cameratilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("pf_camera_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("sm_pf_camera_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("parkour_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("parkour_camera_tilt", EnableLerp, "Enable camera tilt animation for the player");
+	RegConsoleCmd("sm_parkour_tilt", EnableLerp, "Enable camera tilt animation for the player");
 }
 
 public void OnClientCookiesCached(int iClient)
 {
-	char MusicVolume[8];
-	g_cookieMusicVolume.Get(iClient, MusicVolume, sizeof(MusicVolume));
-	if (MusicVolume[0] == '\0')
-		g_cookieMusicVolume.Set(iClient, "1");
+	InitClientCookie(g_cookieMusic, iClient, "1");
+	InitClientCookie(g_cookieMusicVolume, iClient, "1");
+	InitClientCookie(g_cookieTutorialStage, iClient, "1");
+	InitClientCookie(g_cookieSound, iClient, "1");
+	InitClientCookie(g_cookieSelfAmbientSound, iClient, "0");
+	InitClientCookie(g_cookieViewmodel, iClient, "1");
+	InitClientCookie(g_cookieLerp, iClient, "1");
+}
 
-	char TutorialProgress[2];
-	g_cookieTutorialStage.Get(iClient, TutorialProgress, sizeof(TutorialProgress));
-	if (TutorialProgress[0] == '\0')
-		g_cookieTutorialStage.Set(iClient, "1");
+void InitClientCookie(Cookie cookie, int iClient, char[] default_value) {
+	char Value[8];
+	cookie.Get(iClient, Value, sizeof(Value));
+	if (Value[0] == '\0')
+		g_cookieLerp.Set(iClient, default_value);
 }
 
 public void OnAllPluginsLoaded()
@@ -267,6 +272,7 @@ public void OnPluginEnd()
 		SDKUnhook(i, SDKHook_PreThink, OnPreThink);
 		SDKUnhook(i, SDKHook_PostThink, OnPostThink);
 		SDKUnhook(i, SDKHook_WeaponSwitch, OnWeaponSwitch);
+		CPFSoundController.StopCurrentMusic(i);
 	}
 	
 	RemoveMaxSpeedPatch();
@@ -315,17 +321,39 @@ void ProcessClientDownloadCvar(QueryCookie cookie, int iClient, ConVarQueryResul
 		CPrintToChat(iClient, "{fullred}Please allow all downloads in the multiplayer options menu!", cvarName);
 }
 
-public Action ToggleMusic(int iClient, int iArgs)
-{
-	if (!GetCookieInt(g_cookieMusic, iClient))
-	{
-		g_cookieMusic.Set(iClient, "1");
-		CPFSoundController.StopAllMusic(iClient);
+/**
+ * Description
+ * 
+ * @param cookie            The preference cookie to change
+ * @param iClient           The client that wants their preference changed
+ * @param iDesiredValue     The value to set the cookie. Leave null to toggle the preference
+ * @return                  Returns whether or not the value was modified
+ */
+bool SetClientCookiePreference(Cookie cookie, int iClient, char[] DesiredValue = { '\0' }) {
+	bool Enabled = !!GetCookieInt(cookie, iClient);
+	if(DesiredValue[0] != '\0') {
+		bool CurrValue = !!GetCookieInt(cookie, iClient),
+        NewValue = !!StringToInt(DesiredValue);
+
+		if(CurrValue == NewValue)
+			return false;
+
+		cookie.Set(iClient, DesiredValue);
 	}
 	else
-	{
-		g_cookieMusic.Set(iClient, "0");
-		CPFSoundController.SwitchMusic(iClient, true);
+		Enabled ? cookie.Set(iClient, "0") : cookie.Set(iClient, "1");
+
+	return true;
+}
+
+public Action EnableMusic(int iClient, int iArgs)
+{
+	char Arg1[2];
+	GetCmdArg(1, Arg1, sizeof(Arg1));
+	if(SetClientCookiePreference(g_cookieMusic, iClient, Arg1)) {
+		bool Value = !!GetCookieInt(g_cookieMusic, iClient);
+		Value ? CPFSoundController.SwitchMusic(iClient, true) : CPFSoundController.StopAllMusic(iClient);
+		ReplyToCommand(iClient, "%s Parkour Music", Value ? "Enabled" : "Disabled");
 	}
 	
 	return Plugin_Handled;
@@ -367,31 +395,43 @@ public Action ChangeMusicVolume(int iClient, int iArgs)
 	return Plugin_Handled;
 }
 
-public Action ToggleSound(int iClient, int iArgs)
+public Action EnableSound(int iClient, int iArgs)
 {
-	g_cookieSound.Set(iClient, (GetCookieInt(g_cookieMusic, iClient)) ? "0" : "1");
-
-	return Plugin_Handled;
-}
-
-public Action ToggleSelfAmbientSound(int iClient, int iArgs)
-{
-	g_cookieSelfAmbientSound.Set(iClient, (GetCookieInt(g_cookieSelfAmbientSound, iClient)) ? "0" : "1");
+	char Arg1[2];
+	GetCmdArg(1, Arg1, sizeof(Arg1));
+	if(SetClientCookiePreference(g_cookieSound, iClient, Arg1))
+		ReplyToCommand(iClient, "%s Parkour Sounds", GetCookieInt(g_cookieSound, iClient) ? "Enabled" : "Disabled");
 	
 	return Plugin_Handled;
 }
 
-public Action ToggleViewmodel(int iClient, int iArgs)
+public Action EnableSelfAmbientSound(int iClient, int iArgs)
 {
-	g_cookieViewmodel.Set(iClient, (GetCookieInt(g_cookieViewmodel, iClient)) ? "0" : "1");
+	char Arg1[2];
+	GetCmdArg(1, Arg1, sizeof(Arg1));
+	if(SetClientCookiePreference(g_cookieSelfAmbientSound, iClient, Arg1))
+		ReplyToCommand(iClient, "%s Self Parkour Sounds", GetCookieInt(g_cookieSelfAmbientSound, iClient) ? "Enabled" : "Disabled");
 	
 	return Plugin_Handled;
 }
 
-public Action ToggleLerp(int iClient, int iArgs)
+public Action EnableViewmodel(int iClient, int iArgs)
 {
-	g_cookieLerp.Set(iClient, (GetCookieInt(g_cookieLerp, iClient)) ? "0" : "1");
+	char Arg1[2];
+	GetCmdArg(1, Arg1, sizeof(Arg1));
+	if(SetClientCookiePreference(g_cookieViewmodel, iClient, Arg1))
+		ReplyToCommand(iClient, "%s Parkour Viewmodel", GetCookieInt(g_cookieViewmodel, iClient) ? "Enabled" : "Disabled");
 	
+	return Plugin_Handled;
+}
+
+public Action EnableLerp(int iClient, int iArgs)
+{
+	char Arg1[2];
+	GetCmdArg(1, Arg1, sizeof(Arg1));
+	if(SetClientCookiePreference(g_cookieLerp, iClient, Arg1))
+		ReplyToCommand(iClient, "%s Screen Tilt", GetCookieInt(g_cookieLerp, iClient) ? "Enabled" : "Disabled");
+
 	return Plugin_Handled;
 }
 
@@ -1039,7 +1079,7 @@ void InitOther()
 {
 	for(int iClient = 1; iClient < MaxClients + 1; iClient++) {
 		if(IsValidClient(iClient))
-			CPFTutorialController.InitPlayer(iClient);
+			OnClientPutInServer(iClient);
 	}
 
 	CPFSoundController.Init();
@@ -1115,6 +1155,7 @@ public void OnGameFrame()
 
 public void OnClientPutInServer(int iClient) {
 	CPFTutorialController.InitPlayer(iClient);
+	CPFSoundController.InitPlayer(iClient);
 }
 
 public void OnClientPostAdminCheck(int iClient)
@@ -1123,15 +1164,6 @@ public void OnClientPostAdminCheck(int iClient)
 	
 	SetPlayerAirAccel(iClient, g_cvarAirAcceleration.FloatValue);
 	SetPlayerAccel(iClient, g_cvarAcceleration.FloatValue);
-	
-	CPFSoundController.InitDelayTimer(iClient);
-	if (!GetCookieInt(g_cookieMusic, iClient))
-	{
-		CPFSoundController.SetIntensity(iClient, 0.0);
-		CPFSoundController.StopAllMusic(iClient);
-		CPFSoundController.SwitchMusic(iClient);
-		CPFSoundController.UpdateCurrentMusic(iClient);
-	}
 	
 	if (!IsFakeClient(iClient))
 		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, true, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);

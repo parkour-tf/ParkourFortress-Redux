@@ -114,7 +114,7 @@ methodmap CPFRailHandler
 	 */
 	public static void SetSide(const int iClient, const eRailSide eSide)
 	{
-		if (GetCookieInt(g_cookieLerp, iClient))
+		if (!!!GetCookieInt(g_cookieLerp, iClient))
 			return;
 		
 		float vecAngles[3];
