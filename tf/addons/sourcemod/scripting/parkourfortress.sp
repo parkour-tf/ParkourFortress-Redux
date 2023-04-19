@@ -89,7 +89,6 @@ public void OnPluginStart()
 	PrintToServer("Parkour Fortress Reloading...");
 	
 	PrecacheModels();
-	CPFSoundController.Init();
 	
 	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
 	HookEvent("post_inventory_application", OnInventoryPost);
@@ -130,6 +129,7 @@ public void OnPluginStart()
 	g_cookieLerp = new Cookie("parkourlerp", "Enable camera tilt", CookieAccess_Protected);
 	g_cookieMusicVolume = new Cookie("musicvolume", "Background music volume", CookieAccess_Protected);
 	g_cookieSelfAmbientSound = new Cookie("fluwee", "Enable self ambient sounds", CookieAccess_Protected);
+	CPFViewController.Init();
 
 	FindConVar("tf_avoidteammates_pushaway").SetBool(false);
 	FindConVar("tf_grapplinghook_los_force_detach_time").SetFloat(6.0);
@@ -222,7 +222,7 @@ void InitClientCookie(Cookie cookie, int iClient, char[] default_value) {
 	char Value[8];
 	cookie.Get(iClient, Value, sizeof(Value));
 	if (Value[0] == '\0')
-		g_cookieLerp.Set(iClient, default_value);
+		cookie.Set(iClient, default_value);
 }
 
 public void OnAllPluginsLoaded()
@@ -341,7 +341,7 @@ bool SetClientCookiePreference(Cookie cookie, int iClient, char[] DesiredValue =
 		cookie.Set(iClient, DesiredValue);
 	}
 	else
-		Enabled ? cookie.Set(iClient, "0") : cookie.Set(iClient, "1");
+		cookie.Set(iClient, Enabled ? "0" : "1");
 
 	return true;
 }
@@ -1081,10 +1081,8 @@ void InitOther()
 		if(IsValidClient(iClient))
 			OnClientPutInServer(iClient);
 	}
-
-	CPFSoundController.Init();
-	CPFViewController.Init();
 	
+	CPFSoundController.Init();
 	ResetAirAccel();
 	
 	SDKHookClassname("trigger_stun", SDKHook_StartTouch, OnStartTouchTrigger);
