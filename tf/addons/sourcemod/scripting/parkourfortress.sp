@@ -535,7 +535,7 @@ public void PFTeleportPlayer(int iClient, const float origin[3], const float ang
 	
 	if (!IsNullVector(angles))
 	{
-		SetEntPropVector(iClient, Prop_Data, "m_angAbsRotation", angles);
+		ServerCommand("script PlayerInstanceFromIndex(%i).SnapEyeAngles(QAngle(%f, %f, %f));", iClient, angles[0], angles[1], angles[2]);
 	}
 	
 	if (!IsNullVector(velocity))

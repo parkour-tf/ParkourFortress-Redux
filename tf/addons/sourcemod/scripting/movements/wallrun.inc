@@ -281,12 +281,12 @@ methodmap CPFWallrunHandler
 				{
 					float flLerpAngle = ((float(GetGameTickCount() - g_WallrunData[iClient].ActionStart - 5) / float(WALLRUN_LERP_LENGTH)) * WALLRUN_LERP_GOAL_ANGLE);
 					vecAngles[2] += (eSide == WALLRUN_LEFT) ? flLerpAngle : -flLerpAngle;
-					TeleportEntity(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
+					PFTeleportPlayer(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
 				}
 				else if (GetGameTickCount() - g_WallrunData[iClient].ActionStart == WALLRUN_LERP_LENGTH + 5.0)
 				{
 					vecAngles[2] = (eSide == WALLRUN_LEFT) ? WALLRUN_LERP_GOAL_ANGLE : -WALLRUN_LERP_GOAL_ANGLE;
-					TeleportEntity(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
+					PFTeleportPlayer(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
 				}
 			}
 			
