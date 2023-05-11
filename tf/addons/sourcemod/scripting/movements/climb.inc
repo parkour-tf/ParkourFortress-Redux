@@ -53,69 +53,90 @@ methodmap CPFClimbHandler
 	}*/
 	
 	public static void Mount(int iClient, CPFPipe hPipe)
-	{
-		float flClientAbsVel[3];
-		GetEntPropVector(iClient, Prop_Data, "m_vecAbsVelocity", flClientAbsVel);
-		if (flClientAbsVel[2] > -1200.0 && GetEntityMoveType(iClient) != MOVETYPE_NOCLIP)
-		{
-			float vecAngles[3];
-			GetClientEyeAngles(iClient, vecAngles);
-			vecAngles[2] = 0.0;
-			TeleportEntity(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
-			
-			if (!IsValidClient(iClient) || hPipe == null)
-				return;
-				
-			if (TF2_IsPlayerInCondition(iClient, TFCond_Zoomed))
-				UnscopeRifle(iClient);
-			
-			SetEntityMoveType(iClient, MOVETYPE_FLY);
-			
-			CPFPipeController.SetClientPipe(iClient, hPipe);
-			CPFSpeedController.SetSpeed(iClient, 1.0);
-			SetEntityFlags(iClient, GetEntityFlags(iClient) | FL_ATCONTROLS);
-			
-			if (CPFStateController.HasFlags(iClient, SF_LONGJUMP))
-				CPFSpeedController.SetStoredSpeed(iClient, SPEED_BASE);
-			
-			CPFStateController.Set(iClient, State_Climb);
-			
-			int iClimbable = hPipe.EntIndex;
-			if (!IsValidEntity(iClimbable))
-			{
-				DebugOutput("CPFClimbHandler::Mount --- Pipe %d has invalid entindex %d! Client: %N", hPipe.PipeIndex, iClimbable, iClient);
-				return;
-			}
-			
-			float vecOrigin[3], vecDestination[3], vecMaxs[3], vecPipeOriginMaxs[3];
-			GetEntPropVector(iClimbable, Prop_Send, "m_vecOrigin", vecDestination);
-			GetEntPropVector(iClimbable, Prop_Data, "m_vecMaxs", vecMaxs);
-			GetClientAbsOrigin(iClient, vecOrigin);
-				
-			AddVectors(vecDestination, vecMaxs, vecPipeOriginMaxs);
-			
-			if ((vecOrigin[2] + 5) <= vecPipeOriginMaxs[2])
-				vecDestination[2] = vecOrigin[2] + 5.0; // Add 5 to keep player from auto-dismounting
-			else
-				vecDestination[2] = vecPipeOriginMaxs[2] - 5.0;
-				
-			if (CheckPointAgainstPlayerHull(iClient, vecDestination))
-				return;
-			
-			TeleportEntity(iClient, vecDestination, NULL_VECTOR, ZERO_VECTOR);
+    {
+        float flClientAbsVel[3];
+        GetEntPropVector(iClient, Prop_Data, "m_vecAbsVelocity", flClientAbsVel);
+        if (flClientAbsVel[2] > -1200.0 && GetEntityMoveType(iClient) != MOVETYPE_NOCLIP)
+        {
+            float vecAngles[3];
+            GetClientEyeAngles(iClient, vecAngles);
+            vecAngles[2] = 0.0;
+            TeleportEntity(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
+            
+            if (!IsValidClient(iClient) || hPipe == null)
+                return;
+                
+            if (TF2_IsPlayerInCondition(iClient, TFCond_Zoomed))
+                UnscopeRifle(iClient);
+            
+            SetEntityMoveType(iClient, MOVETYPE_FLY);
+            
+            CPFPipeController.SetClientPipe(iClient, hPipe);
+            CPFSpeedController.SetSpeed(iClient, 1.0);
+            SetEntityFlags(iClient, GetEntityFlags(iClient) | FL_ATCONTROLS);
+            
+            if (CPFStateController.HasFlags(iClient, SF_LONGJUMP))
+                CPFSpeedController.SetStoredSpeed(iClient, SPEED_BASE);
+            
+            CPFStateController.Set(iClient, State_Climb);
+            
+            int iClimbable = hPipe.EntIndex;
+            if (!IsValidEntity(iClimbable))
+            {
+                DebugOutput("CPFClimbHandler::Mount --- Pipe %d has invalid entindex %d! Client: %N", hPipe.PipeIndex, iClimbable, iClient);
+                return;
+            }
+            
+            float vecOrigin[3], vecDestination[3], vecMaxs[3], vecPipeOriginMaxs[3];
+            GetEntPropVector(iClimbable, Prop_Send, "m_vecOrigin", vecDestination);
+            GetEntPropVector(iClimbable, Prop_Data, "m_vecMaxs", vecMaxs);
+            GetClientAbsOrigin(iClient, vecOrigin);
+                
+            AddVectors(vecDestination, vecMaxs, vecPipeOriginMaxs);
+            
+            if ((vecOrigin[2] + 5) <= vecPipeOriginMaxs[2])
+                vecDestination[2] = vecOrigin[2] + 5.0; // Add 5 to keep player from auto-dismounting
+            else
+                vecDestination[2] = vecPipeOriginMaxs[2] - 5.0;
+                
+            if (CheckPointAgainstPlayerHull(iClient, vecDestination))
+                return;
+            
+            TeleportEntity(iClient, vecDestination, NULL_VECTOR, ZERO_VECTOR);
+            
+            CPFViewController.SetDefaultSequence(iClient, AnimState_ClimbIdle);
+            
+            CPFSoundController.PlaySmallDing(iClient);
+            
+            CPFSoundController.AddIntensity(iClient, 0.5);
 
-			DebugOutput("CPFClimbHandler::Mount --- Mount successful for %N on pipe %d", iClient, hPipe.PipeIndex);
-			
-			CPFViewController.LockRotation(iClient, hPipe.Angle, 12.0);
-			
-			CPFViewController.SetDefaultSequence(iClient, AnimState_ClimbIdle);
-			
-			CPFSoundController.PlaySmallDing(iClient);
-			
-			CPFSoundController.AddIntensity(iClient, 0.5);
-		}
-		else return;
-	}
+            //Teleport the player's viewmodel angles towards the pipe if possible
+            float vAngles[3] = { 0.0, 180.0, 0.0 }, vEndPos[3], flBestYaw = 180.0, flShortestDist = 128.000001;
+            
+            for(int i; i < 4; i++, vAngles[1] -= 90.0) {
+                TR_TraceRayFilter(vecDestination, vAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceRayNoPlayers);
+                if(!TR_DidHit())
+                    continue;
+                
+                bool bFoundShorterDist;
+                TR_GetEndPosition(vEndPos);
+                float flDist = GetVectorDistance(vecDestination, vEndPos);
+                if(flDist < flShortestDist) {
+                    flBestYaw = vAngles[1];
+                    flShortestDist = flDist;
+                    bFoundShorterDist = true;
+                }
+                
+                if(g_cvarDebugBeams.BoolValue)
+                    DrawVectorPoints(vecDestination, vEndPos, 5.0, bFoundShorterDist ? { 0, 255, 0, 255 } : { 255, 0, 255, 255 });
+            }
+            
+            CPFViewController.LockRotation(iClient, flBestYaw, 12.0);
+            
+            DebugOutput("CPFClimbHandler::Mount --- Mount successful for %N on pipe %d with estimated yaw %f", iClient, hPipe.PipeIndex, flBestYaw);
+        }
+        else return;
+    }
 	
 	public static void Disengage(int iClient, eClimbDisengageSource eCause)
 	{
