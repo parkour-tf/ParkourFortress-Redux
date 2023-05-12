@@ -551,7 +551,7 @@ bool CheckPointAgainstPlayerHull(const int iClient, const float vecPos[3])
 	GetClientMaxs(iClient, vecMaxs);
 	
 	//DrawBoundingBox(vecMins, vecMaxs, vecPos);
-	TraceHullF.Start(vecPos, vecPos, vecMins, vecMaxs, MASK_ALL, TraceEntityFilterSolid);
+	TraceHullF.Start(vecPos, vecPos, vecMins, vecMaxs, MASK_PLAYERSOLID, TraceEntityFilterSolid);
 	return TRACE_GLOBAL.Hit;
 }
 
@@ -564,7 +564,7 @@ bool CheckIfForceDucked(const int iClient)
 	GetClientAbsOrigin(iClient, vecPos);
 	
 	//DrawBoundingBox(vecMins, vecMaxs, vecPos);
-	TraceHullF.Start(vecPos, vecPos, vecMins, vecMaxs, MASK_ALL, TraceEntityFilterSolid);
+	TraceHullF.Start(vecPos, vecPos, vecMins, vecMaxs, MASK_PLAYERSOLID, TraceEntityFilterSolid);
 	return TRACE_GLOBAL.Hit;
 }
 
