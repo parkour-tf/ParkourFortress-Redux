@@ -1083,6 +1083,7 @@ void InitOther()
 	}
 	
 	CPFSoundController.Init();
+	CPFViewController.Init();
 	ResetAirAccel();
 	
 	SDKHookClassname("trigger_stun", SDKHook_StartTouch, OnStartTouchTrigger);
