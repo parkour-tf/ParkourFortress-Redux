@@ -10,6 +10,8 @@
 
 Handle hTutorialTimer[TF_MAXPLAYERS + 1] = { INVALID_HANDLE, ... };
 
+//we have these defined in the parkour.tf codebase somewhere, keep this here for public ver?
+#if defined _PFTIMER_INCLUDED
 enum TutorialStage
 {
 	TUTORIAL_INVALID = -1,
@@ -23,6 +25,7 @@ enum TutorialStage
 	
 	TS_COUNT
 };
+#endif
 
 methodmap CPFTutorialController
 {

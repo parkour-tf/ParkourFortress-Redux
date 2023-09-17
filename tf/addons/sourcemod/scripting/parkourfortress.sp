@@ -62,7 +62,7 @@ All code is licensed under the GNU General Public License, version 3.
 #include "weapons/stocks.sp"
 #include "weapons/pickupweapons.sp"
 #include "weapons/config.sp"
-#include "smmem.inc"
+
 
 public Plugin myinfo =
 {
@@ -598,6 +598,7 @@ public void OnSuccessfulTeleport(int iClient)
 public void OnMapStart()
 {
 	CPFSoundController.Init();
+	CPFTutorialController.Init();
 	PrecacheModels();
 	ClearTutorials();
 	Weapons_Refresh();
@@ -888,9 +889,10 @@ public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hPa
     
     char sClassname[64];
     Address ClassnameAddress = DHookGetParamAddress(hParams, 1);
-    
-    PtrToString(view_as<int>(ClassnameAddress), sClassname, sizeof(sClassname));
-    
+
+    for(int i = 0; i < sizeof(sClassname); ++i)
+        sClassname[i] = view_as<int>(LoadFromAddress(view_as<Address>(ClassnameAddress + i), NumberType_Int8));
+
     int iIndex = DHookGetParamObjectPtrVar(hParams, 3, 4, ObjectValueType_Int) & 0xFFFF;
     
     Action iAction = OnGiveNamedItem(sClassname, iIndex);
@@ -1084,6 +1086,7 @@ void InitOther()
 	
 	CPFSoundController.Init();
 	CPFViewController.Init();
+	CPFTutorialController.Init();
 	ResetAirAccel();
 	
 	SDKHookClassname("trigger_stun", SDKHook_StartTouch, OnStartTouchTrigger);

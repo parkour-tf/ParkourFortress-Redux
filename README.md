@@ -35,8 +35,6 @@ TF2 Econ Data 0.16.6
 
 More Colors 1.9.1
 
-SM-Memory 1.3.1
-
 TF2Attributes
 
 ## Mapping
