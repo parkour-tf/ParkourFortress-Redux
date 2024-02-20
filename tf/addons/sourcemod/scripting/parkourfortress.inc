@@ -445,6 +445,15 @@ stock int abs(int x) { return (x<0) ? -x : x; }
 
 public bool TraceRayNoPlayers(int entity, int mask, any data) 
 {
+	if (0 < data <= MaxClients)
+	{
+		char sClassname[32];
+		GetEntityClassname(entity, sClassname, sizeof(sClassname));
+		
+		if (StrEqual(sClassname, "func_forcefield") && GetEntProp(entity, Prop_Data, "m_iTeamNum") == GetClientTeam(data))
+			return false;
+	}
+	
 	return !(entity == data || (entity >= 1 && entity <= MaxClients));
 }
 
@@ -461,7 +470,7 @@ public bool TraceRayOnlyThisPlayer(int entity, int mask, any data)
 
 public bool TraceEntityFilterSolid(int entity, int mask) 
 {
-	return entity > 33;
+	return entity > MaxClients;
 }
 
 stock void ResetCollisions(int iClient)

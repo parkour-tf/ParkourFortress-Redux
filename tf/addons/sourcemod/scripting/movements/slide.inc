@@ -138,7 +138,7 @@ methodmap CPFSlideHandler
 		vecTraceEnd[2] -= SLIDE_Z_OFFSET;
 		
 		/**** START TRACE ****/
-		TraceHullF.Start(vecEyePosition, vecTraceEnd, view_as<float>({-25.0, -25.0, 0.0 }), view_as<float>({ 25.0, 25.0, 2.0 }), MASK_PLAYERSOLID, TraceRayNoPlayers);
+		TraceHullF.Start(vecEyePosition, vecTraceEnd, view_as<float>({-25.0, -25.0, 0.0 }), view_as<float>({ 25.0, 25.0, 2.0 }), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 		/**** END TRACE ****/
 		if (!TRACE_GLOBAL.Hit)
 		{

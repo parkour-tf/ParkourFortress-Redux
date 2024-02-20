@@ -85,7 +85,7 @@ methodmap CPFVaultHandler
 		float vecEndPosition[3];
 		do
 		{
-			TraceHullF.Start(vecForwardDelta, vecForwardDelta, view_as<float>({-25.0, -25.0, 0.0}), view_as<float>({25.0, 25.0, 82.0}), MASK_PLAYERSOLID, TraceRayNoPlayers);
+			TraceHullF.Start(vecForwardDelta, vecForwardDelta, view_as<float>({-25.0, -25.0, 0.0}), view_as<float>({25.0, 25.0, 82.0}), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 			bVaultTraceHit = TRACE_GLOBAL.Hit;
 			
 			if (!bVaultTraceHit)

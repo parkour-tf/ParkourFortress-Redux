@@ -114,7 +114,7 @@ methodmap CPFClimbHandler
             float vAngles[3] = { 0.0, 180.0, 0.0 }, vEndPos[3], flBestYaw = 180.0, flShortestDist = 128.000001;
             
             for(int i; i < 4; i++, vAngles[1] -= 90.0) {
-                TR_TraceRayFilter(vecDestination, vAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceRayNoPlayers);
+                TR_TraceRayFilter(vecDestination, vAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceRayNoPlayers, iClient);
                 if(!TR_DidHit())
                     continue;
                 

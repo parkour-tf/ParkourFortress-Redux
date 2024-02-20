@@ -270,7 +270,7 @@ methodmap CPFZiplineHandler
 		CPFZiplineHandler.StartThink(iClient, false, vecClientOrigin, vecEndPoint, vecRopeVelocity, flScale, iTicksElapsed);
 		
 		/**** START TRACE ****/
-		TraceHullF hZipline = new TraceHullF(vecClientOrigin, vecEndPoint, view_as<float>({-24.0, -24.0, 0.0}), view_as<float>({24.0, 24.0, 65.0}), MASK_PLAYERSOLID, TraceRayNoPlayers);
+		TraceHullF hZipline = new TraceHullF(vecClientOrigin, vecEndPoint, view_as<float>({-24.0, -24.0, 0.0}), view_as<float>({24.0, 24.0, 65.0}), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 		if (hZipline.Hit)
 		{
 			// Safety trace hit something

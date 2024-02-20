@@ -254,7 +254,7 @@ methodmap CPFSpeedController
 			ForwardVector(vecEyeAngles, 24.35, vecEndPos);
 			AddVectors(vecEyePosition, vecEndPos, vecEndPos);
 			
-			TraceHullF.Start(vecEyePosition, vecEndPos, view_as<float>({-12.0, -12.0, -8.0 }), view_as<float>({ 12.0, 12.0, 0.0 }), MASK_PLAYERSOLID, TraceRayNoPlayers);
+			TraceHullF.Start(vecEyePosition, vecEndPos, view_as<float>({-12.0, -12.0, -8.0 }), view_as<float>({ 12.0, 12.0, 0.0 }), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 			if (flClientSpeed + (TICKRATE_STANDARD_FLOAT/GetTickRate() * SPEED_GAIN_FWD) > SPEED_MAX)
 			{
 				

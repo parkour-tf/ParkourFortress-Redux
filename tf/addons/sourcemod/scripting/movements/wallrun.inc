@@ -178,7 +178,7 @@ methodmap CPFWallrunHandler
 		vecRaisedOrigin[2] += WALLRUN_CEILING_CHECK;
 		
 		DrawBoundingBox(view_as<float>({-24.0, 24.0, 0.0}), view_as<float>({24.0, -24.0, 1.0}), vecRaisedOrigin);
-		TraceHullF hCeilingCheck = new TraceHullF(vecOrigin, vecRaisedOrigin, view_as<float>({-24.0, 24.0, 0.0}), view_as<float>({24.0, -24.0, 1.0}), MASK_PLAYERSOLID, TraceRayNoPlayers);
+		TraceHullF hCeilingCheck = new TraceHullF(vecOrigin, vecRaisedOrigin, view_as<float>({-24.0, 24.0, 0.0}), view_as<float>({24.0, -24.0, 1.0}), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 		bool bCeilingHit = hCeilingCheck.Hit;
 		delete hCeilingCheck;
 		
@@ -250,7 +250,7 @@ methodmap CPFWallrunHandler
 		//DebugOutput("CPFWallrunHandler::Wallrun --- g_flLastWallAngle[%N]: %.3f", iClient, g_WallrunData[iClient].Angle);
 		DrawVectorPoints(vecOrigin, vecEndHullPos, 25.0, {0, 50, 255, 255});
 		
-		TraceHullF hTrace = new TraceHullF(vecOrigin, vecEndHullPos, vecMins, vecMaxs, MASK_PLAYERSOLID, TraceRayNoPlayers);
+		TraceHullF hTrace = new TraceHullF(vecOrigin, vecEndHullPos, vecMins, vecMaxs, MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 		if (CPFWallrunHandler.IsValidWall(iClient, hTrace, vecPlaneNormal))
 		{
 			float vecAngles[3], flNextWallYaw, flAngleDiff;
@@ -383,7 +383,7 @@ methodmap CPFWallrunHandler
 		do
 		{	
 			/**** START TRACE ****/
-			TraceHullF.Start(vecStartHullPos, vecEndHullRotPos, VECMINS_WALLRUN, VECMAXS_WALLRUN, MASK_PLAYERSOLID, TraceRayNoPlayers);
+			TraceHullF.Start(vecStartHullPos, vecEndHullRotPos, VECMINS_WALLRUN, VECMAXS_WALLRUN, MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 			/**** END TRACE ****/
 			TRACE_GLOBAL.GetEndPosition(vecEndPosition);
 			DrawVectorPoints(vecOrigin, vecEndPosition, 10.0, {0, 255, 255, 255});
@@ -392,7 +392,7 @@ methodmap CPFWallrunHandler
 				DebugOutput("CPFWallrunHandler::Try --- Attempt (%i)", iAttempts);
 				
 				/**** START TRACE ****/
-				TraceRayF hCheckNormalStart = new TraceRayF(vecStartHullPos, vecEndHullRotPos, MASK_PLAYERSOLID, RayType_EndPoint, TraceRayNoPlayers);
+				TraceRayF hCheckNormalStart = new TraceRayF(vecStartHullPos, vecEndHullRotPos, MASK_PLAYERSOLID, RayType_EndPoint, TraceRayNoPlayers, iClient);
 				if (hCheckNormalStart.Hit && CPFWallrunHandler.IsValidWall(iClient, hCheckNormalStart, vecPlaneNormal))
 				{
 					flWallYaw = NormalToYaw(vecPlaneNormal, eSide);
@@ -410,7 +410,7 @@ methodmap CPFWallrunHandler
 						
 						
 						float vecHullStartHit[3];
-						TraceHullF hCheckHullStart = new TraceHullF(vecEyePosition, vecEndPosition, VECMINS_WALLRUN, VECMAXS_WALLRUN, MASK_PLAYERSOLID, TraceRayNoPlayers);
+						TraceHullF hCheckHullStart = new TraceHullF(vecEyePosition, vecEndPosition, VECMINS_WALLRUN, VECMAXS_WALLRUN, MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 						bool bCheckHullHit = hCheckHullStart.Hit;
 						if (bCheckHullHit)
 						{

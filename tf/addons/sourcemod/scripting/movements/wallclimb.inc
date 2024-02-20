@@ -115,7 +115,7 @@ methodmap CPFWallclimbHandler
 		vecEndPosition[2] += WALLCLIMB_CHECK_DISTANCE;
 		
 		/**** START TRACE ****/
-		TraceHullF hTrace = new TraceHullF(vecEyePosition, vecEndPosition, view_as<float>({-20.0, -20.0, 0.0}), view_as<float>({20.0, 20.0, 74.0}), MASK_PLAYERSOLID, TraceRayNoPlayers);
+		TraceHullF hTrace = new TraceHullF(vecEyePosition, vecEndPosition, view_as<float>({-20.0, -20.0, 0.0}), view_as<float>({20.0, 20.0, 74.0}), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 		bool bHit = hTrace.Hit;
 		delete hTrace;
 		/**** END TRACE ****/
@@ -155,7 +155,7 @@ methodmap CPFWallclimbHandler
 		AddVectors(vecEyePosition, vecForward, vecEndHullPos);
 		
 		/**** START TRACE ****/
-		TraceHullF hClimbTrace = new TraceHullF(vecEyePosition, vecEndHullPos, view_as<float>({-24.0, -24.0, -8.0}), view_as<float>({24.0, 24.0, 8.0}), MASK_PLAYERSOLID, TraceRayNoPlayers);
+		TraceHullF hClimbTrace = new TraceHullF(vecEyePosition, vecEndHullPos, view_as<float>({-24.0, -24.0, -8.0}), view_as<float>({24.0, 24.0, 8.0}), MASK_PLAYERSOLID, TraceRayNoPlayers, iClient);
 		hClimbTrace.GetEndPosition(vecEndPosition);
 		
 		float vecBuffer[3];
