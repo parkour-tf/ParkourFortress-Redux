@@ -123,7 +123,7 @@ methodmap CPFWallrunHandler
 		float vecAngles[3];
 		GetClientEyeAngles(iClient, vecAngles);
 		vecAngles[2] = 0.0;
-		TeleportEntity(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
+		PFTeleportPlayer(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
 		
 		switch (eCause)
 		{
