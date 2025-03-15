@@ -19,6 +19,8 @@ Here are the movements and features added by this mod:
 
 ## Important Notes
 
+This version of the mod does NOT have updated Windows gamedata. Therefore this mod can only run on Linux.
+
 This version of the mod does NOT come with a timer. The maps are built for use with a proprietary timer that we don't have the authority to release, but it shouldn't be hard for a third party solution to be made with the same naming scheme for the baked in map triggers. See the mapping guide for more information.
 
 This version of the mod also does not come with the tutorial functional. We scrapped an implementation that used cookies to store the tutorial in favor of a MySQL implementation- which was an awful idea in hindsight, but it works, so we haven't reverted it. The tutorial code is still included, in case anyone wants to code it back in.

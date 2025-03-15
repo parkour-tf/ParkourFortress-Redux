@@ -34,35 +34,33 @@ All code is licensed under the GNU General Public License, version 3.
 #pragma semicolon 1
 #pragma newdecls required
 
-#include "parkourfortress.inc"
-
-#include "pftutorial.inc"
-#include "pfclient.inc"
-#include "pfstate.inc"
-#include "pfsound.inc"
-#include "pfviewmodel.inc"
-#include "pfspeed.inc"
-#include "objects/ziplines.inc"
-#include "objects/rails.inc"
-#include "objects/ropes.inc"
-#include "objects/pipes.inc"
-#include "objects/doors.inc"
-#include "movements/longjump.inc"
-#include "movements/roll.inc"
-#include "movements/climb.inc"
-#include "movements/slide.inc"
-#include "movements/wallrun.inc"
-#include "movements/hang.inc"
-#include "movements/zipline.inc"
-#include "movements/doorslam.inc"
-#include "movements/vault.inc"
-#include "movements/wallclimb.inc"
-#include "movements/grindable-rail.inc"
-#include "weapons/weapons.sp"
-#include "weapons/stocks.sp"
-#include "weapons/pickupweapons.sp"
-#include "weapons/config.sp"
-
+#include "../parkourfortress/shareddefs.sp"
+#include "../parkourfortress/pftutorial.sp"
+#include "../parkourfortress/pfclient.sp"
+#include "../parkourfortress/pfstate.sp"
+#include "../parkourfortress/pfsound.sp"
+#include "../parkourfortress/pfviewmodel.sp"
+#include "../parkourfortress/pfspeed.sp"
+#include "../parkourfortress/objects/ziplines.sp"
+#include "../parkourfortress/objects/rails.sp"
+#include "../parkourfortress/objects/ropes.sp"
+#include "../parkourfortress/objects/pipes.sp"
+#include "../parkourfortress/objects/doors.sp"
+#include "../parkourfortress/movements/longjump.sp"
+#include "../parkourfortress/movements/roll.sp"
+#include "../parkourfortress/movements/climb.sp"
+#include "../parkourfortress/movements/slide.sp"
+#include "../parkourfortress/movements/wallrun.sp"
+#include "../parkourfortress/movements/hang.sp"
+#include "../parkourfortress/movements/zipline.sp"
+#include "../parkourfortress/movements/doorslam.sp"
+#include "../parkourfortress/movements/vault.sp"
+#include "../parkourfortress/movements/wallclimb.sp"
+#include "../parkourfortress/movements/grindable-rail.sp"
+#include "../parkourfortress/weapons/weapons.sp"
+#include "../parkourfortress/weapons/stocks.sp"
+#include "../parkourfortress/weapons/pickupweapons.sp"
+#include "../parkourfortress/weapons/config.sp"
 
 public Plugin myinfo =
 {
@@ -891,7 +889,7 @@ public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hPa
     Address ClassnameAddress = DHookGetParamAddress(hParams, 1);
 
     for(int i = 0; i < sizeof(sClassname); ++i)
-        sClassname[i] = view_as<int>(LoadFromAddress(view_as<Address>(ClassnameAddress + i), NumberType_Int8));
+        sClassname[i] = view_as<int>(LoadFromAddress(view_as<Address>(view_as<int>(ClassnameAddress) + i), NumberType_Int8));
 
     int iIndex = DHookGetParamObjectPtrVar(hParams, 3, 4, ObjectValueType_Int) & 0xFFFF;
     
