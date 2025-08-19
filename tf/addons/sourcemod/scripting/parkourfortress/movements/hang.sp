@@ -1,8 +1,3 @@
-#if defined DONOTDEFINE
-	// Just a fix so BasicPawn can see my includes
-	#include "..\parkourfortress.sp"
-#endif
-
 #if defined _MOVEMENTS_HANG_INCLUDED
 	#endinput
 #endif
