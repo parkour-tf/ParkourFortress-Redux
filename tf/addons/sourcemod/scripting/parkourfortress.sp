@@ -17,7 +17,6 @@ All code is licensed under the GNU General Public License, version 3.
 
 #define PLUGIN_VERSION		"1.01p Needle Release Edition"
 
-#define TF_MAXPLAYERS		34	//32 clients + 1 for 0/world/console + 1 for replay/SourceTV
 #define WEAPON_FISTS 		5
 
 #include <sourcemod>

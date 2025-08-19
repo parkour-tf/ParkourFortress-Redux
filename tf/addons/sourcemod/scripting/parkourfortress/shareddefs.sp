@@ -24,7 +24,7 @@ Address g_pPatchLocation;
 bool g_bLate;
 bool g_bMapLoaded;
 
-bool g_bTutorialFetched[TF_MAXPLAYERS];
+bool g_bTutorialFetched[MAXPLAYERS + 1];
 
 Handle g_hHookGiveNamedItem;
 Handle g_hSDKEquipWearable;
@@ -37,16 +37,16 @@ Handle g_hSDKAccelerate;
 Handle g_hSDKGetMaxAmmo;
 Handle g_hHookSetWinningTeam;
 
-Handle g_hUnlockPlayerTimer[TF_MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
+Handle g_hUnlockPlayerTimer[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
 
-int g_iHookIdGiveNamedItem[TF_MAXPLAYERS];
+int g_iHookIdGiveNamedItem[MAXPLAYERS + 1];
 int g_iTEBeams;
 int g_iRestoreData;
 
-float g_flAirAccel[TF_MAXPLAYERS] = {10.0, ...};
+float g_flAirAccel[MAXPLAYERS + 1] = {10.0, ...};
 float g_flStockAirAccel;
 
-float g_flAccel[TF_MAXPLAYERS] = {10.0, ...};
+float g_flAccel[MAXPLAYERS + 1] = {10.0, ...};
 float g_flStockAccel;
 
 const float g_flMaxSpeedVal = 5200.0;

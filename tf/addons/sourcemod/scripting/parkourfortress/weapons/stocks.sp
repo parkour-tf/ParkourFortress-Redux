@@ -371,7 +371,7 @@ stock void TF2_SwitchToSlot(int iClient, int iSlot)
 	if (!IsValidClient(iClient) || iClient < 1)
 		return;
 	int iWeapon = TF2_GetItemInSlot(iClient, WeaponSlot_Melee);
-	if (iWeapon > TF_MAXPLAYERS)
+	if (iWeapon > MaxClients)
 	{
 		char sClassname[128];
 		if (!GetEntityClassname(iWeapon, sClassname, sizeof(sClassname))) return;
@@ -389,7 +389,7 @@ stock void CheckClientWeapons(int iClient)
 	for (int iSlot = WeaponSlot_Primary; iSlot <= WeaponSlot_BuilderEngie; iSlot++)
 	{
 		iWeapon = TF2_GetItemInSlot(iClient, iSlot);
-		if (iWeapon > TF_MAXPLAYERS-1)
+		if (iWeapon > MaxClients)
 		{
 			char sClassname[256];
 			GetEntityClassname(iWeapon, sClassname, sizeof(sClassname));

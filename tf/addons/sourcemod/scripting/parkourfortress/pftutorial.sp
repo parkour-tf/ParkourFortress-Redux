@@ -8,7 +8,7 @@
 #endif
 #define _PFTUTORIAL_INCLUDED
 
-Handle hTutorialTimer[TF_MAXPLAYERS + 1] = { INVALID_HANDLE, ... };
+Handle hTutorialTimer[MAXPLAYERS + 1] = { INVALID_HANDLE, ... };
 
 enum TutorialStage
 {
