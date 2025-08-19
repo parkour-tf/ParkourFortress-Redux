@@ -111,7 +111,7 @@ methodmap CPFPipe < ArrayList
 			if (flAngle > 360.0 || flAngle < 0.0)
 				SetFailState("CPFPipe.Angle.set --- Invalid Angle passed to pipe. Angle: %f", flAngle);
 			
-			view_as<float>(this.Set(NEAREST_WALL_ANG, flAngle));
+			this.Set(NEAREST_WALL_ANG, flAngle);
 		}
 	}
 };

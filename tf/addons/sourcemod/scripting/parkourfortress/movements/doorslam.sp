@@ -13,7 +13,7 @@ static int g_iActionCounter[MAXPLAYERS + 1];
 
 const int DOORBOOST_TICKS = 20;
 const float DOORBOOST_DISTANCE = 6000.0; // Squared value of actual door distance
-stock const char DOOR_OPENER_TARGETNAME[6] = "closer";
+stock const char DOOR_OPENER_TARGETNAME[] = "closer";
 
 methodmap CPFDoorHandler
 {

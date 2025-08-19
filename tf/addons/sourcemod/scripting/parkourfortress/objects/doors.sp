@@ -45,7 +45,7 @@ static const char g_strDoorModels[DOORMODEL_COUNT][] =
 };
 
 const float DOOR_OPEN_SPEED = 10000.0;
-stock const char DOOR_CLOSE_DELAY[3] = "3.0";
+stock const char DOOR_CLOSE_DELAY[] = "3.0";
 
 methodmap CPFDoor < ArrayList
 {
