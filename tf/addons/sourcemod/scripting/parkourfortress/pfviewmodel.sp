@@ -408,7 +408,7 @@ int CreateProxyEntity(int iClient, int iProp)
 	
 	SetEFlags(iEntity, EF_BONEMERGE|EF_BONEMERGE_FASTCULL|EF_PARENT_ANIMATES|EF_NODRAW);
 
-	if (IsValidEntity(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy)))
+	if (IsValidEntity(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy)) && EntRefToEntIndex(g_ViewmodelData[iClient].Proxy) > 0)
 	{
 		SDKUnhook(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy), SDKHook_SetTransmit, OnSetTransmitProxy);
 		RemoveEntity(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy));
