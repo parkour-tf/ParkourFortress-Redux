@@ -306,7 +306,7 @@ methodmap CPFSpeedController
 	
 	public static void Init()
 	{
-		for (int i = 1; i < MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			CPFSpeedController.SetBoost(i, false);
 			CPFSpeedController.SetSpeed(i, SPEED_BASE);

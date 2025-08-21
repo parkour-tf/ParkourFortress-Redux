@@ -342,7 +342,7 @@ methodmap CPFZiplineHandler
 		if (!CPFRopeController.Total())
 			return;
 		
-		for (int i = 1; i < MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsValidClient(i) || !IsPlayerAlive(i) || GetClientButtons(i) & IN_DUCK || CPFStateController.Get(i) != State_None || g_bZiplineCooldown[i])
 				continue;

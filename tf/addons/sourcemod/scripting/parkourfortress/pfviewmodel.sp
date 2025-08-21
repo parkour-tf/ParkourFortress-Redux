@@ -186,7 +186,7 @@ methodmap CPFViewController
 
 	public static void KillAll()
 	{
-		for (int iClient = 1; iClient < MaxClients; iClient++)
+		for (int iClient = 1; iClient <= MaxClients; iClient++)
 		{
 			CPFViewController.Kill(iClient);
 		}

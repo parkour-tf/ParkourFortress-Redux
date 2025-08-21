@@ -713,7 +713,7 @@ methodmap CPFRailHandler
 		if (!CPFRopeController.Total(true))
 			return;
 
-		for (int i = 1; i < MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsValidClient(i) || !IsPlayerAlive(i) || GetClientButtons(i) & IN_JUMP || CPFStateController.Get(i) != State_None || g_bRailCooldown[i])
 				continue;

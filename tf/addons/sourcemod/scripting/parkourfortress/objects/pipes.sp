@@ -188,7 +188,7 @@ methodmap CPFPipeController
 		g_hPipeControl = new ArrayList();
 		g_hClimbableToPipe = new StringMap();
 		
-		for (int i = 1; i < MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 			g_hClientPipe[i] = CPFPIPE_INVALID;
 		
 		SDKHookClassname("trigger_multiple", SDKHook_StartTouch, OnStartTouchTrigger);

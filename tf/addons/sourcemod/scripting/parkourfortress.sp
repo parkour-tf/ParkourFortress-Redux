@@ -250,11 +250,11 @@ public Action BlockCYOA(int client, const char[] command, int argc)
 void ResetAirAccel()
 {
 	g_flStockAirAccel = g_cvarAirAcceleration.FloatValue;
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 		g_flAirAccel[i] = g_flStockAirAccel;
 	
 	g_flStockAccel = g_cvarAcceleration.FloatValue;
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 		g_flAccel[i] = g_flStockAccel;
 }
 
@@ -263,7 +263,7 @@ public void OnPluginEnd()
 #if defined _PFVIEWMODEL_INCLUDED
 	CPFViewController.KillAll();
 #endif
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsValidClient(i)) continue;
 		SDKUnhook(i, SDKHook_PreThink, OnPreThink);
@@ -279,7 +279,7 @@ public void Mapvote_OnMapsLoaded()
 {
 	g_ePFCollisionGroup = (g_cvarPvP.BoolValue) ? COLLISION_GROUP_PLAYER : COLLISION_GROUP_DEBRIS_TRIGGER;
 	
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (CPFStateController.Get(i) == State_None)
 			SetCollisionGroup(i, g_ePFCollisionGroup);
@@ -604,7 +604,7 @@ public void OnMapStart()
 
 void ClearTutorials()
 {
-	for (int i = 0; i < MaxClients + 1; i++)
+	for (int i = 0; i <= MaxClients + 1; i++)
 		g_bTutorialFetched[i] = false;
 }
 
@@ -1076,7 +1076,7 @@ stock int SDK_GetEquippedWearable(int iClient, int iSlot)
 
 void InitOther()
 {
-	for(int iClient = 1; iClient < MaxClients + 1; iClient++) {
+	for(int iClient = 1; iClient <= MaxClients + 1; iClient++) {
 		if(IsValidClient(iClient))
 			OnClientPutInServer(iClient);
 	}
@@ -1130,7 +1130,7 @@ void InitMovements()
 		CPFTraceur.Init();
 		CPFSpeedController.Init();
 		
-		for (int i = 1; i < MaxClients; i++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsValidClient(i)) continue;
 			SDKUnhook(i, SDKHook_PreThink, OnPreThink);
@@ -1260,7 +1260,7 @@ public Action OnRoundEnd(Event hEvent, const char[] strName, bool bDontBroadcast
 
 public void TF2_OnWaitingForPlayersEnd()
 {
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 		CPFRollHandler.Disengage(i);
 }
 
@@ -1988,7 +1988,7 @@ public void OnChangeAirAccel(ConVar cvarAirAccel, const char[] strOldValue, cons
 	g_flStockAirAccel = StringToFloat(strNewValue);
 	float flOldValue = StringToFloat(strOldValue);
 	
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (g_flAirAccel[i] == flOldValue)
 			g_flAirAccel[i] = g_flStockAirAccel;
@@ -2000,7 +2000,7 @@ public void OnChangeAccel(ConVar cvarAccel, const char[] strOldValue, const char
 	g_flStockAccel = StringToFloat(strNewValue);
 	float flOldValue = StringToFloat(strOldValue);
 	
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (g_flAccel[i] == flOldValue)
 			g_flAccel[i] = g_flStockAccel;

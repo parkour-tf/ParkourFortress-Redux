@@ -80,7 +80,7 @@ methodmap CPFTraceur
 	{
 		if (bLate)
 		{
-			for (int i = 1; i < MaxClients; i++)
+			for (int i = 1; i <= MaxClients; i++)
 				(CPFTraceur(i)).Spawn(true);
 		}
 	}
