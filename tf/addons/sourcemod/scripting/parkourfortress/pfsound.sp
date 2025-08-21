@@ -616,7 +616,7 @@ methodmap CPFSoundController
 
 public void PlayToAllButClient(int iClient, char[] sJingle)
 {
-	int iClients[31];
+	int iClients[MAXPLAYERS + 1];
 	int total;
 	int i;
 	
