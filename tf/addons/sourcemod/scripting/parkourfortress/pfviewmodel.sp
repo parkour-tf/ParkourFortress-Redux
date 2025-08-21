@@ -407,6 +407,12 @@ int CreateProxyEntity(int iClient, int iProp)
 	AcceptEntityInput(iEntity, "SetParent", g_ViewmodelData[iClient].TFViewmodel);
 	
 	SetEFlags(iEntity, EF_BONEMERGE|EF_BONEMERGE_FASTCULL|EF_PARENT_ANIMATES|EF_NODRAW);
+
+	if (IsValidEntity(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy)))
+	{
+		SDKUnhook(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy), SDKHook_SetTransmit, OnSetTransmitProxy);
+		RemoveEntity(EntRefToEntIndex(g_ViewmodelData[iClient].Proxy));
+	}
 	
 	SDKHook(iEntity, SDKHook_SetTransmit, OnSetTransmitProxy);
 	
