@@ -13,9 +13,7 @@ jobs:
           tar -xzf sourcemod.tar.gz
           rm sourcemod.tar.gz
           mv addons/sourcemod/scripting ./
-          mv $GITHUB_WORKSPACE/tf/addons/sourcemod/scripting/* ./*
+          rsync -a $GITHUB_WORKSPACE/tf/addons/sourcemod/scripting/* ./scripting
           rm -r addons
-          rm -r include
           rm -r cfg
-          rm -r extensions
-          spcomp parkourfortress.sp
+          ./scripting/spcomp64 scripting/parkourfortress.sp
