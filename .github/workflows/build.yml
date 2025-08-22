@@ -13,7 +13,6 @@ jobs:
           tar -xzf sourcemod.tar.gz
           rm sourcemod.tar.gz
           mv addons/sourcemod/scripting ./
-          mv include/* scripting/include
           mv $GITHUB_WORKSPACE/tf/addons/sourcemod/scripting ./
           rm -r addons
           rm -r include
