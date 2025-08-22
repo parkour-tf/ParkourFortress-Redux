@@ -1,0 +1,22 @@
+name: Build
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a multi-line script
+        run: |
+          wget -q $(wget -q -O - "http://www.sourcemod.net/downloads.php?branch=stable" | grep -oE -m1 "https://[a-z.]+/smdrop/[0-9.]+/sourcemod-(.*)-linux.tar.gz") -O sourcemod.tar.gz
+          tar -xzf sourcemod.tar.gz
+          rm sourcemod.tar.gz
+          mv addons/sourcemod/scripting ./
+          mv include/* scripting/include
+          mv $GITHUB_WORKSPACE/tf/addons/sourcemod/scripting ./
+          rm -r addons
+          rm -r include
+          rm -r cfg
+          rm -r extensions
+          spcomp parkourfortress.sp
