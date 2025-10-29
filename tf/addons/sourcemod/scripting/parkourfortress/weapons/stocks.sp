@@ -147,7 +147,8 @@ stock bool TF2_IsSlotClassname(int iClient, int iSlot, char[] sClassname)
 
 stock int TF2_GetSlotInItem(int iIndex, TFClassType nClass)
 {
-	/*int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
+#if LINUX_IA32
+	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
 	if (iSlot >= 0)
 	{
 		//Spy slots are a bit messy
@@ -157,9 +158,12 @@ stock int TF2_GetSlotInItem(int iIndex, TFClassType nClass)
 			if (iSlot == 4) iSlot = WeaponSlot_Secondary;	//Sapper
 			if (iSlot == 6) iSlot = WeaponSlot_InvisWatch;	//Invis Watch
 		}
-	}*/
-	
+	}
+
+	return iSlot;
+#else
 	return 0;
+#endif
 }
 
 ////////////////////////////////////////////////////////////
@@ -453,7 +457,8 @@ Action Timer_KillEntity(Handle hTimer, int iRef)
 //https://github.com/Mikusch/tfgo/blob/c6109ad9a2f04ac0267e0916145a8274c9f6662e/addons/sourcemod/scripting/tfgo/stocks.sp#L205-L237 :)
 stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 {
-	/*int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
+#if LINUX_IA32
+	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
 	if (iSlot >= 0)
 	{
 		// Econ reports wrong slots for Engineer and Spy
@@ -480,7 +485,10 @@ stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 				}
 			}
 		}
-	}*/
-	
+	}
+
+	return iSlot;
+#else
 	return 0;
+#endif
 }
