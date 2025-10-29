@@ -147,19 +147,19 @@ stock bool TF2_IsSlotClassname(int iClient, int iSlot, char[] sClassname)
 
 stock int TF2_GetSlotInItem(int iIndex, TFClassType nClass)
 {
-	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
+	/*int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
 	if (iSlot >= 0)
 	{
-		//Spy slots is a bit messy
+		//Spy slots are a bit messy
 		if (nClass == TFClass_Spy)
 		{
 			if (iSlot == 1) iSlot = WeaponSlot_Primary;	//Revolver
 			if (iSlot == 4) iSlot = WeaponSlot_Secondary;	//Sapper
 			if (iSlot == 6) iSlot = WeaponSlot_InvisWatch;	//Invis Watch
 		}
-	}
+	}*/
 	
-	return iSlot;
+	return 0;
 }
 
 ////////////////////////////////////////////////////////////
@@ -275,15 +275,13 @@ stock void TF2_RemoveAmmo(int iClient, int iSlot, int iAmmo)
 //
 ////////////////////////////////////////////////////////////
 
-stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = "", char[] sText = "")
+stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = "")
 {
-	/*if (!IsValidClient(iClient) || iClient > 0)
-		return;*/
-	
+#if LINUX_IA32
 	char sClassname[256];
 	TF2Econ_GetItemClassName(iIndex, sClassname, sizeof(sClassname));
 	TF2Econ_TranslateWeaponEntForClass(sClassname, sizeof(sClassname), TF2_GetPlayerClass(iClient));
-	
+
 	int iWeapon = CreateEntityByName(sClassname);
 	if (IsValidEntity(iWeapon))
 	{
@@ -306,24 +304,28 @@ stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = ""
 			int iCount = ExplodeString(sAttribs, " ; ", atts, 32, 32);
 			if (iCount > 1)
 				for (int i = 0; i < iCount; i+= 2)
-					TF2Attrib_SetByDefIndex(iWeapon, StringToInt(atts[i]), StringToFloat(atts[i+1]));
+					ServerCommand("sntc_attribcompat_setbyidx %d %s, 1.5", iClient, atts[i]);
 		}
 		
 		DispatchSpawn(iWeapon);
 		SetEntProp(iWeapon, Prop_Send, "m_bValidatedAttachedEntity", true);
 		
-		if (StrContains(sClassname, "tf_wearable") == 0)
-			SDK_EquipWearable(iClient, iWeapon);
-		else
-			EquipPlayerWeapon(iClient, iWeapon);
+		EquipPlayerWeapon(iClient, iWeapon);
 	}
-	
+
 	return iWeapon;
+#else
+	char sCommandResultBuf[256];
+	ServerCommandEx(sCommandResultBuf, sizeof(sCommandResultBuf), "snt_giveweapon %d %d \"%s\"", iClient, iIndex, 
+		sAttribs);
+	
+	return StringToInt(sCommandResultBuf);
+#endif
 }
 
-//Taken from STT
 stock void TF2_FlagWeaponDontDrop(int iWeapon, bool bVisibleHack = true)
 {
+#if LINUX_IA32
 	int iOffset = GetEntSendPropOffs(iWeapon, "m_Item", true);
 	if (iOffset <= 0)
 		return;
@@ -332,11 +334,12 @@ stock void TF2_FlagWeaponDontDrop(int iWeapon, bool bVisibleHack = true)
 	if (weaponAddress == Address_Null)
 		return;
 	
-	Address addr = view_as<Address>((view_as<int>(weaponAddress)) + iOffset + OFFSET_DONT_DROP); //Going to hijack CEconItemView::m_iInventoryPosition.
-	//Need to build later on an anti weapon drop, using OnEntityCreated or something...
+	//Going to hijack CEconItemView::m_iInventoryPosition.
+	Address addr = view_as<Address>((view_as<int>(weaponAddress)) + iOffset + OFFSET_DONT_DROP);
 	
 	StoreToAddress(addr, FLAG_DONT_DROP_WEAPON, NumberType_Int32);
 	if (bVisibleHack) SetEntProp(iWeapon, Prop_Send, "m_bValidatedAttachedEntity", 1);
+#endif
 }
 
 stock int TF2_GetItemInSlot(int iClient, int iSlot)
@@ -450,7 +453,7 @@ Action Timer_KillEntity(Handle hTimer, int iRef)
 //https://github.com/Mikusch/tfgo/blob/c6109ad9a2f04ac0267e0916145a8274c9f6662e/addons/sourcemod/scripting/tfgo/stocks.sp#L205-L237 :)
 stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 {
-	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
+	/*int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
 	if (iSlot >= 0)
 	{
 		// Econ reports wrong slots for Engineer and Spy
@@ -477,7 +480,7 @@ stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 				}
 			}
 		}
-	}
+	}*/
 	
-	return iSlot;
+	return 0;
 }

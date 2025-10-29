@@ -179,7 +179,8 @@ public Action Event_ResetPickup(Event event, const char[] name, bool dontBroadca
 }
 
 bool AttemptGrabItem(int iClient)
-{	
+{
+#if LINUX_IA32
 	if (!g_bCanPickup[iClient]) return false;
 	
 	int iTarget = GetClientEntityVisible(iClient, "prop_dynamic", g_cvarWeaponGrabDistance.FloatValue);
@@ -231,11 +232,16 @@ bool AttemptGrabItem(int iClient)
 			return true;
 		}
 	}
+
 	return false;
+#else
+	return false;
+#endif
 }
 
 void PickupWeapon(int iClient, Weapon wep, int iTarget)
 {
+#if LINUX_IA32
 	if (wep.sSound[0] == '\0')
 		EmitSoundToClient(iClient, "ui/item_heavy_gun_pickup.wav");
 	else
@@ -255,8 +261,8 @@ void PickupWeapon(int iClient, Weapon wep, int iTarget)
 		iSlot = TF2_GetItemSlot(wep.iIndex, nClass); //fallback if no slot provided
 	
 	if (GetWeaponType(iTarget) != WeaponType_Spawn
-	&& GetWeaponType(iTarget) != WeaponType_RareSpawn
-	&& GetWeaponType(iTarget) != WeaponType_StaticSpawn)
+		&& GetWeaponType(iTarget) != WeaponType_RareSpawn
+		&& GetWeaponType(iTarget) != WeaponType_StaticSpawn)
 	{
 		Weapon oldwep;
 		
@@ -374,6 +380,7 @@ void PickupWeapon(int iClient, Weapon wep, int iTarget)
 	Call_PushCell(iWeapon);
 	Call_PushCell(wep.nRarity);
 	Call_Finish();
+#endif
 }
 
 Action Timer_RegenWeapon(Handle timer, int iRef)

@@ -3,12 +3,17 @@
 #endif
 #define _PARKOURFORTRESS_INCLUDED
 
+#define WINDOWS_IA32 	0
+#define WINDOWS_X86_64 	0
+#define LINUX_IA32 		0
+#define LINUX_X86_64 	1
+
 #define ROPE_COMMAND1 "r_drawropes"
 #define ROPE_COMMAND2 "rope_rendersolid"
 
-#define ROPE_TOTAL 2
+#define ROPE_TOTAL 	2
 
-#define DEFAULT_MAXSPEED 520.0
+#define DEFAULT_MAXSPEED 	520.0
 
 char g_strRopeCommands[ROPE_TOTAL][32] = {
 	ROPE_COMMAND1, ROPE_COMMAND2
@@ -67,8 +72,10 @@ ConVar g_cvarWeaponMaxRare;
 ConVar g_cvarWeaponRareChance;
 ConVar g_cvarWeaponGrabDistance;
 
+#if LINUX_IA32
 ConVar g_cvarAirAcceleration;
 ConVar g_cvarAcceleration;
+#endif
 
 Cookie g_cookieMusic;
 Cookie g_cookieMusicVolume;
@@ -822,7 +829,7 @@ bool HasAnyAmmo(int iClient, int iWeapon)
 	if (!IsValidEntity(iWeapon) || !IsValidClient(iClient)) return false;
 	char sSlot[16];
 	int iItemDefinitionIndex = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
-	if (TF2Econ_GetItemDefinitionString(iItemDefinitionIndex, "item_slot", sSlot, sizeof(sSlot)))
+	/*if (TF2Econ_GetItemDefinitionString(iItemDefinitionIndex, "item_slot", sSlot, sizeof(sSlot)))
 	{
 		if (!StrEqual(sSlot, "melee", false))
 		{
@@ -833,7 +840,7 @@ bool HasAnyAmmo(int iClient, int iWeapon)
 			else
 				return ((GetEntProp(iWeapon, Prop_Send, "m_iClip1") > 0) || TF2_GetAmmo(iClient, iWeapon, false));
 		}
-	}
+	}*/
 	return true;
 }
 
