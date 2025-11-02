@@ -2028,11 +2028,14 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons)
 			SetEntProp(iClient, Prop_Send, "m_iAirDash", 0);
 		}
 		
-		ServerCommand("sntc_attribcompat_setbyname %d \"increased jump height\", 1.5", iClient);
+		if (CommandExists("compat_setattrib"))
+		{
+			ServerCommand("compat_setattrib %d 326 1.5", GetClientUserId(iClient));
+		}
 	}
-	else if (CommandExists("sntc_attribcompat_setbyname"))
+	else if (CommandExists("compat_setattrib"))
 	{
-		ServerCommand("sntc_attribcompat_setbyname %d \"increased jump height\", 1.0", iClient);
+		ServerCommand("compat_setattrib %d 326 1.0", iClient);
 	}
 	
 	if (CPFStateController.HasFlags(iClient, SF_STRIPHOOKSHOT) && (iButtons & IN_ATTACK))
