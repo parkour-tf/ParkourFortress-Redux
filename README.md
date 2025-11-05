@@ -47,14 +47,21 @@ Serafeline (Jon S.), oWave (Tobias K.)
 ### Project Team
 
 **Programming Lead** - Serafeline (Jon S.)
+
 **Programming Support** - Nami (Nami), oWave (Tobias K.), Lucas Nimny (Tyler S.), NotPaddy (Patric O.), Mikusch (Norman M.), Horiuchi (Ben L.)
+
 **Assets Lead** - Beepin (Nate B.)
+
 **Assets Support** - Sunmane/JJ (Sean C.)
+
 **Tutorial Art** - Ben Sadfleck
+
 **Viewmodels** - Kirillian
 
 ### Honorable Mentions
 
 **SLAG Parkour Fortress** - MekuCube (Jonas K.), Werbad, Vincentor, Lampenpam, Scarness, Turtlez (Daryn M.)
+
 **Proof-of-Concept Development Support** - Muffinoota (Ian M.), Leechertyper
+
 **Post Development Support** - Bradasparky
