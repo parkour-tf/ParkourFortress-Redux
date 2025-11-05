@@ -22,13 +22,15 @@ All code is licensed under the GNU General Public License, version 3.
 #include <sourcemod>
 #include <sdkhooks>
 #include <tf2>
-#include <tf2attributes>
 #include <tf2_stocks>
 #include <clientprefs>
 #include <tracerayex>
-#include <dhooks>
 #include <morecolors>
+
+#if defined LINUX_IA32
+#include <tf2attributes>
 #include <tf_econ_data>
+#endif
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -106,9 +108,6 @@ public void OnPluginStart()
 	g_cvarViewmodels = CreateConVar("pf_viewmodels", "1", "Enable viewmodels", 0, true, 0.0, true, 1.0);
 	g_cvarWallrunTraces = CreateConVar("pf_wallrun_traces", "10", "How many traces should wallruns cast?", 0, true, 8.0, true, 90.0);
 	
-	g_cvarAirAcceleration = FindConVar("sv_airaccelerate");
-	g_cvarAcceleration = FindConVar("sv_accelerate");
-	
 	g_cvarWeaponRespawn = CreateConVar("pf_weapon_respawntime", "60.0", "Max time for weapons to respawn if respawntime_random is on, otherwise hard value for respawn period", 0, true, 1.0, false);
 	g_cvarWeaponRespawnMin = CreateConVar("pf_weapon_respawntime_min", "10.0", "If respawntime_random is on, minimum time for weapons to respawn after being picked up", 0, true, 1.0, false);
 	g_cvarWeaponRespawnRandom = CreateConVar("pf_weapon_respawntime_random", "1", "Weapons respawn in a time period between respawntime_min and respawntime", 0, true, 0.0, true, 1.0);
@@ -119,8 +118,6 @@ public void OnPluginStart()
 	g_cvarPvP.AddChangeHook(OnChangePvP);
 	g_cvarWeaponRespawn.AddChangeHook(OnWeaponRespawnSet);
 	g_cvarWeaponRespawnMin.AddChangeHook(OnWeaponRespawnMinSet);
-	g_cvarAirAcceleration.AddChangeHook(OnChangeAirAccel);
-	g_cvarAcceleration.AddChangeHook(OnChangeAccel);
 
 	g_cookieTutorialStage = new Cookie("tutorialprogress", "How far along you are in the tutorial", CookieAccess_Protected);
 	g_cookieLerp = new Cookie("parkourlerp", "Enable camera tilt", CookieAccess_Protected);
@@ -245,17 +242,6 @@ public void OnWeaponRespawnMinSet(ConVar cvarMin, const char[] strOldValue, cons
 public Action BlockCYOA(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
-}
-
-void ResetAirAccel()
-{
-	g_flStockAirAccel = g_cvarAirAcceleration.FloatValue;
-	for (int i = 1; i <= MaxClients; i++)
-		g_flAirAccel[i] = g_flStockAirAccel;
-	
-	g_flStockAccel = g_cvarAcceleration.FloatValue;
-	for (int i = 1; i <= MaxClients; i++)
-		g_flAccel[i] = g_flStockAccel;
 }
 
 public void OnPluginEnd()
@@ -797,40 +783,14 @@ void InitSDK()
 	PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 	g_hSDKGetBaseEntity = EndPrepSDKCall();
 
-	//This hook calls when someone won a round
-	int iOffset = GameConfGetOffset(hGameData, "CTeamplayRoundBasedRules::SetWinningTeam"); 
-	g_hHookSetWinningTeam = DHookCreate(iOffset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore);
-	DHookAddParam(g_hHookSetWinningTeam, HookParamType_Int);
-	DHookAddParam(g_hHookSetWinningTeam, HookParamType_Int);
-	DHookAddParam(g_hHookSetWinningTeam, HookParamType_Bool);
-	DHookAddParam(g_hHookSetWinningTeam, HookParamType_Bool);
-	DHookAddParam(g_hHookSetWinningTeam, HookParamType_Bool);
-	DHookAddParam(g_hHookSetWinningTeam, HookParamType_Bool);
-
+#if defined LINUX_IA32
 	iOffset = GameConfGetOffset(hGameData, "CTFPlayer::GiveNamedItem"); 
 	g_hHookGiveNamedItem = DHookCreate(iOffset, HookType_Entity, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_CharPtr);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_Int);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_ObjectPtr);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_Bool);
-	
-	char strBuf[4];
-	hGameData.GetKeyValue("CGameMovement::player", strBuf, sizeof(strBuf));
-	offsets.player = StringToInt(strBuf);
-	
-	g_hSDKAirAccelerate = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_Address);
-	DHookSetFromConf(g_hSDKAirAccelerate, hGameData, SDKConf_Signature, "CGameMovement::AirAccelerate");
-	DHookAddParam(g_hSDKAirAccelerate, HookParamType_VectorPtr);
-	DHookAddParam(g_hSDKAirAccelerate, HookParamType_Float);
-	DHookAddParam(g_hSDKAirAccelerate, HookParamType_Float);
-	DHookEnableDetour(g_hSDKAirAccelerate, false, AirAccelerate);
-	
-	g_hSDKAccelerate = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_Address);
-	DHookSetFromConf(g_hSDKAccelerate, hGameData, SDKConf_Signature, "CGameMovement::Accelerate");
-	DHookAddParam(g_hSDKAccelerate, HookParamType_VectorPtr);
-	DHookAddParam(g_hSDKAccelerate, HookParamType_Float);
-	DHookAddParam(g_hSDKAccelerate, HookParamType_Float);
-	DHookEnableDetour(g_hSDKAccelerate, false, Accelerate);
+#endif
 
 	StartPrepSDKCall(SDKCall_Player);
 	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CTFPlayer::GetMaxAmmo");
@@ -875,6 +835,7 @@ void InitSDK()
 	delete hGameData;
 }
 
+#if defined LINUX_IA32
 public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hParams)
 {
     // Block if one of the pointers is null
@@ -914,35 +875,7 @@ public void DHook_OnGiveNamedItemRemoved(int iHookId)
 		}
 	}
 }
-
-public MRESReturn AirAccelerate(Address pThis, Handle hParams)
-{
-	DHookSetParam(hParams, 3, g_flAirAccel[view_as<CGameMovement>(pThis).player]);
-	return MRES_ChangedOverride;
-}
-
-public MRESReturn Accelerate(Address pThis, Handle hParams)
-{
-	DHookSetParam(hParams, 3, g_flAccel[view_as<CGameMovement>(pThis).player]);
-	return MRES_ChangedOverride;
-}
-
-void SetPlayerAirAccel(int iClient, float flValue)
-{
-	if (flValue > 0.0)
-		g_flAirAccel[iClient] = flValue;
-}
-
-float GetPlayerAirAccel(int iClient)
-{
-	return g_flAirAccel[iClient];
-}
-
-void SetPlayerAccel(int iClient, float flValue)
-{
-	if (flValue > 0.0)
-		g_flAccel[iClient] = flValue;
-}
+#endif
 
 // Thanks FlaminSarge
 void ApplyMaxSpeedPatch()
@@ -1006,52 +939,6 @@ Action OnGiveNamedItem(char[] sClassname, int iItem)
 	return Plugin_Handled; // get outta here
 }
 
-public MRESReturn CBaseEntity_KeyValue(int iEnt, Handle hParams)
-{
-	if (!g_bMapLoaded || !IsValidEntity(iEnt))
-		return MRES_Ignored;
-
-	char strClassname[128];
-	if (!GetEntityClassname(iEnt, strClassname, sizeof(strClassname)))
-		return MRES_Ignored;
-	
-	if (!(StrEqual(strClassname, "trigger_multiple") || !strncmp("prop_", strClassname, 5) || StrEqual(strClassname, "move_rope")))
-		return MRES_Ignored;
-
-	char strKey[128], strValue[128];
-	DHookGetParamString(hParams, 1, strKey, sizeof(strKey));
-	DHookGetParamString(hParams, 2, strValue, sizeof(strValue));
-	
-	if (StrEqual(strKey, "targetname") && !strncmp("trigger_", strClassname, 8))
-	{
-		char strTargetname[256];
-		GetEntPropString(iEnt, Prop_Data, "m_iName", strTargetname, sizeof(strTargetname));
-		if (StrEqual("climbable", strTargetname))
-		{
-			CPFPipe hPipe = new CPFPipe(iEnt);
-			if (hPipe != null)
-				CPFPipeController.AddPipe(hPipe);
-		}
-	}
-	else if (StrEqual(strKey, "modelname") && !strncmp("prop_", strClassname, 5) && CPFDoorController.IsDoor(iEnt))
-	{
-		CPFDoor hDoor = new CPFDoor(iEnt);
-		if (hDoor != null)
-			CPFDoorController.AddDoor(hDoor);
-	}
-	else if (StrEqual(strKey, "targetname") && StrEqual("move_rope", strClassname) && CPFRopeController.IsRopeStart(iEnt))
-	{
-		CPFRope hRope = new CPFRope(iEnt);
-		if (hRope != null)
-		{
-			CPFRopeController.AddRope(hRope);
-			RequestFrame(ProcessRadialsPostKeyValue);
-		}
-	}
-	
-	return MRES_Ignored;
-}
-
 stock int SDK_GetMaxAmmo(int iClient, int iSlot)
 {
 	if (g_hSDKGetMaxAmmo != null)
@@ -1084,7 +971,6 @@ void InitOther()
 	CPFSoundController.Init();
 	CPFViewController.Init();
 	CPFTutorialController.Init();
-	ResetAirAccel();
 	
 	SDKHookClassname("trigger_stun", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_once", SDKHook_StartTouch, OnStartTouchTrigger);
@@ -1161,11 +1047,10 @@ public void OnClientPostAdminCheck(int iClient)
 {
 	if (!IsValidClient(iClient)) return;
 	
-	SetPlayerAirAccel(iClient, g_cvarAirAcceleration.FloatValue);
-	SetPlayerAccel(iClient, g_cvarAcceleration.FloatValue);
-	
+#if defined LINUX_IA32
 	if (!IsFakeClient(iClient))
 		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, true, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);
+#endif
 }
 
 public void OnConfigsExecuted()
@@ -1276,12 +1161,12 @@ public Action OnWeaponSwitch(int iClient, int iNewWeapon)
 			CPFStateController.RemoveFlags(iClient, SF_STRIPHOOKSHOT);
 		}
 		
-		if (!HasAnyAmmo(iClient, iCurWeapon)) //(!SDK_GetAnyAmmo(iCurWeapon))
+		/*if (!HasAnyAmmo(iClient, iCurWeapon)) //(!SDK_GetAnyAmmo(iCurWeapon))
 		{
 			DebugOutput("killing weapon %i", iCurWeapon);
 			RemovePlayerItem(iClient, iCurWeapon);
 			AcceptEntityInput(iCurWeapon, "Kill");
-		}
+		}*/
 	}
 	
 	if (!IsValidEntity(iNewWeapon)) return Plugin_Continue;
@@ -1389,7 +1274,7 @@ public void OnClientDisconnect(int iClient)
 	
 	if (g_iHookIdGiveNamedItem[iClient])
 	{
-		DHookRemoveHookID(g_iHookIdGiveNamedItem[iClient]);
+		//RemoveHookID(g_iHookIdGiveNamedItem[iClient]);
 		g_iHookIdGiveNamedItem[iClient] = 0;
 	}
 		
@@ -1647,24 +1532,6 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 	GetEntPropString(iEnt, Prop_Data, "m_iName", strTargetname, sizeof(strTargetname));
 	
 	PFState eState = CPFStateController.Get(iClient);
-	
-	if (StrContains(strTargetname, "airaccelerate") > -1)
-	{
-		float flValue = float(StringToInt(strTargetname));
-		if (flValue > 0.0)
-			SetPlayerAirAccel(iClient, flValue);
-		
-		return Plugin_Continue;
-	}
-	else if (StrContains(strTargetname, "accelerate") > -1)
-	{
-		ReplaceString( strTargetname, sizeof(strTargetname), "accelerate", "" );
-		float flValue = float(StringToInt(strTargetname));
-		if (flValue > 0.0)
-			SetPlayerAccel(iClient, flValue);
-		
-		return Plugin_Continue;
-	}
 	
 	if (StrEqual("lockcontrols", strTargetname))
 	{
@@ -1983,30 +1850,6 @@ Action StartHealPlayerRepeat(Handle hTimer, int iUserID)
 	}
 }
 
-public void OnChangeAirAccel(ConVar cvarAirAccel, const char[] strOldValue, const char[] strNewValue)
-{
-	g_flStockAirAccel = StringToFloat(strNewValue);
-	float flOldValue = StringToFloat(strOldValue);
-	
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (g_flAirAccel[i] == flOldValue)
-			g_flAirAccel[i] = g_flStockAirAccel;
-	}
-}
-
-public void OnChangeAccel(ConVar cvarAccel, const char[] strOldValue, const char[] strNewValue)
-{
-	g_flStockAccel = StringToFloat(strNewValue);
-	float flOldValue = StringToFloat(strOldValue);
-	
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (g_flAccel[i] == flOldValue)
-			g_flAccel[i] = g_flStockAccel;
-	}
-}
-
 public void OnPostThink(int iClient)
 {
 	if (!IsValidClient(iClient)) return;
@@ -2073,11 +1916,14 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons)
 			SetEntProp(iClient, Prop_Send, "m_iAirDash", 0);
 		}
 		
-		TF2Attrib_SetByName(iClient, "increased jump height", 1.5);
+		if (CommandExists("compat_setattrib"))
+		{
+			ServerCommand("compat_setattrib %d 326 1.5", GetClientUserId(iClient));
+		}
 	}
-	else
+	else if (CommandExists("compat_setattrib"))
 	{
-		TF2Attrib_SetByName(iClient, "increased jump height", 1.0);
+		ServerCommand("compat_setattrib %d 326 1.0", iClient);
 	}
 	
 	if (CPFStateController.HasFlags(iClient, SF_STRIPHOOKSHOT) && (iButtons & IN_ATTACK))
@@ -2094,7 +1940,7 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons)
 		}
 	}
 	if ((iButtons & IN_ATTACK2) && (CPFStateController.Get(iClient) != State_None 
-	&& CPFStateController.Get(iClient) != State_Slide && CPFStateController.Get(iClient) != State_Noclip))
+		&& CPFStateController.Get(iClient) != State_Slide && CPFStateController.Get(iClient) != State_Noclip))
 	{
 		if (PlayerHasRifleActive(iClient))
 		{
@@ -2116,14 +1962,11 @@ public void OnPreThink(int iClient)
 	const float DEATH_BY_FALL_DAMAGE = 5000.0;
 	/* Air velocity needed to run a hang think every tick */
 	const float AIRVEL_TO_HANG_THINK = 300.0;
-	/* Only run hang think once per this amount of ticks, if 
-   air velocity isn't higher than AIRVEL_TO_HANG THINK */
+	/* Only run hang think once per this amount of ticks, if air velocity isn't higher than AIRVEL_TO_HANG THINK */
 	const int TICKS_PER_HANG_THINK = 2;
-	/* If in wallclimb, maximum amount of ticks at which you'll 
-		vault rather than hang given a valid hang think. */
+	/* If in wallclimb, maximum amount of ticks at which you'll vault rather than hang given a valid hang think. */
 	const int TICK_MAX_TO_VAULT_FROM_HANG = 6;
-	/* If in wallclimb, maximum amount of ticks at which you'll
-		attempt to vault. */
+	/* If in wallclimb, maximum amount of ticks at which you'll attempt to vault. */
 	const int TICK_MAX_TO_VAULT = 4;
 	
 	int iButtonsNotHeld = CPFStateController.GetButtons(iClient);
@@ -2406,8 +2249,7 @@ public void OnPreThink(int iClient)
 
 void ProcessKeybinds(int iClient, int iButtons, int iButtonsNotHeld) //bool bPostHook = false
 {
-	/* Minimum horizontal speed required to register the 
-		start of a slide */
+	/* Minimum horizontal speed required to register the start of a slide */
 	const float HORIZONTAL_SPEED_TO_SLIDE = 200.0;
 	
 	if (iButtons & IN_ATTACK2 && CPFSpeedController.GetBoost(iClient) && CPFSpeedController.GetSpeed(iClient) >= SPEED_MAX && IsOnGround(iClient))
@@ -2438,9 +2280,5 @@ void ProcessKeybinds(int iClient, int iButtons, int iButtonsNotHeld) //bool bPos
 	{
 		CPFWallclimbHandler.Try(iClient);
 		DebugOutput("ProcessKeyBinds --- Tried Wallclimb for %N", iClient);
-	}
-	else if (iButtons && !(iButtons & IN_WALLCLIMB == IN_WALLCLIMB && !(iButtons & IN_MOVERIGHT) && !(iButtons & IN_MOVELEFT) && !(iButtons & IN_DUCK) && iButtonsNotHeld & IN_JUMP && IsOnGround(iClient)))
-	{
-		//DebugOutput("ProcessKeyBinds --- No Wallclimb for %N, %d %d %d %d %d %d", iClient, (iButtons & IN_WALLCLIMB == IN_WALLCLIMB), !(iButtons & IN_MOVERIGHT), !(iButtons & IN_MOVELEFT), !(iButtons & IN_DUCK), iButtonsNotHeld & IN_JUMP, IsOnGround(iClient));
 	}
 }
