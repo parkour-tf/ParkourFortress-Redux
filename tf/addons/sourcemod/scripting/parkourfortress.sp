@@ -1114,10 +1114,34 @@ public void Tutorial_OnGetPlayerStage(int iClient, TutorialStage eStage)
 
 public void GiveFists(int iClient)
 {
-	int iWeapon = TF2_CreateAndEquipWeapon(iClient, WEAPON_FISTS, "1 ; 0.80");
-	if(!g_cvarPvP.BoolValue)
-		SetEntProp(iWeapon, Prop_Send, "m_iAccountID", GetSteamAccountID(iClient));
-	SetCollisionGroup(iWeapon, COLLISION_GROUP_NONE);
+	int iWeapon = CreateEntityByName("tf_weapon_fists");
+	if (IsValidEntity(iWeapon))
+	{
+		SetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex", WEAPON_FISTS);
+		SetEntProp(iWeapon, Prop_Send, "m_bInitialized", 1);
+		
+		//Allow quality / level override by updating through the offset.
+		char netClass[64];
+		GetEntityNetClass(iWeapon, netClass, sizeof(netClass));
+		SetEntData(iWeapon, FindSendPropInfo(netClass, "m_iEntityQuality"), 6);
+		SetEntData(iWeapon, FindSendPropInfo(netClass, "m_iEntityLevel"), 1);
+		
+		SetEntProp(iWeapon, Prop_Send, "m_iEntityQuality", 6);
+		SetEntProp(iWeapon, Prop_Send, "m_iEntityLevel", 1);
+
+		ServerCommand("compat_setattrib_ent %d %d %.2f", iWeapon, 1, 0.80);
+		
+		DispatchSpawn(iWeapon);
+		SetEntProp(iWeapon, Prop_Send, "m_bValidatedAttachedEntity", true);
+		
+		EquipPlayerWeapon(iClient, iWeapon);
+
+		if (!g_cvarPvP.BoolValue && iWeapon)
+		{
+			SetEntProp(iWeapon, Prop_Send, "m_iAccountID", GetSteamAccountID(iClient));
+			SetCollisionGroup(iWeapon, COLLISION_GROUP_NONE);
+		}
+	}
 }
 
 public Action OnInventoryPost(Event hEvent, const char[] strName, bool bDontBroadcast)
@@ -1571,6 +1595,11 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 	if (StrContains(strTargetname, "infinitejump") > -1 && CPFStateController.Get(iClient) != State_Falling)
 	{
 		CPFStateController.SetFlags(iClient, SF_INFINITEJUMP);
+
+		if (CommandExists("compat_setattrib"))
+		{
+			ServerCommand("compat_setattrib %d 326 1.5", GetClientUserId(iClient));
+		}
 		
 		return Plugin_Continue;
 	}
@@ -1646,6 +1675,11 @@ public Action OnEndTouchTrigger(int iEnt, int iClient)
 	if (StrContains(strTargetname, "infinitejump") > -1)
 	{
 		CPFStateController.RemoveFlags(iClient, SF_INFINITEJUMP);
+
+		if (CommandExists("compat_setattrib"))
+		{
+			ServerCommand("compat_setattrib %d 326 1.0", GetClientUserId(iClient));
+		}
 		
 		return Plugin_Continue;
 	}
@@ -1915,15 +1949,6 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons)
 		{
 			SetEntProp(iClient, Prop_Send, "m_iAirDash", 0);
 		}
-		
-		if (CommandExists("compat_setattrib"))
-		{
-			ServerCommand("compat_setattrib %d 326 1.5", GetClientUserId(iClient));
-		}
-	}
-	else if (CommandExists("compat_setattrib"))
-	{
-		ServerCommand("compat_setattrib %d 326 1.0", iClient);
 	}
 	
 	if (CPFStateController.HasFlags(iClient, SF_STRIPHOOKSHOT) && (iButtons & IN_ATTACK))
