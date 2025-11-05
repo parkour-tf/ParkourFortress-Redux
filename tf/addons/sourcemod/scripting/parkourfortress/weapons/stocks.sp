@@ -281,50 +281,12 @@ stock void TF2_RemoveAmmo(int iClient, int iSlot, int iAmmo)
 
 stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = "")
 {
-#if defined LINUX_IA32
-	char sClassname[256];
-	TF2Econ_GetItemClassName(iIndex, sClassname, sizeof(sClassname));
-	TF2Econ_TranslateWeaponEntForClass(sClassname, sizeof(sClassname), TF2_GetPlayerClass(iClient));
-
-	int iWeapon = CreateEntityByName(sClassname);
-	if (IsValidEntity(iWeapon))
-	{
-		SetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex", iIndex);
-		SetEntProp(iWeapon, Prop_Send, "m_bInitialized", 1);
-		
-		//Allow quality / level override by updating through the offset.
-		char netClass[64];
-		GetEntityNetClass(iWeapon, netClass, sizeof(netClass));
-		SetEntData(iWeapon, FindSendPropInfo(netClass, "m_iEntityQuality"), 6);
-		SetEntData(iWeapon, FindSendPropInfo(netClass, "m_iEntityLevel"), 1);
-		
-		SetEntProp(iWeapon, Prop_Send, "m_iEntityQuality", 6);
-		SetEntProp(iWeapon, Prop_Send, "m_iEntityLevel", 1);
-		
-		//Attribute shittery inbound
-		if (!StrEqual(sAttribs, ""))
-		{
-			char atts[32][32];
-			int iCount = ExplodeString(sAttribs, " ; ", atts, 32, 32);
-			if (iCount > 1)
-				for (int i = 0; i < iCount; i+= 2)
-					ServerCommand("sntc_attribcompat_setbyidx %d %s, 1.5", iClient, atts[i]);
-		}
-		
-		DispatchSpawn(iWeapon);
-		SetEntProp(iWeapon, Prop_Send, "m_bValidatedAttachedEntity", true);
-		
-		EquipPlayerWeapon(iClient, iWeapon);
-	}
-
-	return iWeapon;
-#else
-	char sCommandResultBuf[256];
-	ServerCommandEx(sCommandResultBuf, sizeof(sCommandResultBuf), "snt_giveweapon %d %d \"%s\"", iClient, iIndex, 
+	/*char sCommandResultBuf[256];
+	ServerCommandEx(sCommandResultBuf, sizeof(sCommandResultBuf), "compat_giveweapon %d %d \"%s\"", iClient, iIndex, 
 		sAttribs);
 	
-	return StringToInt(sCommandResultBuf);
-#endif
+	return StringToInt(sCommandResultBuf);*/
+	return -1; //TODO: Re-implement
 }
 
 stock void TF2_FlagWeaponDontDrop(int iWeapon, bool bVisibleHack = true)
