@@ -147,7 +147,7 @@ stock bool TF2_IsSlotClassname(int iClient, int iSlot, char[] sClassname)
 
 stock int TF2_GetSlotInItem(int iIndex, TFClassType nClass)
 {
-#if LINUX_IA32
+#if defined LINUX_IA32
 	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
 	if (iSlot >= 0)
 	{
@@ -281,7 +281,7 @@ stock void TF2_RemoveAmmo(int iClient, int iSlot, int iAmmo)
 
 stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = "")
 {
-#if LINUX_IA32
+#if defined LINUX_IA32
 	char sClassname[256];
 	TF2Econ_GetItemClassName(iIndex, sClassname, sizeof(sClassname));
 	TF2Econ_TranslateWeaponEntForClass(sClassname, sizeof(sClassname), TF2_GetPlayerClass(iClient));
@@ -329,7 +329,7 @@ stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = ""
 
 stock void TF2_FlagWeaponDontDrop(int iWeapon, bool bVisibleHack = true)
 {
-#if LINUX_IA32
+#if defined LINUX_IA32
 	int iOffset = GetEntSendPropOffs(iWeapon, "m_Item", true);
 	if (iOffset <= 0)
 		return;
@@ -457,7 +457,7 @@ Action Timer_KillEntity(Handle hTimer, int iRef)
 //https://github.com/Mikusch/tfgo/blob/c6109ad9a2f04ac0267e0916145a8274c9f6662e/addons/sourcemod/scripting/tfgo/stocks.sp#L205-L237 :)
 stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 {
-#if LINUX_IA32
+#if defined LINUX_IA32
 	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
 	if (iSlot >= 0)
 	{

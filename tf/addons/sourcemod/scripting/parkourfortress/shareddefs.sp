@@ -3,9 +3,6 @@
 #endif
 #define _PARKOURFORTRESS_INCLUDED
 
-#define WINDOWS_IA32 	0
-#define WINDOWS_X86_64 	0
-#define LINUX_IA32 		0
 #define LINUX_X86_64 	1
 
 #define ROPE_COMMAND1 "r_drawropes"
@@ -31,8 +28,6 @@ Handle g_hSDKEquipWearable;
 Handle g_hSDKRemoveWearable;
 Handle g_hSDKGetEquippedWearable;
 Handle g_hSDKGetBaseEntity;
-Handle g_hSDKAirAccelerate;
-Handle g_hSDKAccelerate;
 
 Handle g_hSDKGetMaxAmmo;
 Handle g_hHookSetWinningTeam;
@@ -42,12 +37,6 @@ Handle g_hUnlockPlayerTimer[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
 int g_iHookIdGiveNamedItem[MAXPLAYERS + 1];
 int g_iTEBeams;
 int g_iRestoreData;
-
-float g_flAirAccel[MAXPLAYERS + 1] = {10.0, ...};
-float g_flStockAirAccel;
-
-float g_flAccel[MAXPLAYERS + 1] = {10.0, ...};
-float g_flStockAccel;
 
 const float g_flMaxSpeedVal = 5200.0;
 
@@ -71,11 +60,6 @@ ConVar g_cvarWeaponRespawnRandom;
 ConVar g_cvarWeaponMaxRare;
 ConVar g_cvarWeaponRareChance;
 ConVar g_cvarWeaponGrabDistance;
-
-#if LINUX_IA32
-ConVar g_cvarAirAcceleration;
-ConVar g_cvarAcceleration;
-#endif
 
 Cookie g_cookieMusic;
 Cookie g_cookieMusicVolume;

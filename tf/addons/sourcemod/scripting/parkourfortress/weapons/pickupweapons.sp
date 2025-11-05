@@ -180,7 +180,7 @@ public Action Event_ResetPickup(Event event, const char[] name, bool dontBroadca
 
 bool AttemptGrabItem(int iClient)
 {
-#if LINUX_IA32
+#if defined LINUX_IA32
 	if (!g_bCanPickup[iClient]) return false;
 	
 	int iTarget = GetClientEntityVisible(iClient, "prop_dynamic", g_cvarWeaponGrabDistance.FloatValue);
@@ -241,7 +241,7 @@ bool AttemptGrabItem(int iClient)
 
 void PickupWeapon(int iClient, Weapon wep, int iTarget)
 {
-#if LINUX_IA32
+#if defined LINUX_IA32
 	if (wep.sSound[0] == '\0')
 		EmitSoundToClient(iClient, "ui/item_heavy_gun_pickup.wav");
 	else

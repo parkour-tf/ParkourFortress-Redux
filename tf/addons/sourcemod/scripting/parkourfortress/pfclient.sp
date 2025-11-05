@@ -36,9 +36,6 @@ methodmap CPFTraceur
 			SetEntProp(THISCLIENT, Prop_Data, "m_takedamage", view_as<int>(DAMAGE_YES));
 			SetEntProp(THISCLIENT, Prop_Send, "m_bDrawViewmodel", 0);
 			
-			SetPlayerAirAccel(THISCLIENT, g_cvarAirAcceleration.FloatValue);
-			SetPlayerAccel(THISCLIENT, g_cvarAcceleration.FloatValue);
-			
 			if (GetEntityFlags(THISCLIENT) & FL_ATCONTROLS)
 				SetEntityFlags(THISCLIENT, GetEntityFlags(THISCLIENT)&~FL_ATCONTROLS);
 			

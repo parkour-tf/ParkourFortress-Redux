@@ -27,7 +27,7 @@ All code is licensed under the GNU General Public License, version 3.
 #include <tracerayex>
 #include <morecolors>
 
-#if LINUX_IA32
+#if defined LINUX_IA32
 #include <tf2attributes>
 #include <tf_econ_data>
 #endif
@@ -108,9 +108,6 @@ public void OnPluginStart()
 	g_cvarViewmodels = CreateConVar("pf_viewmodels", "1", "Enable viewmodels", 0, true, 0.0, true, 1.0);
 	g_cvarWallrunTraces = CreateConVar("pf_wallrun_traces", "10", "How many traces should wallruns cast?", 0, true, 8.0, true, 90.0);
 	
-	g_cvarAirAcceleration = FindConVar("sv_airaccelerate");
-	g_cvarAcceleration = FindConVar("sv_accelerate");
-	
 	g_cvarWeaponRespawn = CreateConVar("pf_weapon_respawntime", "60.0", "Max time for weapons to respawn if respawntime_random is on, otherwise hard value for respawn period", 0, true, 1.0, false);
 	g_cvarWeaponRespawnMin = CreateConVar("pf_weapon_respawntime_min", "10.0", "If respawntime_random is on, minimum time for weapons to respawn after being picked up", 0, true, 1.0, false);
 	g_cvarWeaponRespawnRandom = CreateConVar("pf_weapon_respawntime_random", "1", "Weapons respawn in a time period between respawntime_min and respawntime", 0, true, 0.0, true, 1.0);
@@ -121,8 +118,6 @@ public void OnPluginStart()
 	g_cvarPvP.AddChangeHook(OnChangePvP);
 	g_cvarWeaponRespawn.AddChangeHook(OnWeaponRespawnSet);
 	g_cvarWeaponRespawnMin.AddChangeHook(OnWeaponRespawnMinSet);
-	g_cvarAirAcceleration.AddChangeHook(OnChangeAirAccel);
-	g_cvarAcceleration.AddChangeHook(OnChangeAccel);
 
 	g_cookieTutorialStage = new Cookie("tutorialprogress", "How far along you are in the tutorial", CookieAccess_Protected);
 	g_cookieLerp = new Cookie("parkourlerp", "Enable camera tilt", CookieAccess_Protected);
@@ -247,17 +242,6 @@ public void OnWeaponRespawnMinSet(ConVar cvarMin, const char[] strOldValue, cons
 public Action BlockCYOA(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
-}
-
-void ResetAirAccel()
-{
-	g_flStockAirAccel = g_cvarAirAcceleration.FloatValue;
-	for (int i = 1; i <= MaxClients; i++)
-		g_flAirAccel[i] = g_flStockAirAccel;
-	
-	g_flStockAccel = g_cvarAcceleration.FloatValue;
-	for (int i = 1; i <= MaxClients; i++)
-		g_flAccel[i] = g_flStockAccel;
 }
 
 public void OnPluginEnd()
@@ -799,27 +783,13 @@ void InitSDK()
 	PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 	g_hSDKGetBaseEntity = EndPrepSDKCall();
 
-#if LINUX_IA32
+#if defined LINUX_IA32
 	iOffset = GameConfGetOffset(hGameData, "CTFPlayer::GiveNamedItem"); 
 	g_hHookGiveNamedItem = DHookCreate(iOffset, HookType_Entity, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_CharPtr);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_Int);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_ObjectPtr);
 	DHookAddParam(g_hHookGiveNamedItem, HookParamType_Bool);
-	
-	g_hSDKAirAccelerate = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_Address);
-	DHookSetFromConf(g_hSDKAirAccelerate, hGameData, SDKConf_Signature, "CGameMovement::AirAccelerate");
-	DHookAddParam(g_hSDKAirAccelerate, HookParamType_VectorPtr);
-	DHookAddParam(g_hSDKAirAccelerate, HookParamType_Float);
-	DHookAddParam(g_hSDKAirAccelerate, HookParamType_Float);
-	DHookEnableDetour(g_hSDKAirAccelerate, false, AirAccelerate);
-	
-	g_hSDKAccelerate = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_Address);
-	DHookSetFromConf(g_hSDKAccelerate, hGameData, SDKConf_Signature, "CGameMovement::Accelerate");
-	DHookAddParam(g_hSDKAccelerate, HookParamType_VectorPtr);
-	DHookAddParam(g_hSDKAccelerate, HookParamType_Float);
-	DHookAddParam(g_hSDKAccelerate, HookParamType_Float);
-	DHookEnableDetour(g_hSDKAccelerate, false, Accelerate);
 #endif
 
 	StartPrepSDKCall(SDKCall_Player);
@@ -865,7 +835,7 @@ void InitSDK()
 	delete hGameData;
 }
 
-#if LINUX_IA32
+#if defined LINUX_IA32
 public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hParams)
 {
     // Block if one of the pointers is null
@@ -905,43 +875,7 @@ public void DHook_OnGiveNamedItemRemoved(int iHookId)
 		}
 	}
 }
-
-public MRESReturn AirAccelerate(Address pThis, Handle hParams)
-{
-	DHookSetParam(hParams, 3, g_flAirAccel[view_as<CGameMovement>(pThis).player]);
-	return MRES_ChangedOverride;
-}
-
-public MRESReturn Accelerate(Address pThis, Handle hParams)
-{
-	DHookSetParam(hParams, 3, g_flAccel[view_as<CGameMovement>(pThis).player]);
-	return MRES_ChangedOverride;
-}
 #endif
-
-void SetPlayerAirAccel(int iClient, float flValue)
-{
-	if (flValue > 0.0)
-	{
-		g_flAirAccel[iClient] = flValue;
-		ServerCommand("sntc_setairaccel %d %.2f", iClient, flValue);
-	}
-		
-}
-
-float GetPlayerAirAccel(int iClient)
-{
-	return g_flAirAccel[iClient];
-}
-
-void SetPlayerAccel(int iClient, float flValue)
-{
-	if (flValue > 0.0)
-	{
-		g_flAirAccel[iClient] = flValue;
-		ServerCommand("sntc_setaccel %d %.2f", iClient, flValue);
-	}
-}
 
 // Thanks FlaminSarge
 void ApplyMaxSpeedPatch()
@@ -1037,7 +971,6 @@ void InitOther()
 	CPFSoundController.Init();
 	CPFViewController.Init();
 	CPFTutorialController.Init();
-	ResetAirAccel();
 	
 	SDKHookClassname("trigger_stun", SDKHook_StartTouch, OnStartTouchTrigger);
 	SDKHookClassname("trigger_once", SDKHook_StartTouch, OnStartTouchTrigger);
@@ -1114,10 +1047,7 @@ public void OnClientPostAdminCheck(int iClient)
 {
 	if (!IsValidClient(iClient)) return;
 	
-	SetPlayerAirAccel(iClient, g_cvarAirAcceleration.FloatValue);
-	SetPlayerAccel(iClient, g_cvarAcceleration.FloatValue);
-	
-#if LINUX_IA32
+#if defined LINUX_IA32
 	if (!IsFakeClient(iClient))
 		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, true, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);
 #endif
@@ -1603,24 +1533,6 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 	
 	PFState eState = CPFStateController.Get(iClient);
 	
-	if (StrContains(strTargetname, "airaccelerate") > -1)
-	{
-		float flValue = float(StringToInt(strTargetname));
-		if (flValue > 0.0)
-			SetPlayerAirAccel(iClient, flValue);
-		
-		return Plugin_Continue;
-	}
-	else if (StrContains(strTargetname, "accelerate") > -1)
-	{
-		ReplaceString( strTargetname, sizeof(strTargetname), "accelerate", "" );
-		float flValue = float(StringToInt(strTargetname));
-		if (flValue > 0.0)
-			SetPlayerAccel(iClient, flValue);
-		
-		return Plugin_Continue;
-	}
-	
 	if (StrEqual("lockcontrols", strTargetname))
 	{
 		if(GetEntityMoveType(iClient) == MOVETYPE_NOCLIP)
@@ -1935,30 +1847,6 @@ Action StartHealPlayerRepeat(Handle hTimer, int iUserID)
 	{
 		SetEntityHealth(iClient, RoundToFloor(flHealth));
 		return Plugin_Continue;
-	}
-}
-
-public void OnChangeAirAccel(ConVar cvarAirAccel, const char[] strOldValue, const char[] strNewValue)
-{
-	g_flStockAirAccel = StringToFloat(strNewValue);
-	float flOldValue = StringToFloat(strOldValue);
-	
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (g_flAirAccel[i] == flOldValue)
-			g_flAirAccel[i] = g_flStockAirAccel;
-	}
-}
-
-public void OnChangeAccel(ConVar cvarAccel, const char[] strOldValue, const char[] strNewValue)
-{
-	g_flStockAccel = StringToFloat(strNewValue);
-	float flOldValue = StringToFloat(strOldValue);
-	
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (g_flAccel[i] == flOldValue)
-			g_flAccel[i] = g_flStockAccel;
 	}
 }
 

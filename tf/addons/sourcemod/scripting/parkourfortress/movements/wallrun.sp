@@ -40,7 +40,6 @@ enum struct WallrunData
 {
 	eWallrunSide Side;
 	float Angle;
-	float AirAccelPre;
 	bool BufferedJump;
 	int ActionStart;
 	int DismountTime;
@@ -55,13 +54,11 @@ methodmap CPFWallrunHandler
 		const float WALLRUN_AIRACCEL = 10.0;
 		const float WALLRUN_GRAVITY = 0.0;
 		const float WALLRUN_SPEED = 0.0;
-		
-		g_WallrunData[iClient].AirAccelPre = GetPlayerAirAccel(iClient);
 
 		g_WallrunData[iClient].Side = eSide;
 		g_WallrunData[iClient].DismountTime = GetGameTickCount() + DISMOUNT_HANGTIME;
 
-		SetPlayerAirAccel(iClient, WALLRUN_AIRACCEL);
+		ServerCommand("compat_setairaccel %d %.2f", GetClientUserId(iClient), WALLRUN_AIRACCEL);
 
 		SetEntityMoveType(iClient, MOVETYPE_ISOMETRIC);
 		SetEntityGravity(iClient, WALLRUN_GRAVITY);
@@ -88,7 +85,7 @@ methodmap CPFWallrunHandler
 		
 		SetCollisionGroup(iClient, g_ePFCollisionGroup);
 		
-		SetPlayerAirAccel(iClient, g_WallrunData[iClient].AirAccelPre);
+		ServerCommand("compat_setairaccel %d null", GetClientUserId(iClient));
 		
 		float flSpeed;
 		flSpeed = CPFSpeedController.GetStoredSpeed(iClient);
