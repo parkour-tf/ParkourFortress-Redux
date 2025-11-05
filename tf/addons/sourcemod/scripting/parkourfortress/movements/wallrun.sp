@@ -266,9 +266,10 @@ methodmap CPFWallrunHandler
 			ForwardVector(vecWallAngles, 420.0, vecVelocity);
 			vecVelocity[2] = (WALLRUN_HEIGHT_COEFFICIENT * (((TICKRATE_STANDARD_FLOAT/GetTickRate()) * float(GetGameTickCount() - g_WallrunData[iClient].ActionStart)) - WALLRUN_HEIGHT_SHIFT));
 			
+			GetClientAbsAngles(iClient, vecAngles);
+
 			if (!!GetCookieInt(g_cookieLerp, iClient))
 			{
-				GetClientAbsAngles(iClient, vecAngles);
 				if (GetGameTickCount() - g_WallrunData[iClient].ActionStart < WALLRUN_LERP_LENGTH + 5.0 && GetGameTickCount() - g_WallrunData[iClient].ActionStart > 5.0)
 				{
 					float flLerpAngle = ((float(GetGameTickCount() - g_WallrunData[iClient].ActionStart - 5) / float(WALLRUN_LERP_LENGTH)) * WALLRUN_LERP_GOAL_ANGLE);
@@ -280,6 +281,11 @@ methodmap CPFWallrunHandler
 					vecAngles[2] = (eSide == WALLRUN_LEFT) ? WALLRUN_LERP_GOAL_ANGLE : -WALLRUN_LERP_GOAL_ANGLE;
 					PFTeleportPlayer(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
 				}
+			}
+			else if (GetGameTickCount() == g_WallrunData[iClient].ActionStart + 1)
+			{
+				vecAngles[2] = (eSide == WALLRUN_LEFT) ? WALLRUN_LERP_GOAL_ANGLE : -WALLRUN_LERP_GOAL_ANGLE;
+				PFTeleportPlayer(iClient, NULL_VECTOR, vecAngles, NULL_VECTOR);
 			}
 			
 			PFTeleportPlayer(iClient, NULL_VECTOR, NULL_VECTOR, vecVelocity);
@@ -353,7 +359,6 @@ methodmap CPFWallrunHandler
 		vecEyeAngles[2] = 0.0;
 		ForwardVector(vecEyeAngles, 1.0, vecEndHullPos);
 		flRotation = eSide ? -1 * (flRotation) : flRotation;
-		
 		
 		// TraceHull Start Position Setup
 		vecStartHullPos = vecEndHullPos;
