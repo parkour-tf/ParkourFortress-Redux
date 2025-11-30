@@ -312,13 +312,15 @@ void ProcessClientDownloadCvar(QueryCookie cookie, int iClient, ConVarQueryResul
  * @param iDesiredValue     The value to set the cookie. Leave null to toggle the preference
  * @return                  Returns whether or not the value was modified
  */
-bool SetClientCookiePreference(Cookie cookie, int iClient, char[] DesiredValue = { '\0' }) {
+bool SetClientCookiePreference(Cookie cookie, int iClient, char[] DesiredValue = { '\0' }) 
+{
 	bool Enabled = !!GetCookieInt(cookie, iClient);
-	if(DesiredValue[0] != '\0') {
+	if (DesiredValue[0] != '\0')
+	{
 		bool CurrValue = !!GetCookieInt(cookie, iClient),
         NewValue = !!StringToInt(DesiredValue);
 
-		if(CurrValue == NewValue)
+		if (CurrValue == NewValue)
 			return false;
 
 		cookie.Set(iClient, DesiredValue);
@@ -1566,6 +1568,7 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 		
 		CPFStateController.Set(iClient, State_Locked);
 		SetEntityFlags(iClient, GetEntityFlags(iClient)|FL_ATCONTROLS);
+
 		return Plugin_Continue;
 	}
 	else if (StrEqual("unlockcontrols", strTargetname))
@@ -1574,6 +1577,17 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 			return Plugin_Continue;
 		
 		CPFStateController.ResetClient(iClient);
+
+		return Plugin_Continue;
+	}
+	else if (StrContains(strTargetname, "_start") || StrEqual("start_zone", strTargetname))
+	{
+		CPFSpeedController.SetInSpawn(iClient, true);
+
+		CPFSpeedController.SetSpeed(view_as<int>(iClient), 250.0);
+		CPFSpeedController.SetStoredSpeed(view_as<int>(iClient), 250.0);
+		CPFSoundController.SetIntensity(view_as<int>(iClient), 0.0);
+
 		return Plugin_Continue;
 	}
 	
@@ -1632,8 +1646,7 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 			{
 				DebugOutput("OnStartTouchTrigger --- Player ducking, trying again soon", iClient);
 				RequestFrame(OnStartTouchPost, iClient);
-				CreateTimer(0.06, CheckPlayerTrigger, iClient);
-						
+				CreateTimer(0.06, CheckPlayerTrigger, iClient);		
 			}	
 		}
 	}
@@ -1659,6 +1672,17 @@ public Action OnEndTouchTrigger(int iEnt, int iClient)
 	
 	char strTargetname[128];
 	GetEntPropString(iEnt, Prop_Data, "m_iName", strTargetname, sizeof(strTargetname));
+
+	if (StrContains(strTargetname, "_start") || StrEqual("start_zone", strTargetname))
+	{
+		CPFSpeedController.SetInSpawn(iClient, false);
+
+		CPFSpeedController.SetSpeed(view_as<int>(iClient), 250.0);
+		CPFSpeedController.SetStoredSpeed(view_as<int>(iClient), 250.0);
+		CPFSoundController.SetIntensity(view_as<int>(iClient), 0.0);
+
+		return Plugin_Continue;
+	}
 	
 	if (StrEqual("nofalldeath", strTargetname) || StrEqual("nofalldamage", strTargetname))
 	{

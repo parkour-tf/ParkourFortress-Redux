@@ -5,6 +5,7 @@
 
 enum struct SpeedData
 {
+	bool InSpawn;
 	bool Boosted;
 	bool FallDeathImmune;
 	float LastSpeed;
@@ -29,6 +30,11 @@ methodmap CPFSpeedController
 		VFormat(strDebugFmt, sizeof(strDebugFmt), strDebug, 2);
 		
 		PrintToChatAll(strDebugFmt);
+	}
+
+	public static void SetInSpawn(int iClient, bool bValue)
+	{
+		g_SpeedData[iClient].InSpawn = bValue;
 	}
 	
 	public static void SetFallDeathImmunity(int iClient, bool bValue)
@@ -196,6 +202,14 @@ methodmap CPFSpeedController
 	public static void Think(int iClient, int iButtons)
 	{
 		if (!IsValidClient(iClient)) return;
+
+		if (g_SpeedData[iClient].InSpawn)
+		{
+			if (g_SpeedData[iClient].Boosted)
+				CPFSpeedController.SetBoost(iClient, false);
+
+			return;
+		}
 		
 		float flNewIntensity = ((CPFSpeedController.GetSpeed(iClient) - 250.0)/170.0) * 0.02;
 		CPFSoundController.AddIntensity(iClient, flNewIntensity);
@@ -234,8 +248,6 @@ methodmap CPFSpeedController
 		float flClientSpeed = CPFSpeedController.GetSpeed(iClient);
 		CPFSpeedController.SetAirVel(iClient, 0.0);
 		//CPFSpeedController.Debug("CPFSpeedController::Think --- %N (%d) Speed: %.3f", iClient, iClient, flClientSpeed);
-		
-		
 		
 		// Button checks first, speed checks second
 		if (iButtons & IN_FORWARD && !((iButtons & IN_DUCK) || IsFullyDucked(iClient)))

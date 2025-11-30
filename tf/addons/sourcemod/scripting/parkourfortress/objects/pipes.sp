@@ -191,9 +191,6 @@ methodmap CPFPipeController
 		for (int i = 1; i <= MaxClients; i++)
 			g_hClientPipe[i] = CPFPIPE_INVALID;
 		
-		SDKHookClassname("trigger_multiple", SDKHook_StartTouch, OnStartTouchTrigger);
-		SDKHookClassname("trigger_multiple", SDKHook_EndTouch, OnEndTouchTrigger);
-		
 		if (bLate)
 		{
 			for (int i = 1; i < 2048; i++)
