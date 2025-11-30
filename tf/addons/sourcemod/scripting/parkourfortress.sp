@@ -89,13 +89,6 @@ public void OnPluginStart()
 	
 	PrecacheModels();
 	
-	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
-	HookEvent("post_inventory_application", OnInventoryPost);
-	HookEvent("teamplay_round_start", OnRoundStart);
-	HookEvent("teamplay_round_win", OnRoundEnd);
-	HookEvent("teamplay_round_stalemate", OnRoundEnd);
-	HookEvent("player_death", OnPlayerDeath, EventHookMode_Post);
-	
 	HookUserMessage(GetUserMessageId("VoiceSubtitle"), UserMsg_VoiceSubtitle, true);
 	
 	CreateConVar("pf_version", PLUGIN_VERSION, "Plugin Version", FCVAR_ARCHIVE);
@@ -582,12 +575,18 @@ public void OnSuccessfulTeleport(int iClient)
 
 public void OnMapStart()
 {
+	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
+	HookEvent("post_inventory_application", OnInventoryPost);
+	HookEvent("teamplay_round_start", OnRoundStart);
+	HookEvent("teamplay_round_win", OnRoundEnd);
+	HookEvent("teamplay_round_stalemate", OnRoundEnd);
+	HookEvent("player_death", OnPlayerDeath, EventHookMode_Post);
+
 	CPFSoundController.Init();
 	CPFTutorialController.Init();
 	PrecacheModels();
 	ClearTutorials();
 	Weapons_Refresh();
-	CreateTimer(1.0, OnMapStartFrame);
 }
 
 void ClearTutorials()
@@ -728,27 +727,6 @@ void PrecacheModels()
 	SuperPrecacheMaterial("models/reduxsource/zipwire_tower_kir_green", true);
 }
 
-Action OnMapStartFrame(Handle hTimer)
-{
-	if (!g_bLate)
-	{
-		PrintToServer("Initializing PF Objects");
-		InitObjects(true);
-		InitSDK();
-		InitWeapons();
-		InitOther();
-	}
-	
-	//Comment - This doesn't work
-	FindConVar("tf_weapon_criticals").SetBool(!g_cvarPvP.BoolValue);
-	FindConVar("tf_weapon_criticals_melee").SetBool(!g_cvarPvP.BoolValue);
-	FindConVar("tf_use_fixed_weaponspreads").SetBool(g_cvarPvP.BoolValue);
-
-	g_bMapLoaded = true;
-
-	return Plugin_Continue;
-}
-
 public void Mapvote_OnPvPMap()
 {
 	Weapons_Refresh();
@@ -756,6 +734,13 @@ public void Mapvote_OnPvPMap()
 
 public void OnMapEnd()
 {
+	UnhookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
+	UnhookEvent("post_inventory_application", OnInventoryPost);
+	UnhookEvent("teamplay_round_start", OnRoundStart);
+	UnhookEvent("teamplay_round_win", OnRoundEnd);
+	UnhookEvent("teamplay_round_stalemate", OnRoundEnd);
+	UnhookEvent("player_death", OnPlayerDeath, EventHookMode_Post);
+
 	g_bMapLoaded = false;
 	g_bLate = false;
 	
@@ -1158,6 +1143,16 @@ public Action OnInventoryPost(Event hEvent, const char[] strName, bool bDontBroa
 public Action OnRoundStart(Event hEvent, const char[] strName, bool bDontBroadcast)
 {
 	InitObjects(true);
+	InitSDK();
+	InitWeapons();
+	InitOther();
+
+	FindConVar("tf_weapon_criticals").SetBool(!g_cvarPvP.BoolValue);
+	FindConVar("tf_weapon_criticals_melee").SetBool(!g_cvarPvP.BoolValue);
+	FindConVar("tf_use_fixed_weaponspreads").SetBool(g_cvarPvP.BoolValue);
+
+	g_bMapLoaded = true;
+
 	Mapvote_OnMapsLoaded();
 
 	return Plugin_Continue;
@@ -1580,7 +1575,7 @@ public Action OnStartTouchTrigger(int iEnt, int iClient)
 
 		return Plugin_Continue;
 	}
-	else if (StrContains(strTargetname, "_start") || StrEqual("start_zone", strTargetname))
+	else if (StrContains(strTargetname, "_start") > -1 || StrEqual("start_zone", strTargetname))
 	{
 		CPFSpeedController.SetInSpawn(iClient, true);
 
@@ -1673,7 +1668,7 @@ public Action OnEndTouchTrigger(int iEnt, int iClient)
 	char strTargetname[128];
 	GetEntPropString(iEnt, Prop_Data, "m_iName", strTargetname, sizeof(strTargetname));
 
-	if (StrContains(strTargetname, "_start") || StrEqual("start_zone", strTargetname))
+	if (StrContains(strTargetname, "_start") > -1 || StrEqual("start_zone", strTargetname))
 	{
 		CPFSpeedController.SetInSpawn(iClient, false);
 
