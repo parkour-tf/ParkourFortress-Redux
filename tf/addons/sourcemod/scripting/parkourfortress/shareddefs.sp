@@ -16,8 +16,6 @@ char g_strRopeCommands[ROPE_TOTAL][32] = {
 	ROPE_COMMAND1, ROPE_COMMAND2
 };
 
-Address g_pPatchLocation;
-
 bool g_bLate;
 bool g_bMapLoaded;
 
