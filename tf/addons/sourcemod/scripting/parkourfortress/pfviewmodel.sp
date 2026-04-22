@@ -382,8 +382,6 @@ int CreateViewmodel(int iClient)
 	
 	SDKHook(iEntity, SDKHook_SetTransmit, OnSetTransmitViewmodel);
 	
-
-	
 	return EntIndexToEntRef(iEntity);
 }
 
