@@ -162,7 +162,7 @@ methodmap CPFStateController
 		return g_eStateInfo[iClient].ButtonsInterrupted;
 	}
 
-	public static int SetCooldown(int iClient, PFState eState, float flLength)
+	public static void SetCooldown(int iClient, PFState eState, float flLength)
 	{
 		g_bOnCooldown[eState][iClient] = true;
 		DataPack hData = new DataPack();
