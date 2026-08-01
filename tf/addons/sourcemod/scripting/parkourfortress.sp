@@ -250,8 +250,7 @@ public void OnPluginEnd()
 		SDKUnhook(i, SDKHook_WeaponSwitch, OnWeaponSwitch);
 		CPFSoundController.StopCurrentMusic(i);
 	}
-	
-	RemoveMaxSpeedPatch();
+
 }
 
 public void Mapvote_OnMapsLoaded()
@@ -743,8 +742,7 @@ public void OnMapEnd()
 
 	g_bMapLoaded = false;
 	g_bLate = false;
-	
-	RemoveMaxSpeedPatch();
+
 }
 
 public Action WeaponReload(int client, int args)
