@@ -24,7 +24,6 @@ bool g_bTutorialFetched[MAXPLAYERS + 1];
 Handle g_hSDKEquipWearable;
 Handle g_hSDKRemoveWearable;
 Handle g_hSDKGetEquippedWearable;
-Handle g_hSDKGetBaseEntity;
 
 Handle g_hSDKGetMaxAmmo;
 Handle g_hHookSetWinningTeam;
@@ -184,26 +183,6 @@ enum TakeDamage_t
 	DAMAGE_YES,
 	DAMAGE_AIM,
 };
-
-enum struct CTFGameMovementOffsets
-{
-	int player;
-}
-
-CTFGameMovementOffsets offsets;
-
-methodmap CGameMovement
-{
-	public CGameMovement(Address pGameMovement)
-	{
-		return view_as<CGameMovement>(pGameMovement);
-	}
-	
-	property int player
-	{
-		public get() { return SDKCall(g_hSDKGetBaseEntity, LoadFromAddress(view_as<Address>(this) + view_as<Address>(offsets.player), NumberType_Int32)); }
-	}
-}
 
 #if !defined _PF_INCLUDED
 stock bool IsValidClient(int iClient)
