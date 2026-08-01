@@ -21,7 +21,6 @@ bool g_bMapLoaded;
 
 bool g_bTutorialFetched[MAXPLAYERS + 1];
 
-Handle g_hHookGiveNamedItem;
 Handle g_hSDKEquipWearable;
 Handle g_hSDKRemoveWearable;
 Handle g_hSDKGetEquippedWearable;
@@ -32,7 +31,6 @@ Handle g_hHookSetWinningTeam;
 
 Handle g_hUnlockPlayerTimer[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
 
-int g_iHookIdGiveNamedItem[MAXPLAYERS + 1];
 int g_iTEBeams;
 int g_iRestoreData;
 
