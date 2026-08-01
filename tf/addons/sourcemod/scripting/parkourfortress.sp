@@ -27,11 +27,6 @@ All code is licensed under the GNU General Public License, version 3.
 #include <tracerayex>
 #include <morecolors>
 
-#if defined LINUX_IA32
-#include <tf2attributes>
-#include <tf_econ_data>
-#endif
-
 #pragma semicolon 1
 #pragma newdecls required
 
@@ -250,7 +245,6 @@ public void OnPluginEnd()
 		SDKUnhook(i, SDKHook_WeaponSwitch, OnWeaponSwitch);
 		CPFSoundController.StopCurrentMusic(i);
 	}
-
 }
 
 public void Mapvote_OnMapsLoaded()
@@ -742,7 +736,6 @@ public void OnMapEnd()
 
 	g_bMapLoaded = false;
 	g_bLate = false;
-
 }
 
 public Action WeaponReload(int client, int args)
@@ -767,15 +760,6 @@ void InitSDK()
 	PrepSDKCall_SetFromConf(hGameData, SDKConf_Virtual, "CBaseEntity::GetBaseEntity");
 	PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 	g_hSDKGetBaseEntity = EndPrepSDKCall();
-
-#if defined LINUX_IA32
-	iOffset = GameConfGetOffset(hGameData, "CTFPlayer::GiveNamedItem"); 
-	g_hHookGiveNamedItem = DHookCreate(iOffset, HookType_Entity, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
-	DHookAddParam(g_hHookGiveNamedItem, HookParamType_CharPtr);
-	DHookAddParam(g_hHookGiveNamedItem, HookParamType_Int);
-	DHookAddParam(g_hHookGiveNamedItem, HookParamType_ObjectPtr);
-	DHookAddParam(g_hHookGiveNamedItem, HookParamType_Bool);
-#endif
 
 	StartPrepSDKCall(SDKCall_Player);
 	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CTFPlayer::GetMaxAmmo");
@@ -819,48 +803,6 @@ void InitSDK()
 		
 	delete hGameData;
 }
-
-#if defined LINUX_IA32
-public MRESReturn Client_OnGiveNamedItem(int iClient, Handle hReturn, Handle hParams)
-{
-    // Block if one of the pointers is null
-    if (DHookIsNullParam(hParams, 1) || DHookIsNullParam(hParams, 3))
-    {
-        DHookSetReturn(hReturn, 0);
-        return MRES_Supercede;
-    }    
-    
-    char sClassname[64];
-    Address ClassnameAddress = DHookGetParamAddress(hParams, 1);
-
-    for(int i = 0; i < sizeof(sClassname); ++i)
-        sClassname[i] = view_as<int>(LoadFromAddress(view_as<Address>(view_as<int>(ClassnameAddress) + i), NumberType_Int8));
-
-    int iIndex = DHookGetParamObjectPtrVar(hParams, 3, 4, ObjectValueType_Int) & 0xFFFF;
-    
-    Action iAction = OnGiveNamedItem(sClassname, iIndex);
-    
-    if (iAction == Plugin_Handled)
-    {
-        DHookSetReturn(hReturn, 0);
-        return MRES_Supercede;
-    }
-    
-    return MRES_Ignored;
-}
-
-public void DHook_OnGiveNamedItemRemoved(int iHookId)
-{
-	for (int iClient = 1; iClient <= MaxClients; iClient++)
-	{
-		if (g_iHookIdGiveNamedItem[iClient] == iHookId)
-		{
-			g_iHookIdGiveNamedItem[iClient] = 0;
-			return;
-		}
-	}
-}
-#endif
 
 Action OnGiveNamedItem(char[] sClassname, int iItem)
 {
@@ -984,11 +926,6 @@ public void OnClientPutInServer(int iClient) {
 public void OnClientPostAdminCheck(int iClient)
 {
 	if (!IsValidClient(iClient)) return;
-	
-#if defined LINUX_IA32
-	if (!IsFakeClient(iClient))
-		g_iHookIdGiveNamedItem[iClient] = DHookEntity(g_hHookGiveNamedItem, true, iClient, DHook_OnGiveNamedItemRemoved, Client_OnGiveNamedItem);
-#endif
 }
 
 public void OnChangePvP(ConVar cvarTime, const char[] strOldValue, const char[] strNewValue)
@@ -1238,13 +1175,7 @@ public void OnClientDisconnect(int iClient)
 	CPFViewController.Disconnect(iClient);
 	
 	Weapons_ClientDisconnect(iClient);
-	
-	if (g_iHookIdGiveNamedItem[iClient])
-	{
-		//RemoveHookID(g_iHookIdGiveNamedItem[iClient]);
-		g_iHookIdGiveNamedItem[iClient] = 0;
-	}
-		
+
 	g_bTutorialFetched[iClient] = false;
 }
 

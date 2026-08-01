@@ -1,6 +1,4 @@
 //Required for TF2_FlagWeaponNoDrop
-#define FLAG_DONT_DROP_WEAPON 				0x23E173A2
-#define OFFSET_DONT_DROP					36
 
 ////////////////////////////////////////////////////////////
 //
@@ -147,23 +145,7 @@ stock bool TF2_IsSlotClassname(int iClient, int iSlot, char[] sClassname)
 
 stock int TF2_GetSlotInItem(int iIndex, TFClassType nClass)
 {
-#if defined LINUX_IA32
-	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, nClass);
-	if (iSlot >= 0)
-	{
-		//Spy slots are a bit messy
-		if (nClass == TFClass_Spy)
-		{
-			if (iSlot == 1) iSlot = WeaponSlot_Primary;	//Revolver
-			if (iSlot == 4) iSlot = WeaponSlot_Secondary;	//Sapper
-			if (iSlot == 6) iSlot = WeaponSlot_InvisWatch;	//Invis Watch
-		}
-	}
-
-	return iSlot;
-#else
 	return 0;
-#endif
 }
 
 ////////////////////////////////////////////////////////////
@@ -291,21 +273,6 @@ stock int TF2_CreateAndEquipWeapon(int iClient, int iIndex, char[] sAttribs = ""
 
 stock void TF2_FlagWeaponDontDrop(int iWeapon, bool bVisibleHack = true)
 {
-#if defined LINUX_IA32
-	int iOffset = GetEntSendPropOffs(iWeapon, "m_Item", true);
-	if (iOffset <= 0)
-		return;
-	
-	Address weaponAddress = GetEntityAddress(iWeapon);
-	if (weaponAddress == Address_Null)
-		return;
-	
-	//Going to hijack CEconItemView::m_iInventoryPosition.
-	Address addr = view_as<Address>((view_as<int>(weaponAddress)) + iOffset + OFFSET_DONT_DROP);
-	
-	StoreToAddress(addr, FLAG_DONT_DROP_WEAPON, NumberType_Int32);
-	if (bVisibleHack) SetEntProp(iWeapon, Prop_Send, "m_bValidatedAttachedEntity", 1);
-#endif
 }
 
 stock int TF2_GetItemInSlot(int iClient, int iSlot)
@@ -419,38 +386,5 @@ Action Timer_KillEntity(Handle hTimer, int iRef)
 //https://github.com/Mikusch/tfgo/blob/c6109ad9a2f04ac0267e0916145a8274c9f6662e/addons/sourcemod/scripting/tfgo/stocks.sp#L205-L237 :)
 stock int TF2_GetItemSlot(int iIndex, TFClassType iClass)
 {
-#if defined LINUX_IA32
-	int iSlot = TF2Econ_GetItemLoadoutSlot(iIndex, iClass);
-	if (iSlot >= 0)
-	{
-		// Econ reports wrong slots for Engineer and Spy
-		switch (iClass)
-		{
-			case TFClass_Spy:
-			{
-				switch (iSlot)
-				{
-					case 1: iSlot = WeaponSlot_Primary; // Revolver
-					case 4: iSlot = WeaponSlot_Secondary; // Sapper
-					case 5: iSlot = WeaponSlot_PDADisguise; // Disguise Kit
-					case 6: iSlot = WeaponSlot_InvisWatch; // Invis Watch
-				}
-			}
-			
-			case TFClass_Engineer:
-			{
-				switch (iSlot)
-				{
-					case 4: iSlot = WeaponSlot_BuilderEngie; // Toolbox
-					case 5: iSlot = WeaponSlot_PDABuild; // Construction PDA
-					case 6: iSlot = WeaponSlot_PDADestroy; // Destruction PDA
-				}
-			}
-		}
-	}
-
-	return iSlot;
-#else
 	return 0;
-#endif
 }
