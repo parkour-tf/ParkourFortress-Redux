@@ -756,11 +756,6 @@ void InitSDK()
 	if (hGameData == null)
 		SetFailState("Failed to load gamedata parkourdata.txt");
 
-	StartPrepSDKCall(SDKCall_Raw);
-	PrepSDKCall_SetFromConf(hGameData, SDKConf_Virtual, "CBaseEntity::GetBaseEntity");
-	PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
-	g_hSDKGetBaseEntity = EndPrepSDKCall();
-
 	StartPrepSDKCall(SDKCall_Player);
 	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CTFPlayer::GetMaxAmmo");
 	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
