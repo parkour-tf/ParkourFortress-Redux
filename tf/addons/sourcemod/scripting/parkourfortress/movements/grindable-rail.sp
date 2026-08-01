@@ -701,7 +701,7 @@ methodmap CPFRailHandler
 	 * Input: Runs on every frame.
 	 * Output: Players who meet the criteria for it will be mounted to rails.
 	 */
-	public static CPFRail OnGameFrame()
+	public static void OnGameFrame()
 	{
 		const float CLOSEST_POINT_DECREMENT = 15.0;
 		const float ORIGIN_HEIGHT_ADJUSTMENT = 41.0;
