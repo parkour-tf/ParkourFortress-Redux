@@ -113,12 +113,14 @@ public void OnPluginStart()
 	g_cookieSelfAmbientSound = new Cookie("fluwee", "Enable self ambient sounds", CookieAccess_Protected);
 	CPFViewController.Init();
 
+#if !defined PRIVATE
 	FindConVar("tf_avoidteammates_pushaway").SetBool(false);
 	FindConVar("tf_grapplinghook_los_force_detach_time").SetFloat(6.0);
 	FindConVar("tf_grapplinghook_acceleration").SetFloat(5000.0);
 	FindConVar("tf_grapplinghook_max_distance").SetFloat(8192.0);
 	FindConVar("tf_grapplinghook_projectile_speed").SetFloat(4200.0);
 	FindConVar("tf_grapplinghook_use_acceleration").SetBool(true);
+#endif
 	
 	
 #if defined DRAWVECS
@@ -212,7 +214,9 @@ public void OnAllPluginsLoaded()
 	AddCommandListener(BlockCYOA, "cyoa_pda_open");
 	AddCommandListener(Command_VoiceMenu, "voicemenu");
 
+#if !defined PRIVATE
 	FindConVar("tf_maxspeed_limit").SetFloat(5200.00);
+#endif
 }
 
 public void OnWeaponRespawnSet(ConVar cvarTime, const char[] strOldValue, const char[] strNewValue)
