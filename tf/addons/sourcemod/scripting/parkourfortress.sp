@@ -83,9 +83,11 @@ public void OnPluginStart()
 	PrintToServer("Parkour Fortress Reloading...");
 	
 	PrecacheModels();
-	
+
+#if !defined PRIVATE
 	HookUserMessage(GetUserMessageId("VoiceSubtitle"), UserMsg_VoiceSubtitle, true);
-	
+#endif
+
 	CreateConVar("pf_version", PLUGIN_VERSION, "Plugin Version", FCVAR_ARCHIVE);
 	g_cvarPvP = CreateConVar("pf_pvp", "0", "Enable PvP", 0, true, 0.0);
 	g_cvarDebugSpeed = CreateConVar("pf_speedlog", "0", "Enable speed log in chat", 0, true, 0.0, true, 1.0);
@@ -211,7 +213,9 @@ void InitClientCookie(Cookie cookie, int iClient, char[] default_value) {
 
 public void OnAllPluginsLoaded()
 {
+#if !defined PRIVATE
 	AddCommandListener(BlockCYOA, "cyoa_pda_open");
+#endif
 	AddCommandListener(Command_VoiceMenu, "voicemenu");
 
 #if !defined PRIVATE
@@ -231,10 +235,12 @@ public void OnWeaponRespawnMinSet(ConVar cvarMin, const char[] strOldValue, cons
 		cvarMin.FloatValue = g_cvarWeaponRespawn.FloatValue;
 }
 
+#if !defined PRIVATE
 public Action BlockCYOA(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
 }
+#endif
 
 public void OnPluginEnd()
 {
@@ -414,10 +420,12 @@ public Action EnableLerp(int iClient, int iArgs)
 	return Plugin_Handled;
 }
 
+#if !defined PRIVATE
 public Action UserMsg_VoiceSubtitle(UserMsg eID, BfRead hMsg, const int[] iPlayers, int iPlayerNum, bool bReliable, bool bInit)
 {
 	return Plugin_Handled;
 }
+#endif
 
 public Action Command_VoiceMenu(int iClient, const char[] sCommand, int iArgs)
 {
