@@ -268,6 +268,7 @@ public void Mapvote_OnMapsLoaded()
 	FindConVar("mp_respawnwavetime").SetInt(PVP_RESPAWNWAVETIME); //
 }
 
+#if !defined PRIVATE
 void CheckClientRopeCvars(int iClient)
 {
 	for (int i = 0; i < ROPE_TOTAL; i++)
@@ -282,7 +283,9 @@ void ProcessClientRopeCvars(QueryCookie cookie, int iClient, ConVarQueryResult r
 		CPrintToChat(iClient, "{fullred}Please type {green}%s 1{fullred} in console in order to see ropes correctly! Add {green}%s 1{fullred} at the very end of your cfg/autoexec.cfg and restart your game.", cvarName, cvarName);
 	}
 }
+#endif
 
+#if !defined PRIVATE
 void CheckClientDownloadCvar(int iClient)
 {
 	QueryClientConVar(iClient, "cl_downloadfilter", ProcessClientDownloadCvar);
@@ -293,6 +296,7 @@ void ProcessClientDownloadCvar(QueryCookie cookie, int iClient, ConVarQueryResul
 	if (!StrEqual(cvarValue, "all"))
 		CPrintToChat(iClient, "{fullred}Please allow all downloads in the multiplayer options menu!", cvarName);
 }
+#endif
 
 /**
  * Description
@@ -1231,6 +1235,7 @@ public void OnEntityCreatedPost(int iEntity)
 	}
 }
 
+#if !defined PRIVATE
 public void CustomMusicNotifier(int iClient)
 {
 	if (!IsValidClient(iClient))
@@ -1315,6 +1320,7 @@ int CurrentMapHasCustomMusic()
 
 	return 0;
 }
+#endif
 
 public void ProcessRadialsPostKeyValue(any aData)
 {
