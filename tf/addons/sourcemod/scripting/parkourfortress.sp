@@ -604,6 +604,7 @@ void PrecacheModels()
 	PrecacheModel("materials/cable/cable.vmt", true);
 	PrecacheModel("materials/cable/rope.vmt", true);
 	
+#if !defined PRIVATE
 	/** --- External --- **/
 	/* Legacy Props */
 	// AC Unit
@@ -722,6 +723,7 @@ void PrecacheModels()
 	SuperPrecacheMaterial("models/reduxsource/zipwire_tower", true);
 	SuperPrecacheMaterial("models/reduxsource/zipwire_tower_blue", true);
 	SuperPrecacheMaterial("models/reduxsource/zipwire_tower_kir_green", true);
+#endif
 }
 
 public void Mapvote_OnPvPMap()
