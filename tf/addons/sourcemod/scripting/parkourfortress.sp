@@ -53,10 +53,14 @@ All code is licensed under the GNU General Public License, version 3.
 #include "parkourfortress/movements/vault.sp"
 #include "parkourfortress/movements/wallclimb.sp"
 #include "parkourfortress/movements/grindable-rail.sp"
+#if !defined PRIVATE
 #include "parkourfortress/weapons/weapons.sp"
+#endif
 #include "parkourfortress/weapons/stocks.sp"
+#if !defined PRIVATE
 #include "parkourfortress/weapons/pickupweapons.sp"
 #include "parkourfortress/weapons/config.sp"
+#endif
 
 public Plugin myinfo =
 {
@@ -69,7 +73,9 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle hSelf, bool bLate, char[] strError, int iErr_max)
 {
+#if !defined PRIVATE
 	g_hForwardWeaponPickup = new GlobalForward("OnPickupWeapon", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+#endif
 	
 	g_bLate = bLate;
 	return APLRes_Success;
@@ -98,16 +104,20 @@ public void OnPluginStart()
 	g_cvarViewmodels = CreateConVar("pf_viewmodels", "1", "Enable viewmodels", 0, true, 0.0, true, 1.0);
 	g_cvarWallrunTraces = CreateConVar("pf_wallrun_traces", "10", "How many traces should wallruns cast?", 0, true, 8.0, true, 90.0);
 	
+#if !defined PRIVATE
 	g_cvarWeaponRespawn = CreateConVar("pf_weapon_respawntime", "60.0", "Max time for weapons to respawn if respawntime_random is on, otherwise hard value for respawn period", 0, true, 1.0, false);
 	g_cvarWeaponRespawnMin = CreateConVar("pf_weapon_respawntime_min", "10.0", "If respawntime_random is on, minimum time for weapons to respawn after being picked up", 0, true, 1.0, false);
 	g_cvarWeaponRespawnRandom = CreateConVar("pf_weapon_respawntime_random", "1", "Weapons respawn in a time period between respawntime_min and respawntime", 0, true, 0.0, true, 1.0);
 	g_cvarWeaponMaxRare = CreateConVar("pf_weapon_rare_max", "99999", "Max number of rare weapons spawned per round", 0, true, 0.0, false);
 	g_cvarWeaponRareChance = CreateConVar("pf_weapon_rare_chance", "5", "1 in value chance to spawn rare weapon when spawning random rarity", 0, true, 1.0, false);
 	g_cvarWeaponGrabDistance = CreateConVar("pf_weapon_grab_distance", "100.0", "How far away in units a player can pick up a weapon from", 0, true, 48.0, false);
+#endif
 	
 	g_cvarPvP.AddChangeHook(OnChangePvP);
+#if !defined PRIVATE
 	g_cvarWeaponRespawn.AddChangeHook(OnWeaponRespawnSet);
 	g_cvarWeaponRespawnMin.AddChangeHook(OnWeaponRespawnMinSet);
+#endif
 
 	g_cookieTutorialStage = new Cookie("tutorialprogress", "How far along you are in the tutorial", CookieAccess_Protected);
 	g_cookieLerp = new Cookie("parkourlerp", "Enable camera tilt", CookieAccess_Protected);
@@ -133,14 +143,18 @@ public void OnPluginStart()
 	{
 		InitObjects(true);
 		InitSDK();
+#if !defined PRIVATE
 		InitWeapons();
+#endif
 		InitOther();
 	}
 	
 	InitMovements();
 	
 	RegAdminCmd("sm_debugreach", DebugReach, ADMFLAG_ROOT);
+#if !defined PRIVATE
 	RegAdminCmd("sm_reloadweapon", WeaponReload, ADMFLAG_ROOT);
+#endif
 	RegAdminCmd("sm_debugbbox", DebugBBox, ADMFLAG_ROOT);
 	RegAdminCmd("sm_debugcoords", DebugCoords, ADMFLAG_ROOT);
 	
@@ -223,6 +237,7 @@ public void OnAllPluginsLoaded()
 #endif
 }
 
+#if !defined PRIVATE
 public void OnWeaponRespawnSet(ConVar cvarTime, const char[] strOldValue, const char[] strNewValue)
 {
 	if (StringToFloat(strNewValue) <= g_cvarWeaponRespawnMin.FloatValue)
@@ -234,6 +249,7 @@ public void OnWeaponRespawnMinSet(ConVar cvarMin, const char[] strOldValue, cons
 	if (StringToFloat(strNewValue) <= g_cvarWeaponRespawn.FloatValue)
 		cvarMin.FloatValue = g_cvarWeaponRespawn.FloatValue;
 }
+#endif
 
 #if !defined PRIVATE
 public Action BlockCYOA(int client, const char[] command, int argc)
@@ -439,6 +455,7 @@ public Action Command_VoiceMenu(int iClient, const char[] sCommand, int iArgs)
 	GetCmdArg(1, sArg1, sizeof(sArg1));
 	GetCmdArg(2, sArg2, sizeof(sArg2));
 	
+#if !defined PRIVATE
 	//Capture call for medic commands (represented by "voicemenu 0 0").
 	if (sArg1[0] == '0' && sArg2[0] == '0')
 	{
@@ -446,6 +463,7 @@ public Action Command_VoiceMenu(int iClient, const char[] sCommand, int iArgs)
 		if (AttemptGrabItem(iClient))
 			return Plugin_Handled;
 	}
+#endif
 	
 	return Plugin_Continue;
 }
@@ -595,7 +613,9 @@ public void OnMapStart()
 	CPFTutorialController.Init();
 	PrecacheModels();
 	ClearTutorials();
+#if !defined PRIVATE
 	Weapons_Refresh();
+#endif
 }
 
 void ClearTutorials()
@@ -740,7 +760,9 @@ void PrecacheModels()
 
 public void Mapvote_OnPvPMap()
 {
+#if !defined PRIVATE
 	Weapons_Refresh();
+#endif
 }
 
 public void OnMapEnd()
@@ -756,11 +778,13 @@ public void OnMapEnd()
 	g_bLate = false;
 }
 
+#if !defined PRIVATE
 public Action WeaponReload(int client, int args)
 {
 	Weapons_Refresh();
 	return Plugin_Handled;
 }
+#endif
 
 public Action DebugReach(int client, int args)
 {
@@ -1040,7 +1064,9 @@ public Action OnRoundStart(Event hEvent, const char[] strName, bool bDontBroadca
 {
 	InitObjects(true);
 	InitSDK();
+#if !defined PRIVATE
 	InitWeapons();
+#endif
 	InitOther();
 
 	FindConVar("tf_weapon_criticals").SetBool(!g_cvarPvP.BoolValue);
@@ -1187,7 +1213,9 @@ public void OnClientDisconnect(int iClient)
 	
 	CPFViewController.Disconnect(iClient);
 	
+#if !defined PRIVATE
 	Weapons_ClientDisconnect(iClient);
+#endif
 
 	g_bTutorialFetched[iClient] = false;
 }

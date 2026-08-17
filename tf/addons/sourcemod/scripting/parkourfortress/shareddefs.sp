@@ -49,12 +49,14 @@ ConVar g_cvarViewmodels;
 ConVar g_cvarWallrunTraces;
 
 ConVar g_cvarPvP;
+#if !defined PRIVATE
 ConVar g_cvarWeaponRespawn;
 ConVar g_cvarWeaponRespawnMin;
 ConVar g_cvarWeaponRespawnRandom;
 ConVar g_cvarWeaponMaxRare;
 ConVar g_cvarWeaponRareChance;
 ConVar g_cvarWeaponGrabDistance;
+#endif
 
 Cookie g_cookieMusic;
 Cookie g_cookieMusicVolume;
@@ -66,7 +68,9 @@ Cookie g_cookieTutorialStage;
 
 int g_iFoundPropBecauseICantReturnItFromTheEnumerator;
 
+#if !defined PRIVATE
 GlobalForward g_hForwardWeaponPickup;
+#endif
 
 ArrayList g_hRailControl;
 ArrayList g_hRopeControl;
@@ -620,6 +624,7 @@ stock float ClientHorizontalSpeed(int iClient)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+#if !defined PRIVATE
 enum eWeaponsRarity
 {
 	eWeaponsRarity_Common,
@@ -628,6 +633,7 @@ enum eWeaponsRarity
 	eWeaponsRarity_Pickup,
 	WEAPONRARITY_COUNT,
 };
+#endif
 
 enum
 {
