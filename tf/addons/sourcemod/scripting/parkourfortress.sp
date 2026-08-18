@@ -25,7 +25,7 @@ All code is licensed under the GNU General Public License, version 3.
 #include <tf2_stocks>
 #include <clientprefs>
 #include <tracerayex>
-#include <morecolors>
+#include <multicolors>
 
 #pragma semicolon 1
 #pragma newdecls required

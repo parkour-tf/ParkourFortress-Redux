@@ -188,6 +188,24 @@ enum TakeDamage_t
 	DAMAGE_AIM,
 };
 
+/**
+ * Converts a string to lowercase in place.
+ *
+ * Provided here because the colored-chat include this plugin uses (multicolors) does not
+ * export one, unlike the unlicensed morecolors it replaced. Used by weapons/config.sp.
+ *
+ * @param buffer		String to convert.
+ */
+stock void CStrToLower(char[] buffer)
+{
+	int iLength = strlen(buffer);
+
+	for (int i = 0; i < iLength; i++)
+	{
+		buffer[i] = CharToLower(buffer[i]);
+	}
+}
+
 #if !defined _PF_INCLUDED
 stock bool IsValidClient(int iClient)
 {
