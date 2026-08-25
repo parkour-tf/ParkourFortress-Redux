@@ -20,9 +20,7 @@ checkout of this repository - including by its own `.github/workflows/build.yml`
 downloads stock SourceMod and would fail on the same missing include.
 
 Multi-Colors is the maintained successor to that include and provides the same
-`CPrintToChat` / `CReplyToCommand` API. It is used in preference to Dr. McKay's original
-`morecolors.inc` because that file ships without a license, whereas Multi-Colors is
-explicitly GPLv3 and therefore compatible with this repository.
+`CPrintToChat` / `CReplyToCommand` API.
 
 Do not edit these files locally; re-vendor from upstream instead so the provenance above
 stays accurate.
