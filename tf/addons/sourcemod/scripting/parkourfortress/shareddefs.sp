@@ -49,12 +49,14 @@ ConVar g_cvarViewmodels;
 ConVar g_cvarWallrunTraces;
 
 ConVar g_cvarPvP;
+#if !defined PRIVATE
 ConVar g_cvarWeaponRespawn;
 ConVar g_cvarWeaponRespawnMin;
 ConVar g_cvarWeaponRespawnRandom;
 ConVar g_cvarWeaponMaxRare;
 ConVar g_cvarWeaponRareChance;
 ConVar g_cvarWeaponGrabDistance;
+#endif
 
 Cookie g_cookieMusic;
 Cookie g_cookieMusicVolume;
@@ -66,7 +68,9 @@ Cookie g_cookieTutorialStage;
 
 int g_iFoundPropBecauseICantReturnItFromTheEnumerator;
 
+#if !defined PRIVATE
 GlobalForward g_hForwardWeaponPickup;
+#endif
 
 ArrayList g_hRailControl;
 ArrayList g_hRopeControl;
@@ -183,6 +187,24 @@ enum TakeDamage_t
 	DAMAGE_YES,
 	DAMAGE_AIM,
 };
+
+/**
+ * Converts a string to lowercase in place.
+ *
+ * Provided here because the colored-chat include this plugin uses (multicolors) does not
+ * export one, unlike the unlicensed morecolors it replaced. Used by weapons/config.sp.
+ *
+ * @param buffer		String to convert.
+ */
+stock void CStrToLower(char[] buffer)
+{
+	int iLength = strlen(buffer);
+
+	for (int i = 0; i < iLength; i++)
+	{
+		buffer[i] = CharToLower(buffer[i]);
+	}
+}
 
 #if !defined _PF_INCLUDED
 stock bool IsValidClient(int iClient)
@@ -620,6 +642,7 @@ stock float ClientHorizontalSpeed(int iClient)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+#if !defined PRIVATE
 enum eWeaponsRarity
 {
 	eWeaponsRarity_Common,
@@ -628,6 +651,7 @@ enum eWeaponsRarity
 	eWeaponsRarity_Pickup,
 	WEAPONRARITY_COUNT,
 };
+#endif
 
 enum
 {
