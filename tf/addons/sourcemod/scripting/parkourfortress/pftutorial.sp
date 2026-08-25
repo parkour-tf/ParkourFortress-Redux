@@ -113,13 +113,29 @@ methodmap CPFTutorialController
 		if (hTutorialTimer[iClient] != INVALID_HANDLE)
 			delete hTutorialTimer[iClient];
 
-		// #19246: seed the local tutorial-stage cookie from LoadoutSharp's cross-session store before deciding
-		// whether to run the tutorial timer, so a player who advanced the tutorial in a prior session or on
-		// another server resumes at the right stage. A failed or invalid fetch (TUTORIAL_INVALID) falls through
-		// to the existing cookie-only behaviour and never blocks the player.
+		// #19246 / #19272: reconcile the local tutorial-stage cookie with LoadoutSharp's cross-session store by
+		// taking the higher of the two, so a player who advanced the tutorial in a prior session or on another
+		// server resumes at the right stage and neither store can ever move them backwards.
+		//
+		// Seeding the bridged value unconditionally is what #19272 fixes: an absent LoadoutSharp cookie answers 0,
+		// which is a valid stage and therefore is not caught by the TUTORIAL_INVALID guard, so a player who
+		// finished the tutorial under the old cookie-only system had their progress reset and the 0 pushed back.
+		// Writing the max also carries a local value LoadoutSharp is behind on across the bridge, which matters
+		// because LoadoutSharp hides the player's HUD for as long as its own copy reads mid-tutorial.
+		//
+		// A failed or invalid fetch (TUTORIAL_INVALID) falls through to the existing cookie-only behaviour and
+		// never blocks the player. Stores that already agree are left alone rather than rewritten.
 		TutorialStage eBridged = CPFTutorialController.FetchStageFromLoadoutSharp(iClient);
-		if (eBridged != TUTORIAL_INVALID)
-			CPFTutorialController.SetStage(iClient, eBridged);
+		TutorialStage eLocal = CPFTutorialController.GetStage(iClient);
+
+		if (eBridged != TUTORIAL_INVALID && eBridged != eLocal)
+		{
+			TutorialStage eResolved = eLocal;
+			if (eBridged > eLocal)
+				eResolved = eBridged;
+
+			CPFTutorialController.SetStage(iClient, eResolved);
+		}
 
 		if (CPFTutorialController.GetStage(iClient) < TUTORIAL_COMPLETE)
 			hTutorialTimer[iClient] = CreateTimer(1.0, DisplayTutorialScreen, iClient, TIMER_REPEAT);
