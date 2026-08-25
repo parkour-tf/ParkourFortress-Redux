@@ -31,6 +31,11 @@ methodmap CPFTutorialController
 		char Stage[2];
 		IntToString(view_as<int>(eStage), Stage, sizeof(Stage));
 		g_cookieTutorialStage.Set(iClient, Stage);
+
+		// #19246: mirror the stage into LoadoutSharp's cross-session store so tutorial progress follows the
+		// player across sessions and servers. Uses the int value directly, not the single-digit Stage buffer
+		// above. Best-effort - an absent bridge command just logs an unknown-command line and is a no-op.
+		ServerCommand("compat_settutorialstage %d %d", GetClientUserId(iClient), view_as<int>(eStage));
 	}
 
 	public static void IncStage(int iClient)
@@ -82,9 +87,39 @@ methodmap CPFTutorialController
 #endif
 	}
 	
-	public static void InitPlayer(int iClient) {
+	// #19246: read the player's tutorial stage back from LoadoutSharp's cross-session store via the
+	// compat_gettutorialstage bridge command. Mirrors the ServerCommandEx capture pattern in weapons/stocks.sp:
+	// the command prints a bare integer line to the console, which the redirect captures into strBuf. Returns
+	// TUTORIAL_INVALID when the client is invalid, the capture is empty / non-numeric (e.g. an unknown-command
+	// line when LoadoutSharp is absent), or the value is negative (the getter's -1 failure sentinel).
+	public static TutorialStage FetchStageFromLoadoutSharp(int iClient)
+	{
+		if (!IsValidClient(iClient))
+			return TUTORIAL_INVALID;
+
+		char strBuf[16];
+		ServerCommandEx(strBuf, sizeof(strBuf), "compat_gettutorialstage %d", GetClientUserId(iClient));
+		TrimString(strBuf);
+
+		int iStage;
+		if (StringToIntEx(strBuf, iStage) == 0 || iStage < 0)
+			return TUTORIAL_INVALID;
+
+		return view_as<TutorialStage>(iStage);
+	}
+
+	public static void InitPlayer(int iClient)
+	{
 		if (hTutorialTimer[iClient] != INVALID_HANDLE)
 			delete hTutorialTimer[iClient];
+
+		// #19246: seed the local tutorial-stage cookie from LoadoutSharp's cross-session store before deciding
+		// whether to run the tutorial timer, so a player who advanced the tutorial in a prior session or on
+		// another server resumes at the right stage. A failed or invalid fetch (TUTORIAL_INVALID) falls through
+		// to the existing cookie-only behaviour and never blocks the player.
+		TutorialStage eBridged = CPFTutorialController.FetchStageFromLoadoutSharp(iClient);
+		if (eBridged != TUTORIAL_INVALID)
+			CPFTutorialController.SetStage(iClient, eBridged);
 
 		if (CPFTutorialController.GetStage(iClient) < TUTORIAL_COMPLETE)
 			hTutorialTimer[iClient] = CreateTimer(1.0, DisplayTutorialScreen, iClient, TIMER_REPEAT);
