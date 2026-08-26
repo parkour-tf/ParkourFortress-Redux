@@ -42,6 +42,17 @@ enum struct StateInfo
 	PFState LastState;
 	ePFStateFlags Flags;
 	int ButtonsInterrupted;
+
+	/**
+	 * The live heal repeat timer, or INVALID_HANDLE when the heal cycle is not running.
+	 *
+	 * Kept beside Flags because it pairs with SF_BEINGHEALED: the flag says a heal cycle is
+	 * notionally active, this handle is the thing actually driving it. Before AB#18984 only the
+	 * flag existed, the handle was discarded at creation, and the cycle could only be ended by
+	 * clearing the flag and waiting for the timer to notice - which let a stale timer survive a
+	 * death long enough for a second one to be armed alongside it.
+	 */
+	Handle HealTimer;
 }
 
 static StateInfo g_eStateInfo[MAXPLAYERS + 1];
@@ -65,7 +76,52 @@ methodmap CPFStateController
 	public static void SetFlags(int iClient, ePFStateFlags eFlags) { g_eStateInfo[iClient].Flags = eFlags; }
 	public static void AddFlags(int iClient, ePFStateFlags eFlags) { g_eStateInfo[iClient].Flags |= eFlags; }
 	public static void RemoveFlags(int iClient, ePFStateFlags eFlags)  { g_eStateInfo[iClient].Flags &= ~eFlags; }
-	
+
+	/**
+	 * Heal repeat timer lifetime (AB#18984).
+	 *
+	 * There are deliberately TWO ways to end the cycle, and picking the wrong one is the original
+	 * defect this API exists to prevent:
+	 *
+	 *   KillHealTimer  - an EXTERNAL end (death, disconnect). The timer is still live and nobody
+	 *                    else will free it, so this deletes the handle.
+	 *   ClearHealTimer - an INTERNAL end (the timer callback itself returning Plugin_Stop).
+	 *                    SourceMod frees the handle when the callback returns Plugin_Stop, so this
+	 *                    only drops our reference. Deleting here would be a double close.
+	 *
+	 * A timer callback must never delete its own handle. Call ClearHealTimer and return
+	 * Plugin_Stop; never KillHealTimer from inside StartHealPlayerRepeat.
+	 */
+	public static Handle GetHealTimer(int iClient) { return g_eStateInfo[iClient].HealTimer; }
+	public static bool HasHealTimer(int iClient) { return g_eStateInfo[iClient].HealTimer != INVALID_HANDLE; }
+	public static void SetHealTimer(int iClient, Handle hTimer) { g_eStateInfo[iClient].HealTimer = hTimer; }
+
+	/** Drops the reference without freeing it. For use from inside the heal callback only; see above. */
+	public static void ClearHealTimer(int iClient)
+	{
+		g_eStateInfo[iClient].HealTimer = INVALID_HANDLE;
+	}
+
+	/** Ends a live heal cycle from outside the callback, freeing the timer. Safe to call when none is running. */
+	public static void KillHealTimer(int iClient)
+	{
+		if (g_eStateInfo[iClient].HealTimer != INVALID_HANDLE)
+		{
+			delete g_eStateInfo[iClient].HealTimer;
+			g_eStateInfo[iClient].HealTimer = INVALID_HANDLE;
+		}
+	}
+
+	/**
+	 * Resets per-client state for a connecting client. The heal handle is cleared rather than
+	 * deleted: the slot may carry a stale value from a previous occupant whose timer is long gone,
+	 * and deleting that would close a handle we do not own.
+	 */
+	public static void InitPlayer(int iClient)
+	{
+		g_eStateInfo[iClient].HealTimer = INVALID_HANDLE;
+	}
+
 	public static PFState Get(int iClient)
 	{
 		if (!IsValidClient(iClient))
