@@ -102,12 +102,18 @@ methodmap CPFStateController
 		g_eStateInfo[iClient].HealTimer = INVALID_HANDLE;
 	}
 
-	/** Ends a live heal cycle from outside the callback, freeing the timer. Safe to call when none is running. */
+	/**
+	 * Ends a live heal cycle from outside the callback. Safe to call when none is running.
+	 *
+	 * KillTimer, not delete. A timer manages its own lifetime, so closing a live one is an error
+	 * rather than cleanup; KillTimer is the supported way to cancel early. (CPFSoundController's
+	 * KillDelayTimer uses delete here and is wrong for the same reason.)
+	 */
 	public static void KillHealTimer(int iClient)
 	{
 		if (g_eStateInfo[iClient].HealTimer != INVALID_HANDLE)
 		{
-			delete g_eStateInfo[iClient].HealTimer;
+			KillTimer(g_eStateInfo[iClient].HealTimer);
 			g_eStateInfo[iClient].HealTimer = INVALID_HANDLE;
 		}
 	}
