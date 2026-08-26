@@ -958,6 +958,7 @@ public void OnGameFrame()
 public void OnClientPutInServer(int iClient) {
 	CPFTutorialController.InitPlayer(iClient);
 	CPFSoundController.InitPlayer(iClient);
+	CPFStateController.InitPlayer(iClient);
 }
 
 public void OnClientPostAdminCheck(int iClient)
@@ -1207,7 +1208,8 @@ public void OnClientDisconnect(int iClient)
 	CPFSoundController.SetCurrentLevel(iClient, 0);
 	CPFSoundController.SetCurrentMusic(iClient, 0);
 	CPFSoundController.KillDelayTimer(iClient);
-		
+	CPFStateController.KillHealTimer(iClient);
+
 	CPFStateController.SetFlags(iClient, SF_NONE);
 	CPFRollHandler.Disconnect(iClient);
 	
@@ -1763,6 +1765,11 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	CPFSoundController.StopAllSounds(client);
 	
 	CPFStateController.Set(client, State_None);
+
+	// Ending the cycle means killing the timer, not just clearing the flag (AB#18984). Clearing the
+	// flag alone leaves the timer live until its next tick, and a one-shot landing inside that window
+	// arms a second one on top of it.
+	CPFStateController.KillHealTimer(client);
 	CPFStateController.RemoveFlags(client, SF_BEINGHEALED);
 	CPFStateController.RemoveFlags(client, SF_INFINITEJUMP);
 	CPFStateController.RemoveFlags(client, SF_INFINITEBOOST);
@@ -1773,7 +1780,13 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 Action StartHealPlayer(Handle hTimer, int iUserID)
 {
 	int iClient = GetClientOfUserId(iUserID);
-	if (!IsValidClient(iClient) || !IsPlayerAlive(iClient) ||  CPFStateController.HasFlags(iClient, SF_BEINGHEALED))
+
+	// The stored-handle check is not redundant with the flag check (AB#18984). A one-shot scheduled
+	// before a death can land after the player has respawned but before the previous repeat timer's
+	// next tick; at that moment the flag is clear but the old timer is still live, and arming a second
+	// one leaves both running with neither able to tell it is the duplicate.
+	if (!IsValidClient(iClient) || !IsPlayerAlive(iClient) || CPFStateController.HasFlags(iClient, SF_BEINGHEALED)
+		|| CPFStateController.HasHealTimer(iClient))
 	{
 		return Plugin_Stop;
 	}
@@ -1786,33 +1799,37 @@ Action StartHealPlayer(Handle hTimer, int iUserID)
 	else
 	{
 		SetEntityHealth(iClient, RoundToFloor(flHealth));
-		CreateTimer(1.0, StartHealPlayerRepeat, GetClientUserId(iClient), TIMER_REPEAT);
+		CPFStateController.SetHealTimer(iClient, CreateTimer(1.0, StartHealPlayerRepeat, GetClientUserId(iClient), TIMER_REPEAT));
 		CPFStateController.AddFlags(iClient, SF_BEINGHEALED);
 	}
-	
+
 	return Plugin_Stop;
 }
 
+// Both exits below return Plugin_Stop WITHOUT calling KillTimer on hTimer. SourceMod frees a
+// repeating timer's handle when its callback returns Plugin_Stop, so killing it here too is a double
+// close; this function previously did both on both exits (AB#18984 AC3). ClearHealTimer only drops
+// the stored reference, which is the correct counterpart to an internal end.
 Action StartHealPlayerRepeat(Handle hTimer, int iUserID)
 {
 	int iClient = GetClientOfUserId(iUserID);
 	if (!IsValidClient(iClient) || !IsPlayerAlive(iClient) || !CPFStateController.HasFlags(iClient, SF_BEINGHEALED))
 	{
-		if (hTimer != null)
-			KillTimer(hTimer);
-		
+		if (IsValidClient(iClient))
+			CPFStateController.ClearHealTimer(iClient);
+
 		return Plugin_Stop;
 	}
-	
+
 	int iWaterLevel = CPFStateController.GetWaterLevel(iClient);
 	if (iWaterLevel == 3)
 		return Plugin_Continue;
-	
+
 	float flHealth = (float(GetEntProp(iClient, Prop_Send, "m_iHealth")) * 1.02) + 2.0;
 	if (flHealth >= 125.0)
 	{
 		SetEntityHealth(iClient, 125);
-		KillTimer(hTimer);
+		CPFStateController.ClearHealTimer(iClient);
 		CPFStateController.RemoveFlags(iClient, SF_BEINGHEALED);
 		return Plugin_Stop;
 	}
