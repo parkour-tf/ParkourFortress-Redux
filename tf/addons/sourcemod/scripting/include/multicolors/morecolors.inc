@@ -1023,7 +1023,13 @@ stock void MC_InitFastColors() {
  * @return       32-bit hash value
  */
 stock int MC_FastHash(const char[] str) {
-	int hash = 2166136261;
+	// LOCAL DIVERGENCE FROM UPSTREAM Bara/Multi-Colors (AB#19428) - preserve on any refresh
+	// of this vendored tree. Upstream spells the basis as the decimal 2166136261, which does
+	// not fit a signed 32-bit int; spcomp builds newer than the 1.13.0.7329 we historically
+	// shipped reject it outright with "error 454: implicit truncation converting from int64
+	// to int". 0x811C9DC5 is the identical 32-bit pattern, so the hash is bit-for-bit the
+	// same - a typing correction, not an algorithm change.
+	int hash = 0x811C9DC5;
 	for (int i = 0; str[i]; i++) {
 		hash ^= str[i];
 		hash *= 16777619;
