@@ -120,6 +120,30 @@ methodmap CPFWallclimbHandler
 		
 		GetAngleVectors(vecAngles, vecAngles, NULL_VECTOR, NULL_VECTOR);
 		hClimbTrace.GetPlaneNormal(vecWallNormal);
+
+		/* A player hugging the wall puts the mount hull's leading face on the wall plane, so
+		 * the hull trace starts solid and carries no collision plane; the zeroed normal then
+		 * fails the facing check below and the mount silently rejects. Recover the normal with
+		 * a center ray from the eye, which sits a half-hull clear of a hugged wall. */
+		if (hClimbTrace.StartSolid || VectorIsZero(vecWallNormal))
+		{
+			const float WALLCLIMB_NORMAL_RAY_LENGTH = 64.0;
+
+			float vecNormalRayEnd[3];
+			vecNormalRayEnd = vecAngles;
+			ScaleVector(vecNormalRayEnd, WALLCLIMB_NORMAL_RAY_LENGTH);
+			AddVectors(vecEyePosition, vecNormalRayEnd, vecNormalRayEnd);
+
+			TraceRayF hNormalTrace = new TraceRayF(vecEyePosition, vecNormalRayEnd, MASK_PLAYERSOLID, RayType_EndPoint, TraceRayNoPlayers, iClient);
+			bool bNormalHit = hNormalTrace.Hit;
+			if (bNormalHit)
+				hNormalTrace.GetPlaneNormal(vecWallNormal);
+			delete hNormalTrace;
+
+			if (!bNormalHit)
+				return false;
+		}
+
 		flPhi = GetVectorDotProduct(vecAngles, vecWallNormal);
 		
 		if (-0.05 < vecWallNormal[2] && vecWallNormal[2] < 0.05 && flPhi <= -0.5)
