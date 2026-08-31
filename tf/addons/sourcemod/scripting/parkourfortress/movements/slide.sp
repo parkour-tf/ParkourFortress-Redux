@@ -157,7 +157,11 @@ methodmap CPFSlideHandler
 		DebugOutput("CPFSlideHandler::TraceSlide --- Slope normal %f, %f, %f", iClient, vecSlopeNormal[0], vecSlopeNormal[1], vecSlopeNormal[2]);
 		DebugOutput("CPFSlideHandler::TraceSlide --- Internal position for %N: %f, %f, %f", iClient, vecLastPosInternal[0], vecLastPosInternal[1], vecLastPosInternal[2]);
 		DebugOutput("CPFSlideHandler::TraceSlide --- Current position for %N: %f, %f, %f", iClient, vecEyePosition[0], vecEyePosition[1], vecOrigin[2]);
-		if ((FloatAbs(vecSlopeNormal[0]) < 0.01 && FloatAbs(vecSlopeNormal[1]) < 0.01 || FloatAbs(vecSlopeNormal[2]) < 0.01) && !VectorIsZero(vecLastPosInternal) && ((vecLastPosInternal[2] - vecOrigin[2] <= 16.0) && (vecLastPosInternal[2] - vecOrigin[2] >= 4.0)))
+		/* The descent window measures units fallen per trace (one trace per 2 ticks), which
+		 * is a rate: scale the bounds to the tick interval or the window closes at higher
+		 * tickrates and the fake slope never engages. */
+		float flTickScale = TICKRATE_STANDARD_FLOAT / GetTickRate();
+		if ((FloatAbs(vecSlopeNormal[0]) < 0.01 && FloatAbs(vecSlopeNormal[1]) < 0.01 || FloatAbs(vecSlopeNormal[2]) < 0.01) && !VectorIsZero(vecLastPosInternal) && ((vecLastPosInternal[2] - vecOrigin[2] <= 16.0 * flTickScale) && (vecLastPosInternal[2] - vecOrigin[2] >= 4.0 * flTickScale)))
 		{
 			DebugOutput("CPFSlideHandler::TraceSlide --- Trying fake slope", iClient);
 			float vecFakeSlopeBuffer[3];
@@ -289,7 +293,10 @@ methodmap CPFSlideHandler
 	
 	public static void Slide(int iClient, int iButtons)
 	{
-		g_iSlideTime[iClient] += TickModify(2);
+		/* Raw ticks, deliberately not TickModify'd: End() already scales its
+		 * SLIDE_MINIMUM_FOR_SPEED gate with TickModify and rate-converts the boost
+		 * formula, so scaling the increment too double-counts the tickrate. */
+		g_iSlideTime[iClient] += 2;
 		
 		if (!(iButtons & IN_DUCK))
 		{
