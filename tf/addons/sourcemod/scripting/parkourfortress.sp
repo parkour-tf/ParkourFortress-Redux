@@ -2128,7 +2128,7 @@ public void OnPreThink(int iClient)
 			
 			if (hangResult)
 			{
-				if (GetGameTickCount() - CPFWallclimbHandler.StartTick(iClient) <= TICK_MAX_TO_VAULT_FROM_HANG)
+				if (GetGameTickCount() - CPFWallclimbHandler.StartTick(iClient) <= TickModify(TICK_MAX_TO_VAULT_FROM_HANG))
 				{
 					if (CPFVaultHandler.Try(iClient))
 						CPFWallclimbHandler.Break(iClient, WALLCLIMB_DISENGAGE_VAULT);
