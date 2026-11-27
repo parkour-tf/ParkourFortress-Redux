@@ -67,7 +67,7 @@
 
 			"CTeamplayRoundBasedRules::SetWinningTeam"
 			{
-				"linux"	"165"
+				"linux"	"167"
 				"windows"	"166"
 			}
 			
